@@ -17,12 +17,12 @@ import sys
 ADDR_R = 1024 * 1024 * 1024
 ADDR_W = 1024 * 1024 * 4096
 REG_SIZE = 4
-BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/scripts/cs/"
+BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 
-input_file = BASEDIR + "input.txt"
-dynamic_trace = BASEDIR + "output_trace.out.tid0.dyn.out"
-memory_trace = BASEDIR + "output_trace.out.tid0.mem.out"
-static_trace = BASEDIR + "output_trace.out.tid0.stat.out"
+input_file = BASEDIR + "bitmap_files/result.txt"
+dynamic_trace = BASEDIR + "columnStore/traços/x86/output_trace.out.tid0.dyn.out"
+memory_trace = BASEDIR + "columnStore/traços/x86/output_trace.out.tid0.mem.out"
+static_trace = BASEDIR + "columnStore/traços/x86/output_trace.out.tid0.stat.out"
 
 FILE_INPUT = open(input_file, 'r')
 FILE_DYN = open(dynamic_trace, 'w')
@@ -34,7 +34,7 @@ header = header.split("|")
 totalAttributes = int(header[0])
 numberPredicates = int(header[1])
 instructionAddress = 1024
-w, h = 10, 60
+w, h = numberPredicates, totalAttributes
 dynamic_block = [[0 for x in range(w)] for y in range(h)]
 memory_block = [[0 for x in range(w)] for y in range(h)]
 
@@ -120,3 +120,4 @@ for j in range(numberPredicates):
 FILE_MEM.close()
 FILE_DYN.close()
 FILE_INPUT.close()
+os.system("gzip " + BASEDIR + "columnStore/traços/x86/" + "*.out")
