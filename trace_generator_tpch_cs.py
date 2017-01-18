@@ -15,7 +15,7 @@ import os
 import sys
 
 ADDR_R = 1024 * 1024 * 1024
-ADDR_W = 1024 * 1024 * 1024 + 6001218
+ADDR_W = 1024 * 1024 * 4096
 REG_SIZE = 4
 BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/scripts/cs/"
 
@@ -60,14 +60,14 @@ for i in range(numberPredicates):
     basicBlock += 1
     instructionAddress += 2
     FILE_STAT.write("@" + str(basicBlock) + "\n")  #APPLY PREDICATE)#
-    FILE_STAT.write("MOVDQU 8 " + str(instructionAddress) + " 6 1 8 1 9 0 0 0 0 1 3 0 0 0\n")
+    FILE_STAT.write("MOVDQU 8 " + str(instructionAddress) + " 6 1 8 1 9 0 0 1 0 0 3 0 0 0\n")
     instructionAddress += 6
     FILE_STAT.write("CMP 1 " + str(instructionAddress) + " 3 1 9 1 10 0 0 0 0 0 3 0 0 0\n")
     instructionAddress += 3
     FILE_STAT.write("JNBE 7 " + str(instructionAddress) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
     basicBlock += 1
     instructionAddress += 2
-    FILE_STAT.write("@" + str(basicBlock) + "\n")  #MATERIALIZATION (LOAD -> STORE)#
+    FILE_STAT.write("@" + str(basicBlock) + "\n")  #BITMAP (STORE)#
     FILE_STAT.write("MOVDQU 8 " + str(instructionAddress) + " 6 1 11 1 12 0 0 0 0 0 3 0 0 0\n")
     instructionAddress += 6
     FILE_STAT.write("MOVDQU 9 " + str(instructionAddress) + " 6 1 12 1 13 0 0 0 0 1 3 0 0 0\n")
@@ -95,6 +95,8 @@ for i in range(len(tuples)):
         if elem[j] == '1':
             dynamic_block[j][i] = str(str(basicBlock + 1) + "\n")
             dynamic_block[j][i] += str(str(basicBlock + 2) + "\n")
+            memory_block[j][i] = ("R 4 " + str(ADDR_R) + " " + str(basicBlock + 2) + "\n")
+            ADDR_R += REG_SIZE
             dynamic_block[j][i] += str(str(basicBlock + 3) + "\n")
             memory_block[j][i] = ("W 4 " + str(ADDR_W) + " " + str(basicBlock + 2) + "\n")
             ADDR_W += REG_SIZE
@@ -104,8 +106,8 @@ for i in range(len(tuples)):
         else:
             dynamic_block[j][i] = str(str(basicBlock + 1) + "\n")
             dynamic_block[j][i] += str(str(basicBlock + 2) + "\n")
-            memory_block[j][i] = ("W 4 " + str(ADDR_W) + " " + str(basicBlock + 2) + "\n")
-            ADDR_W += REG_SIZE
+            memory_block[j][i] = ("R 4 " + str(ADDR_R) + " " + str(basicBlock + 2) + "\n")
+            ADDR_R += REG_SIZE
         basicBlock += 3
 
 ######### WRITES ON DYNAMIC AND MEMORY FILE ################3
