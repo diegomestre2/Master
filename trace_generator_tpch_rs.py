@@ -17,12 +17,12 @@ import sys
 ADDR_R = 1024 * 1024 * 1024
 ADDR_W = 1024 * 1024 * 4096
 REG_SIZE = 4
-BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/scripts/rs/"
+BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 
-input_file = BASEDIR + "input.txt"
-dynamic_trace = BASEDIR + "output_trace.out.tid0.dyn.out"
-memory_trace = BASEDIR + "output_trace.out.tid0.mem.out"
-static_trace = BASEDIR + "output_trace.out.tid0.stat.out"
+input_file = BASEDIR + "bitmap_files/result.txt"
+dynamic_trace = BASEDIR + "rowStore/traços/x86/output_trace.out.tid0.dyn.out"
+memory_trace = BASEDIR + "rowStore/traços/x86/output_trace.out.tid0.mem.out"
+static_trace = BASEDIR + "rowStore/traços/x86/output_trace.out.tid0.stat.out"
 
 FILE_INPUT = open(input_file, 'r')
 FILE_DYN = open(dynamic_trace, 'w')
@@ -33,11 +33,13 @@ header = FILE_INPUT.readline()
 header = header.split("|")
 totalAttributes = int(header[0])
 numberPredicates = int(header[1])
+
 instructionAddress = 1024
-w, h = 10, 60
+tuples = FILE_INPUT.readlines()
+qtdTuples = len(tuples)
+w, h = qtdTuples, numberPredicates
 dynamic_block = [[0 for x in range(w)] for y in range(h)]
 memory_block = [[0 for x in range(w)] for y in range(h)]
-
 AttributesByStage = [totalAttributes, totalAttributes, totalAttributes]
 address_base = [1024, 1024, 1024]
 address_target = [111024, 121024, 131024]
@@ -46,9 +48,9 @@ FILE_DYN.write("# SiNUCA Trace Dynamic\n")
 FILE_MEM.write("# SiNUCA Trace Memory\n")
 FILE_STAT.write("# SiNUCA Trace Static\n")
 
-tuples = FILE_INPUT.readlines()
 basicBlock = 0
 #################### STATIC FILE #########################
+print "Generating Static File..."
 for i in range(numberPredicates):
     basicBlock += 1
     FILE_STAT.write("@" + str(basicBlock) + "\n")  # LAÇO FOR POR TUPLA#
@@ -89,9 +91,10 @@ for i in range(numberPredicates):
 
 FILE_STAT.write("# eof")
 FILE_STAT.close()
+print "Static File Ok!"
 
 #################### DYNAMIC AND MEMORY FILE #########################
-
+print "Generating Dynamic and Memory Files..."
 for i in range(len(tuples)):
     elem = tuples[i]
     elem = elem.split()
@@ -120,13 +123,14 @@ for i in range(len(tuples)):
             memory_block[j][i] = ("R 4 " + str(ADDR_R) + " " + str(basicBlock + 2) + "\n")
             ADDR_R += totalAttributes * REG_SIZE
         basicBlock += 4
-
+print "Writing on Dynamic and Memory File..."
 for j in range(numberPredicates):
     for i in range(len(tuples)):
         FILE_DYN.write(dynamic_block[j][i])
         if memory_block[j][i] != 0:
             FILE_MEM.write(memory_block[j][i])
-
+print "Dynamic and Memory Files Ok!"
 FILE_MEM.close()
 FILE_DYN.close()
 FILE_INPUT.close()
+os.system("gzip " + BASEDIR + "rowStore/traços/x86/" + "*.out")
