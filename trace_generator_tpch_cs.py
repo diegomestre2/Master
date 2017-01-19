@@ -34,7 +34,9 @@ header = header.split("|")
 totalAttributes = int(header[0])
 numberPredicates = int(header[1])
 instructionAddress = 1024
-w, h = numberPredicates, totalAttributes
+tuples = FILE_INPUT.readlines()
+qtdTuples = len(tuples)
+w, h = qtdTuples, numberPredicates
 dynamic_block = [[0 for x in range(w)] for y in range(h)]
 memory_block = [[0 for x in range(w)] for y in range(h)]
 
@@ -46,9 +48,9 @@ FILE_DYN.write("# SiNUCA Trace Dynamic\n")
 FILE_MEM.write("# SiNUCA Trace Memory\n")
 FILE_STAT.write("# SiNUCA Trace Static\n")
 
-tuples = FILE_INPUT.readlines()
 basicBlock = 0
 #################### STATIC FILE #########################
+print "Generating Static File..."
 for i in range(numberPredicates):
     basicBlock += 1
     FILE_STAT.write("@" + str(basicBlock) + "\n")  #COLUMN-AT-A-TIME#
@@ -81,9 +83,9 @@ for i in range(numberPredicates):
 
 FILE_STAT.write("# eof")
 FILE_STAT.close()
-
+print "Static File Ok!"
 #################### DYNAMIC AND MEMORY FILE #########################
-
+print "Generating Data For Dynamic and Memory Files..."
 for i in range(len(tuples)):
     elem = tuples[i]
     elem = elem.split()
@@ -97,10 +99,8 @@ for i in range(len(tuples)):
             dynamic_block[j][i] += str(str(basicBlock + 2) + "\n")
             memory_block[j][i] = ("R 4 " + str(ADDR_R) + " " + str(basicBlock + 2) + "\n")
             ADDR_R += REG_SIZE
-            dynamic_block[j][i] += str(str(basicBlock + 3) + "\n")
-            memory_block[j][i] = ("W 4 " + str(ADDR_W) + " " + str(basicBlock + 2) + "\n")
-            ADDR_W += REG_SIZE
             ############# CREATE THE BITMAP ###################################
+            dynamic_block[j][i] += str(str(basicBlock + 3) + "\n")
             memory_block[j][i] += str("W 4 " + str(ADDR_W) + " " + str(basicBlock + 3) + "\n")
             ADDR_W += REG_SIZE
         else:
@@ -109,7 +109,7 @@ for i in range(len(tuples)):
             memory_block[j][i] = ("R 4 " + str(ADDR_R) + " " + str(basicBlock + 2) + "\n")
             ADDR_R += REG_SIZE
         basicBlock += 3
-
+print "Writing on Dynamic and Memory File..."
 ######### WRITES ON DYNAMIC AND MEMORY FILE ################3
 for j in range(numberPredicates):
     for i in range(len(tuples)):
@@ -120,4 +120,7 @@ for j in range(numberPredicates):
 FILE_MEM.close()
 FILE_DYN.close()
 FILE_INPUT.close()
+print "Dynamic and Memory Files Ok!"
+print "Compressing Files..."
 os.system("gzip " + BASEDIR + "columnStore/traços/x86/" + "*.out")
+print "ALL Done!"
