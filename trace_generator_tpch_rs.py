@@ -94,7 +94,7 @@ FILE_STAT.close()
 print "Static File Ok!"
 
 #################### DYNAMIC AND MEMORY FILE #########################
-print "Generating Dynamic and Memory Files..."
+print "Generating Data for Dynamic and Memory Files..."
 for i in range(len(tuples)):
     elem = tuples[i]
     elem = elem.split()
@@ -129,8 +129,11 @@ for j in range(numberPredicates):
         FILE_DYN.write(dynamic_block[j][i])
         if memory_block[j][i] != 0:
             FILE_MEM.write(memory_block[j][i])
-print "Dynamic and Memory Files Ok!"
+
 FILE_MEM.close()
 FILE_DYN.close()
 FILE_INPUT.close()
+print "Dynamic and Memory Files Ok!"
+print "Compressing Files..."
 os.system("gzip " + BASEDIR + "rowStore/traços/x86/" + "*.out")
+print "ALL Done!"
