@@ -70,8 +70,6 @@ for i in range(numberPredicates):
     basicBlock += 1
     instructionAddress += 2
     FILE_STAT.write("@" + str(basicBlock) + "\n")  #BITMAP (STORE)#
-    FILE_STAT.write("MOVDQU 8 " + str(instructionAddress) + " 6 1 11 1 12 0 0 0 0 0 3 0 0 0\n")
-    instructionAddress += 6
     FILE_STAT.write("MOVDQU 9 " + str(instructionAddress) + " 6 1 12 1 13 0 0 0 0 1 3 0 0 0\n")
     instructionAddress += 6
     FILE_STAT.write("ADD 1 " + str(instructionAddress) + " 4 1 1 1 1 0 0 0 0 0 3 0 0 0\n")
