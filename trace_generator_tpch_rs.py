@@ -8,7 +8,7 @@
 ## 64MB => 16777216
 ## 1GB => 268435456
 
-##HEADER | TotalNumberOFAttributes | NumberOfPredicates |
+##HEADER | NumberOfTables | ...TuplesByTable ... | TotalNumberOfAttributes | NumberOfPredicates |
 
 import subprocess
 import os
@@ -31,8 +31,15 @@ FILE_STAT = open(static_trace, 'w')
 
 header = FILE_INPUT.readline()
 header = header.split("|")
-totalAttributes = int(header[0])
-numberPredicates = int(header[1])
+numberOfTables = int(header[0])
+tuplesByTable = []
+totalAttributes = []
+
+for i in range(numberOfTables):
+    tuplesByTable[i] = header[i + 1]
+    totalAttributes[i] = header[i + numberOfTables + 1]
+
+numberPredicates = int(header[(numberOfTables * 2) + 1])
 
 instructionAddress = 1024
 tuples = FILE_INPUT.readlines()
@@ -40,9 +47,6 @@ qtdTuples = len(tuples)
 w, h = qtdTuples, numberPredicates
 dynamic_block = [[0 for x in range(w)] for y in range(h)]
 memory_block = [[0 for x in range(w)] for y in range(h)]
-AttributesByStage = [totalAttributes, totalAttributes, totalAttributes]
-address_base = [1024, 1024, 1024]
-address_target = [111024, 121024, 131024]
 
 FILE_DYN.write("# SiNUCA Trace Dynamic\n")
 FILE_MEM.write("# SiNUCA Trace Memory\n")
@@ -109,7 +113,7 @@ for i in range(len(tuples)):
             memory_block[j][i] = ("R 4 " + str(ADDR_R) + " " + str(basicBlock + 2) + "\n")
             ADDR_R += REG_SIZE
             ############# MATERIALIZE EACH ATTRIBUTE
-            for k in range(totalAttributes):
+            for k in range(totalAttributes[j]):
                 dynamic_block[j][i] += str(str(basicBlock + 3) + "\n")
                 memory_block[j][i] += str("R 4 " + str(ADDR_R) + " " + str(basicBlock + 3) + "\n")
                 memory_block[j][i] += str("W 4 " + str(ADDR_W) + " " + str(basicBlock + 3) + "\n")
@@ -123,6 +127,13 @@ for i in range(len(tuples)):
             memory_block[j][i] = ("R 4 " + str(ADDR_R) + " " + str(basicBlock + 2) + "\n")
             ADDR_R += totalAttributes * REG_SIZE
         basicBlock += 4
+
+##################  #####################################################
+for i in range(len(tuples)):
+    elem = tuples[i]
+    elem = elem.split()
+    basicBlock = 0
+
 print "Writing on Dynamic and Memory File..."
 for j in range(numberPredicates):
     for i in range(len(tuples)):

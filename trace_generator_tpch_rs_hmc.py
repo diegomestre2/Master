@@ -73,7 +73,9 @@ for i in range(numberOfPredicates):
     FILE_STAT.write("JNBE 7 " + str(INST_ADDR) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
     basicBlock += 1
     INST_ADDR += 2
-    FILE_STAT.write("@" + str(basicBlock) + "\n")  # BITMAP (STORE)#
+    FILE_STAT.write("@" + str(basicBlock) + "\n")  # MATERIALIZATION (LOAD -> STORE)#
+    FILE_STAT.write("MOVDQU 8 " + str(INST_ADDR) + " 6 1 11 1 12 0 0 1 0 0 3 0 0 0\n")  # R
+    INST_ADDR += 6
     FILE_STAT.write("MOVDQU 9 " + str(INST_ADDR) + " 6 1 12 1 13 0 0 0 0 1 3 0 0 0\n")
     INST_ADDR += 6
     FILE_STAT.write("ADD 1 " + str(INST_ADDR) + " 4 1 1 1 1 0 0 0 0 0 3 0 0 0\n")

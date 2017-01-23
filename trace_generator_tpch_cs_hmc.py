@@ -21,9 +21,9 @@ INST_ADDR = 1024
 BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 
 input_file = BASEDIR + "bitmap_files/resultQ06.txt"
-dynamic_trace = BASEDIR + "columnStore/traços/HMC/Q06/output_trace.out.tid0.dyn.out"
-memory_trace = BASEDIR + "columnStore/traços/HMC/Q06/output_trace.out.tid0.mem.out"
-static_trace = BASEDIR + "columnStore/traços/HMC/Q06/output_trace.out.tid0.stat.out"
+dynamic_trace = BASEDIR + "columnStore/traços/HMC/Q06/256/output_trace.out.tid0.dyn.out"
+memory_trace = BASEDIR + "columnStore/traços/HMC/Q06/256/output_trace.out.tid0.mem.out"
+static_trace = BASEDIR + "columnStore/traços/HMC/Q06/256/output_trace.out.tid0.stat.out"
 
 FILE_INPUT = open(input_file, 'r')
 FILE_DYN = open(dynamic_trace, 'w')
@@ -101,20 +101,20 @@ for i in range(len(tuples)):
         ########################################################################
         ##  PREDICATE MATCH
         ########################################################################
-        if predicateMatch[column] == 4:
+        if predicateMatch[column] == 64:
             predicateMatch[column] = 0
             dynamic_block[column][i] += str(str(basicBlock + 2) + "\n")
-            memory_block[column][i] = ("R 16 " + str(ADDR_R) + " " + str(basicBlock + 2) + "\n")
-            ADDR_R += (REG_SIZE * 4)
+            memory_block[column][i] = ("R 256 " + str(ADDR_R) + " " + str(basicBlock + 2) + "\n")
+            ADDR_R += (REG_SIZE * 64)
             ############# CREATE THE BITMAP ###################################
             dynamic_block[column][i] += str(str(basicBlock + 3) + "\n")
-            memory_block[column][i] += str("W 16 " + str(ADDR_W) + " " + str(basicBlock + 3) + "\n")
-            ADDR_W += (REG_SIZE * 4)
-        if predicateNotMatch[column] == 4:
+            memory_block[column][i] += str("W 256 " + str(ADDR_W) + " " + str(basicBlock + 3) + "\n")
+            ADDR_W += (REG_SIZE * 64)
+        if predicateNotMatch[column] == 64:
             predicateNotMatch[column] = 0
             dynamic_block[column][i] += str(str(basicBlock + 2) + "\n")
-            memory_block[column][i] = ("R 16 " + str(ADDR_R) + " " + str(basicBlock + 2) + "\n")
-            ADDR_R += (REG_SIZE * 4)
+            memory_block[column][i] = ("R 256 " + str(ADDR_R) + " " + str(basicBlock + 2) + "\n")
+            ADDR_R += (REG_SIZE * 64)
 
         basicBlock += 3
 
@@ -131,5 +131,5 @@ FILE_DYN.close()
 FILE_INPUT.close()
 print "Dynamic and Memory Files Ok!"
 print "Compressing Files..."
-os.system("gzip " + BASEDIR + "columnStore/traços/HMC/Q06/" + "*.out")
+os.system("gzip " + BASEDIR + "columnStore/traços/HMC/Q06/256/" + "*.out")
 print "ALL Done!"

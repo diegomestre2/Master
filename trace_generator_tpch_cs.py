@@ -33,6 +33,7 @@ header = FILE_INPUT.readline()
 header = header.split("|")
 totalAttributes = int(header[0])
 numberPredicates = int(header[1])
+
 instructionAddress = 1024
 tuples = FILE_INPUT.readlines()
 qtdTuples = len(tuples)
