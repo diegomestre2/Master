@@ -17,12 +17,12 @@ import sys
 ADDR_R = 1024 * 1024 * 1024
 ADDR_W = 1024 * 1024 * 4096
 REG_SIZE = 4
-BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 
-input_file = BASEDIR + "bitmap_files/result.txt"
-dynamic_trace = BASEDIR + "rowStore/traços/x86/output_trace.out.tid0.dyn.out"
-memory_trace = BASEDIR + "rowStore/traços/x86/output_trace.out.tid0.mem.out"
-static_trace = BASEDIR + "rowStore/traços/x86/output_trace.out.tid0.stat.out"
+BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
+input_file = BASEDIR + "bitmap_files/resultQ06.txt"
+dynamic_trace = BASEDIR + "rowStore/traces/x86/Q06/output_trace.out.tid0.dyn.out"
+memory_trace = BASEDIR + "rowStore/traces/x86/Q06/output_trace.out.tid0.mem.out"
+static_trace = BASEDIR + "rowStore/traces/x86/Q06/output_trace.out.tid0.stat.out"
 
 FILE_INPUT = open(input_file, 'r')
 FILE_DYN = open(dynamic_trace, 'w')
@@ -32,27 +32,27 @@ FILE_STAT = open(static_trace, 'w')
 header = FILE_INPUT.readline()
 header = header.split("|")
 numberOfTables = int(header[0])
-tuplesByTable = []
-totalAttributes = []
-
-for i in range(numberOfTables):
-    tuplesByTable[i] = header[i + 1]
-    totalAttributes[i] = header[i + numberOfTables + 1]
-
 numberPredicates = int(header[(numberOfTables * 2) + 1])
-
 instructionAddress = 1024
+basicBlock = 0
+
 tuples = FILE_INPUT.readlines()
 qtdTuples = len(tuples)
 w, h = qtdTuples, numberPredicates
+
 dynamic_block = [[0 for x in range(w)] for y in range(h)]
 memory_block = [[0 for x in range(w)] for y in range(h)]
+tuplesByTable = [0 for y in range(qtdTuples)]
+totalAttributes = [0 for y in range(3)]
+
+for i in range(numberOfTables):
+    tuplesByTable[i] = int(header[i + 1])
+    totalAttributes[i] = int(header[i + numberOfTables + 1])
 
 FILE_DYN.write("# SiNUCA Trace Dynamic\n")
 FILE_MEM.write("# SiNUCA Trace Memory\n")
 FILE_STAT.write("# SiNUCA Trace Static\n")
 
-basicBlock = 0
 #################### STATIC FILE #########################
 print "Generating Static File..."
 for i in range(numberPredicates):
@@ -113,32 +113,31 @@ for i in range(len(tuples)):
             memory_block[j][i] = ("R 4 " + str(ADDR_R) + " " + str(basicBlock + 2) + "\n")
             ADDR_R += REG_SIZE
             ############# MATERIALIZE EACH ATTRIBUTE
-            for k in range(totalAttributes[j]):
+            for k in range(totalAttributes[0]):
                 dynamic_block[j][i] += str(str(basicBlock + 3) + "\n")
                 memory_block[j][i] += str("R 4 " + str(ADDR_R) + " " + str(basicBlock + 3) + "\n")
                 memory_block[j][i] += str("W 4 " + str(ADDR_W) + " " + str(basicBlock + 3) + "\n")
                 dynamic_block[j][i] += str(str(basicBlock + 4) + "\n")
-
                 ADDR_W += REG_SIZE
                 ADDR_R += REG_SIZE
+        ########################################################################
+        ##  Predicate Not Match
+        ########################################################################
         elif j == 0 or (j > 0 and elem[j - 1] == '1'):
             dynamic_block[j][i] = str(str(basicBlock + 1) + "\n")
             dynamic_block[j][i] += str(str(basicBlock + 2) + "\n")
             memory_block[j][i] = ("R 4 " + str(ADDR_R) + " " + str(basicBlock + 2) + "\n")
-            ADDR_R += totalAttributes * REG_SIZE
+            ADDR_R += REG_SIZE
 
         basicBlock += 4
 
-##################  #####################################################
-for i in range(len(tuples)):
-    elem = tuples[i]
-    elem = elem.split()
-    basicBlock = 0
+#######################################################################
 
 print "Writing on Dynamic and Memory File..."
 for j in range(numberPredicates):
     for i in range(len(tuples)):
-        FILE_DYN.write(dynamic_block[j][i])
+        if dynamic_block[j][i] != 0:
+            FILE_DYN.write(dynamic_block[j][i])
         if memory_block[j][i] != 0:
             FILE_MEM.write(memory_block[j][i])
 
@@ -147,5 +146,5 @@ FILE_DYN.close()
 FILE_INPUT.close()
 print "Dynamic and Memory Files Ok!"
 print "Compressing Files..."
-os.system("gzip " + BASEDIR + "rowStore/traços/x86/" + "*.out")
+os.system("gzip " + BASEDIR + "rowStore/traces/x86/Q06/" + "*.out")
 print "ALL Done!"

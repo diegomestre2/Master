@@ -19,10 +19,10 @@ ADDR_W = 1024 * 1024 * 4096
 REG_SIZE = 4
 BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 
-input_file = BASEDIR + "bitmap_files/result.txt"
-dynamic_trace = BASEDIR + "columnStore/traços/x86/output_trace.out.tid0.dyn.out"
-memory_trace = BASEDIR + "columnStore/traços/x86/output_trace.out.tid0.mem.out"
-static_trace = BASEDIR + "columnStore/traços/x86/output_trace.out.tid0.stat.out"
+input_file = BASEDIR + "bitmap_files/resultQ06.txt"
+dynamic_trace = BASEDIR + "columnStore/traces/x86/Q06/output_trace.out.tid0.dyn.out"
+memory_trace = BASEDIR + "columnStore/traces/x86/Q06/output_trace.out.tid0.mem.out"
+static_trace = BASEDIR + "columnStore/traces/x86/Q06/output_trace.out.tid0.stat.out"
 
 FILE_INPUT = open(input_file, 'r')
 FILE_DYN = open(dynamic_trace, 'w')
@@ -113,7 +113,8 @@ print "Writing on Dynamic and Memory File..."
 ######### WRITES ON DYNAMIC AND MEMORY FILE ################3
 for j in range(numberPredicates):
     for i in range(len(tuples)):
-        FILE_DYN.write(dynamic_block[j][i])
+        if dynamic_block[j][i] != 0:
+            FILE_DYN.write(dynamic_block[j][i])
         if memory_block[j][i] != 0:
             FILE_MEM.write(memory_block[j][i])
 
@@ -122,5 +123,5 @@ FILE_DYN.close()
 FILE_INPUT.close()
 print "Dynamic and Memory Files Ok!"
 print "Compressing Files..."
-os.system("gzip " + BASEDIR + "columnStore/traços/x86/" + "*.out")
+os.system("gzip " + BASEDIR + "columnStore/traces/x86/Q06/" + "*.out")
 print "ALL Done!"
