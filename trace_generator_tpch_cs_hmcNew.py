@@ -22,7 +22,8 @@ BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 
 input_file = BASEDIR + "bitmap_files/resultQ06.txt"
 dynamic_trace = BASEDIR + "columnStore/traços/HMC/Q06/output_trace.out.tid0.dyn.out"
-memory_trace = BASEDIR + "columnStore/traços/HMC/Q06/output_trace.out.tid0.mem.out"
+memory_trace = BASEDIR + "columnStore/traços/HMC/Q06/out" \
+                         "put_trace.out.tid0.mem.out"
 static_trace = BASEDIR + "columnStore/traços/HMC/Q06/output_trace.out.tid0.stat.out"
 
 FILE_INPUT = open(input_file, 'r')
