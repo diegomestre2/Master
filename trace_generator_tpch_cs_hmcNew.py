@@ -22,15 +22,13 @@ BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 
 input_file = BASEDIR + "bitmap_files/resultQ06.txt"
 dynamic_trace = BASEDIR + "columnStore/traços/HMC/Q06/output_trace.out.tid0.dyn.out"
-memory_trace = BASEDIR + "columnStore/traços/HMC/Q06/out" \
-                         "put_trace.out.tid0.mem.out"
+memory_trace = BASEDIR + "columnStore/traços/HMC/Q06/output_trace.out.tid0.mem.out"
 static_trace = BASEDIR + "columnStore/traços/HMC/Q06/output_trace.out.tid0.stat.out"
 
 FILE_INPUT = open(input_file, 'r')
 FILE_DYN = open(dynamic_trace, 'w')
 FILE_MEM = open(memory_trace, 'w')
 FILE_STAT = open(static_trace, 'w')
-
 
 header = FILE_INPUT.readline()
 header = header.split("|")
@@ -69,7 +67,7 @@ for i in range(numberOfPredicates):
     basicBlock += 1
     INST_ADDR += 2
     FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
-    FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")   # R
+    FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")  # R
     INST_ADDR += 4
     FILE_STAT.write("HMC_CPY 13 " + str(INST_ADDR) + " 4 1 10 1 11 0 0 0 0 1 3 0 0 0\n")  # W
     INST_ADDR += 4
@@ -78,7 +76,6 @@ for i in range(numberOfPredicates):
     FILE_STAT.write("JNBE 7 " + str(INST_ADDR) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
     basicBlock += 1
     INST_ADDR += 2
-
 
 FILE_STAT.write("# eof")
 FILE_STAT.close()

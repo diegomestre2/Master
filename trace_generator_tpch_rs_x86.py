@@ -32,16 +32,19 @@ FILE_STAT = open(static_trace, 'w')
 header = FILE_INPUT.readline()
 header = header.split("|")
 numberOfTables = int(header[0])
-numberPredicates = int(header[(numberOfTables * 2) + 1])
+numberOfPredicates = int(header[(numberOfTables * 2) + 1])
 instructionAddress = 1024
 basicBlock = 0
 
 tuples = FILE_INPUT.readlines()
+FILE_INPUT.close()
+
 qtdTuples = len(tuples)
-w, h = qtdTuples, numberPredicates
+w, h = qtdTuples, numberOfPredicates
 
 dynamic_block = [[0 for x in range(w)] for y in range(h)]
 memory_block = [[0 for x in range(w)] for y in range(h)]
+bitColSum = [0 for y in range(numberOfPredicates)]
 tuplesByTable = [0 for y in range(qtdTuples)]
 totalAttributes = [0 for y in range(3)]
 
