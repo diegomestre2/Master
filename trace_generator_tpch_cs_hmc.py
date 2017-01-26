@@ -14,7 +14,7 @@ import subprocess
 import os
 import sys
 
-BLOCK_SIZE = 4
+BLOCK_SIZE = 64
 
 ADDR_R = 1024 * 1024 * 1024
 ADDR_W = 1024 * 1024 * 4096
@@ -55,8 +55,8 @@ for i in range(numberOfTables):
     totalAttributes[i] = int(header[i + numberOfTables + 1])
 
 AttributesByStage = [totalAttributes, totalAttributes, totalAttributes]
-address_base = [1024, 1024, 1024]
-address_target = [111024, 121024, 131024]
+address_base = [ADDR_R, ADDR_R * 2, ADDR_R * 4]
+address_target = [ADDR_W, ADDR_W * 2, ADDR_R * 4]
 
 FILE_DYN.write("# SiNUCA Trace Dynamic\n")
 FILE_MEM.write("# SiNUCA Trace Memory\n")
@@ -117,26 +117,26 @@ for tuple in range(len(tuples)):
                 ########################################################################
                 dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                 memory_block[column][tuple] = (
-                    "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(ADDR_R) + " " + str(basicBlock + 2) + "\n")
-                ADDR_R += (REG_SIZE * BLOCK_SIZE)
+                    "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(basicBlock + 2) + "\n")
+                address_base[column] += (REG_SIZE * BLOCK_SIZE)
                 ########################################################################
                 ## CREATE THE BITMAP
                 ########################################################################
-                for i in range((REG_SIZE * BLOCK_SIZE)/16):
+                for i in range((REG_SIZE * BLOCK_SIZE) / 16):
                     dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
-                    memory_block[column][tuple] += str("W 16 " + str(ADDR_W) + " " + str(basicBlock + 3) + "\n")
-                    ADDR_W += (REG_SIZE * 4)
+                    memory_block[column][tuple] += str("W 16 " + str(address_target[column]) + " " + str(basicBlock + 3) + "\n")
+                    address_target[column] += (REG_SIZE * 4)
             elif column > 0:
                 if lastSum > 0:
                     dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                     memory_block[column][tuple] = (
-                        "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(ADDR_R) + " " + str(basicBlock + 2) + "\n")
-                    ADDR_R += (REG_SIZE * BLOCK_SIZE)
+                        "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(basicBlock + 2) + "\n")
+                    address_base[column] += (REG_SIZE * BLOCK_SIZE)
             else:
                 dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                 memory_block[column][tuple] = (
-                    "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(ADDR_R) + " " + str(basicBlock + 2) + "\n")
-                ADDR_R += (REG_SIZE * BLOCK_SIZE)
+                    "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(basicBlock + 2) + "\n")
+                address_base[column] += (REG_SIZE * BLOCK_SIZE)
         else:
             bitColSum[column] += int(elem[column])
         basicBlock += 3
