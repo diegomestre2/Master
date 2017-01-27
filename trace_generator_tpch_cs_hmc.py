@@ -14,7 +14,7 @@ import subprocess
 import os
 import sys
 
-BLOCK_SIZE = 64
+BLOCK_SIZE = 8
 
 ADDR_R = 1024 * 1024 * 1024
 ADDR_W = 1024 * 1024 * 4096
@@ -55,8 +55,8 @@ for i in range(numberOfTables):
     totalAttributes[i] = int(header[i + numberOfTables + 1])
 
 AttributesByStage = [totalAttributes, totalAttributes, totalAttributes]
-address_base = [ADDR_R, ADDR_R * 2, ADDR_R * 4]
-address_target = [ADDR_W, ADDR_W * 2, ADDR_R * 4]
+address_base = [ADDR_R, ADDR_R * 2, ADDR_R * 3]
+address_target = [ADDR_W, int(ADDR_W * 1.5), ADDR_W * 2]
 
 FILE_DYN.write("# SiNUCA Trace Dynamic\n")
 FILE_MEM.write("# SiNUCA Trace Memory\n")
