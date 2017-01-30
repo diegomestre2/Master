@@ -63,7 +63,7 @@ for hmc_size in (4, 8, 16, 32, 64):
     FILE_STAT.write("# SiNUCA Trace Static\n")
 
     basicBlock = 0
-    print "Generating Traces Files For HMC..."
+    print("Generating Traces Files For HMC... " + str(hmc_size * 4) + " Bytes")
     #################### STATIC FILE #########################
     print "Generating Static File..."
     for i in range(numberOfPredicates):
