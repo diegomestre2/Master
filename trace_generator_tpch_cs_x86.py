@@ -21,9 +21,9 @@ REG_SIZE = 4
 BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 
 input_file = BASEDIR + "bitmap_files/resultQ06.txt"
-dynamic_trace = BASEDIR + "columnStore/traces/x86/Q06/output_trace.out.tid0.dyn.out"
-memory_trace = BASEDIR + "columnStore/traces/x86/Q06/output_trace.out.tid0.mem.out"
-static_trace = BASEDIR + "columnStore/traces/x86/Q06/output_trace.out.tid0.stat.out"
+dynamic_trace = BASEDIR + "traces/x86/Q06/columnStore/output_trace.out.tid0.dyn.out"
+memory_trace = BASEDIR + "traces/x86/Q06/columnStore/output_trace.out.tid0.mem.out"
+static_trace = BASEDIR + "traces/x86/Q06/columnStore/output_trace.out.tid0.stat.out"
 
 FILE_INPUT = open(input_file, 'r')
 FILE_DYN = open(dynamic_trace, 'w')
@@ -42,8 +42,8 @@ FILE_INPUT.close()
 
 qtdTuples = len(tuples)
 w, h = qtdTuples, numberOfPredicates
-dynamic_block = [[0 for x in range(w)] for y in range(h)]
-memory_block = [[0 for x in range(w)] for y in range(h)]
+dynamic_block = [["" for x in range(w)] for y in range(h)]
+memory_block = [["" for x in range(w)] for y in range(h)]
 bitColSum = [0 for y in range(numberOfPredicates)]
 tuplesByTable = [0 for y in range(qtdTuples)]
 totalAttributes = [0 for y in range(3)]
@@ -103,7 +103,7 @@ for tuple in range(len(tuples)):
     elem = elem.split()
     basicBlock = 0
     for column in range(numberOfPredicates):
-        dynamic_block[column][tuple] = str(str(basicBlock + 1) + "\n")
+        dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
         if fieldCount == 1:
             bitColSum[column] += int(elem[column])
             if bitColSum[column] > 0:
@@ -115,7 +115,7 @@ for tuple in range(len(tuples)):
                 ##  PREDICATE MATCH
                 ########################################################################
                 dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
-                memory_block[column][tuple] = (
+                memory_block[column][tuple] += (
                     "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(basicBlock + 2) + "\n")
                 address_base[column] += (REG_SIZE * BLOCK_SIZE)
                 ########################################################################
@@ -126,14 +126,18 @@ for tuple in range(len(tuples)):
                     memory_block[column][tuple] += str("W 16 " + str(address_target[column]) + " " + str(basicBlock + 3) + "\n")
                     address_target[column] += (REG_SIZE * 4)
             elif column > 0:
+                if column == numberOfPredicates - 1:
+                    fieldCount = BLOCK_SIZE + 1
                 if lastSum > 0:
                     dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
-                    memory_block[column][tuple] = (
+                    memory_block[column][tuple] += (
                         "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(basicBlock + 2) + "\n")
                     address_base[column] += (REG_SIZE * BLOCK_SIZE)
-            else:
+            elif column == 0:
+                if column == numberOfPredicates - 1:
+                    fieldCount = BLOCK_SIZE + 1
                 dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
-                memory_block[column][tuple] = (
+                memory_block[column][tuple] += (
                     "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(basicBlock + 2) + "\n")
                 address_base[column] += (REG_SIZE * BLOCK_SIZE)
         else:
@@ -153,5 +157,6 @@ FILE_MEM.close()
 FILE_DYN.close()
 print "Dynamic and Memory Files Ok!"
 print "Compressing Files..."
-os.system("gzip " + BASEDIR + "columnStore/traces/x86/Q06/" + "*.out")
+os.system("rm -f " + BASEDIR + "traces/x86/Q06/columnStore/" + "*gz")
+os.system("gzip " + BASEDIR + "traces/x86/Q06/columnStore/" + "*.out")
 print "ALL Done!"
