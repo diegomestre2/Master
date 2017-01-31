@@ -80,7 +80,7 @@ for hmc_size in (4, 8, 16, 32, 64):
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
         FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 1 1 2 0\n")
         INST_ADDR += 4
-        FILE_STAT.write("JNBE 7 " + str(INST_ADDR) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
+        FILE_STAT.write("JNE 7 " + str(INST_ADDR) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
         basicBlock += 1
         INST_ADDR += 2
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # MATCH POSITION (STORE)#
@@ -90,7 +90,7 @@ for hmc_size in (4, 8, 16, 32, 64):
         INST_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INST_ADDR) + " 3 1 1 1 2 0 0 0 0 0 3 0 0 0\n")
         INST_ADDR += 3
-        FILE_STAT.write("JNBE 7 " + str(INST_ADDR) + " 2 1 2 1 3 0 0 0 0 0 4 0 0 0\n")
+        FILE_STAT.write("JNE 7 " + str(INST_ADDR) + " 2 1 2 1 3 0 0 0 0 0 4 0 0 0\n")
         INST_ADDR += 2
 
     FILE_STAT.write("# eof")
