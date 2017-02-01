@@ -14,15 +14,18 @@ import subprocess
 import os
 import sys
 
+BLOCK_SIZE = 4
+
 ADDR_R = 1024 * 1024 * 1024
 ADDR_W = 1024 * 1024 * 4096
 REG_SIZE = 4
-
+INST_ADDR = 1024
 BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
+
 input_file = BASEDIR + "bitmap_files/resultQ06.txt"
-dynamic_trace = BASEDIR + "rowStore/traces/x86/Q06/output_trace.out.tid0.dyn.out"
-memory_trace = BASEDIR + "rowStore/traces/x86/Q06/output_trace.out.tid0.mem.out"
-static_trace = BASEDIR + "rowStore/traces/x86/Q06/output_trace.out.tid0.stat.out"
+dynamic_trace = BASEDIR + "traces/x86/Q06/rowStore/output_trace.out.tid0.dyn.out"
+memory_trace = BASEDIR + "traces/x86/Q06/rowStore/output_trace.out.tid0.mem.out"
+static_trace = BASEDIR + "traces/x86/Q06/rowStore/output_trace.out.tid0.stat.out"
 
 FILE_INPUT = open(input_file, 'r')
 FILE_DYN = open(dynamic_trace, 'w')
@@ -41,9 +44,8 @@ FILE_INPUT.close()
 
 qtdTuples = len(tuples)
 w, h = qtdTuples, numberOfPredicates
-
-dynamic_block = [[0 for x in range(w)] for y in range(h)]
-memory_block = [[0 for x in range(w)] for y in range(h)]
+dynamic_block = [["" for x in range(w)] for y in range(h)]
+memory_block = [["" for x in range(w)] for y in range(h)]
 bitColSum = [0 for y in range(numberOfPredicates)]
 tuplesByTable = [0 for y in range(qtdTuples)]
 totalAttributes = [0 for y in range(3)]
@@ -52,13 +54,19 @@ for i in range(numberOfTables):
     tuplesByTable[i] = int(header[i + 1])
     totalAttributes[i] = int(header[i + numberOfTables + 1])
 
+AttributesByStage = [totalAttributes, totalAttributes, totalAttributes]
+address_base = [ADDR_R, ADDR_R * 2, ADDR_R * 3]
+address_target = [ADDR_W, int(ADDR_W * 1.5), ADDR_W * 2]
+
 FILE_DYN.write("# SiNUCA Trace Dynamic\n")
 FILE_MEM.write("# SiNUCA Trace Memory\n")
 FILE_STAT.write("# SiNUCA Trace Static\n")
 
+basicBlock = 0
+print("Generating Traces Files For HMC... 16 Bytes")
 #################### STATIC FILE #########################
 print "Generating Static File..."
-for i in range(numberPredicates):
+for i in range(numberOfPredicates):
     basicBlock += 1
     FILE_STAT.write("@" + str(basicBlock) + "\n")  # LAÇO FOR POR TUPLA#
     FILE_STAT.write("ADD 1 " + str(instructionAddress) + " 4 1 5 1 5 0 0 0 0 0 3 0 0 0\n")
@@ -73,7 +81,7 @@ for i in range(numberPredicates):
     instructionAddress += 6
     FILE_STAT.write("CMP 1 " + str(instructionAddress) + " 3 1 9 1 10 0 0 0 0 0 3 0 0 0\n")
     instructionAddress += 3
-    FILE_STAT.write("JNBE 7 " + str(instructionAddress) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
+    FILE_STAT.write("JNE 7 " + str(instructionAddress) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
     basicBlock += 1
     instructionAddress += 2
     FILE_STAT.write("@" + str(basicBlock) + "\n")  # MATERIALIZAÇÃO (LOAD -> STORE)#
@@ -85,69 +93,106 @@ for i in range(numberPredicates):
     instructionAddress += 4
     FILE_STAT.write("CMP 1 " + str(instructionAddress) + " 3 1 1 1 2 0 0 0 0 0 3 0 0 0\n")
     instructionAddress += 3
-    FILE_STAT.write("JNBE 7 " + str(instructionAddress) + " 2 1 2 1 3 0 0 0 0 0 4 0 0 0\n")
-    basicBlock += 1
+    FILE_STAT.write("JNE 7 " + str(instructionAddress) + " 2 1 2 1 3 0 0 0 0 0 4 0 0 0\n")
     instructionAddress += 2
-    FILE_STAT.write("@" + str(basicBlock) + "\n")  # LAÇO FOR POR ATRIBUTO#
-    FILE_STAT.write("ADD 1 " + str(instructionAddress) + " 4 1 14 1 14 0 0 0 0 0 3 0 0 0\n")
-    instructionAddress += 4
-    FILE_STAT.write("CMP 1 " + str(instructionAddress) + " 3 1 14 1 15 0 0 0 0 0 3 0 0 0\n")
-    instructionAddress += 3
-    FILE_STAT.write("JNE 7 " + str(instructionAddress) + " 2 1 15 1 16 0 0 0 0 0 4 0 0 0\n")
-    instructionAddress += 2
+    # basicBlock += 1
+    # FILE_STAT.write("@" + str(basicBlock) + "\n")  # LAÇO FOR POR ATRIBUTO#
+    # FILE_STAT.write("ADD 1 " + str(instructionAddress) + " 4 1 14 1 14 0 0 0 0 0 3 0 0 0\n")
+    # instructionAddress += 4
+    # FILE_STAT.write("CMP 1 " + str(instructionAddress) + " 3 1 14 1 15 0 0 0 0 0 3 0 0 0\n")
+    # instructionAddress += 3
+    # FILE_STAT.write("JNE 7 " + str(instructionAddress) + " 2 1 15 1 16 0 0 0 0 0 4 0 0 0\n")
+    # instructionAddress += 2
 
 FILE_STAT.write("# eof")
 FILE_STAT.close()
 print "Static File Ok!"
-
+fieldCount = BLOCK_SIZE
+lastSum = 0
 #################### DYNAMIC AND MEMORY FILE #########################
-print "Generating Data for Dynamic and Memory Files..."
-for i in range(len(tuples)):
-    elem = tuples[i]
+print "Generating Data For Dynamic and Memory Files..."
+for tuple in range(len(tuples)):
+    elem = tuples[tuple]
     elem = elem.split()
     basicBlock = 0
-    for j in range(numberPredicates):
+    for column in range(numberOfPredicates):
         ########################################################################
-        ##  Predicate Match
+        ##  ITERATOR TUPLE-AT-A-TIME
         ########################################################################
-        if elem[j] == '1':
-            dynamic_block[j][i] = str(str(basicBlock + 1) + "\n")
-            dynamic_block[j][i] += str(str(basicBlock + 2) + "\n")
-            memory_block[j][i] = ("R 4 " + str(ADDR_R) + " " + str(basicBlock + 2) + "\n")
-            ADDR_R += REG_SIZE
-            ############# MATERIALIZE EACH ATTRIBUTE
-            for k in range(totalAttributes[0]):
-                dynamic_block[j][i] += str(str(basicBlock + 3) + "\n")
-                memory_block[j][i] += str("R 4 " + str(ADDR_R) + " " + str(basicBlock + 3) + "\n")
-                memory_block[j][i] += str("W 4 " + str(ADDR_W) + " " + str(basicBlock + 3) + "\n")
-                dynamic_block[j][i] += str(str(basicBlock + 4) + "\n")
-                ADDR_W += REG_SIZE
-                ADDR_R += REG_SIZE
-        ########################################################################
-        ##  Predicate Not Match
-        ########################################################################
-        elif j == 0 or (j > 0 and elem[j - 1] == '1'):
-            dynamic_block[j][i] = str(str(basicBlock + 1) + "\n")
-            dynamic_block[j][i] += str(str(basicBlock + 2) + "\n")
-            memory_block[j][i] = ("R 4 " + str(ADDR_R) + " " + str(basicBlock + 2) + "\n")
-            ADDR_R += REG_SIZE
+        dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
+        if fieldCount == 1:
+            bitColSum[column] += int(elem[column])
+            if bitColSum[column] > 0:
+                lastSum = bitColSum[column]
+                bitColSum[column] = 0
+                if column == numberOfPredicates - 1:
+                    fieldCount = BLOCK_SIZE + 1
+                ########################################################################
+                ##  PREDICATE MATCH
+                ########################################################################
+                dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
+                memory_block[column][tuple] += (
+                    "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(
+                        basicBlock + 2) + "\n")
+                address_base[column] += (REG_SIZE * BLOCK_SIZE)
+                ########################################################################
+                ## MATERIALIZATION ALL TUPLES
+                ########################################################################
+                if totalAttributes[0] < BLOCK_SIZE:
+                    sizeOfMaterialization = 1
+                else:
+                    sizeOfMaterialization = (totalAttributes[0] * 4) / (REG_SIZE * BLOCK_SIZE)
 
-        basicBlock += 4
-
-#######################################################################
+                for i in range(sizeOfMaterialization):
+                    dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
+                    memory_block[column][tuple] += str(
+                        "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_target[column]) + " " + str(
+                            basicBlock + 3) + "\n")
+                    address_target[column] += (REG_SIZE * 4)
+                    memory_block[column][tuple] += str(
+                        "W " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_target[column]) + " " + str(
+                            basicBlock + 3) + "\n")
+                    address_target[column] += (REG_SIZE * 4)
+            elif column > 0:
+                if column == numberOfPredicates - 1:
+                    fieldCount = BLOCK_SIZE + 1
+                if lastSum > 0:
+                    ########################################################################
+                    ##  PREDICATE MATCH
+                    ########################################################################
+                    dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
+                    memory_block[column][tuple] += (
+                        "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(
+                            basicBlock + 2) + "\n")
+                    address_base[column] += (REG_SIZE * BLOCK_SIZE)
+            else:
+                if column == numberOfPredicates - 1:
+                    fieldCount = BLOCK_SIZE + 1
+                ########################################################################
+                ##  PREDICATE MATCH
+                ########################################################################
+                dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
+                memory_block[column][tuple] += (
+                    "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(
+                        basicBlock + 2) + "\n")
+                address_base[column] += (REG_SIZE * BLOCK_SIZE)
+        else:
+            bitColSum[column] += int(elem[column])  # Controls the sum of bits in each column
+        basicBlock += 4  # Controls the basicBlock way for each column
+    fieldCount -= 1  # Counts the amount of tuples to process
 
 print "Writing on Dynamic and Memory File..."
-for j in range(numberPredicates):
-    for i in range(len(tuples)):
-        if dynamic_block[j][i] != 0:
-            FILE_DYN.write(dynamic_block[j][i])
-        if memory_block[j][i] != 0:
-            FILE_MEM.write(memory_block[j][i])
+######### WRITES ON DYNAMIC AND MEMORY FILE ################3
+for column in range(numberOfPredicates):
+    for tuple in range(len(tuples)):
+        FILE_DYN.write(dynamic_block[column][tuple])
+        if memory_block[column][tuple] != 0:
+            FILE_MEM.write(memory_block[column][tuple])
 
 FILE_MEM.close()
 FILE_DYN.close()
-FILE_INPUT.close()
 print "Dynamic and Memory Files Ok!"
 print "Compressing Files..."
-os.system("gzip " + BASEDIR + "rowStore/traces/x86/Q06/" + "*.out")
+os.system("rm -f " + BASEDIR + "traces/x86/Q06/rowStore/" + "*gz")
+os.system("gzip " + BASEDIR + "traces/x86/Q06/rowStore/" + "*.out")
 print "ALL Done!"

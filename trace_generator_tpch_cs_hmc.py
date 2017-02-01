@@ -75,16 +75,16 @@ for hmc_size in (4, 8, 16, 32, 64):
         FILE_STAT.write("CMP 1 " + str(INST_ADDR) + " 3 1 5 1 6 0 0 0 0 0 3 0 0 0\n")
         INST_ADDR += 3
         FILE_STAT.write("JNE 7 " + str(INST_ADDR) + " 2 1 6 1 7 0 0 0 0 0 4 0 0 0\n")
-        basicBlock += 1
         INST_ADDR += 2
+        basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
-        FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 1 1 2 0\n")
+        FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n") # R
         INST_ADDR += 4
         FILE_STAT.write("JNE 7 " + str(INST_ADDR) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
-        basicBlock += 1
         INST_ADDR += 2
+        basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # MATCH POSITION (STORE)#
-        FILE_STAT.write("MOVDQU 9 " + str(INST_ADDR) + " 6 1 12 1 13 0 0 0 0 1 3 0 0 0\n")
+        FILE_STAT.write("MOV 9 " + str(INST_ADDR) + " 6 1 12 1 13 0 0 0 0 1 3 0 0 0\n") # W 1Byte
         INST_ADDR += 6
         FILE_STAT.write("ADD 1 " + str(INST_ADDR) + " 4 1 1 1 1 0 0 0 0 0 3 0 0 0\n")
         INST_ADDR += 4
@@ -92,12 +92,20 @@ for hmc_size in (4, 8, 16, 32, 64):
         INST_ADDR += 3
         FILE_STAT.write("JNE 7 " + str(INST_ADDR) + " 2 1 2 1 3 0 0 0 0 0 4 0 0 0\n")
         INST_ADDR += 2
+        basicBlock +=1
+        FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
+        FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 13 1 14 0 0 1 0 0 3 0 0 0\n") # R 1Byte
+        INST_ADDR += 4
+        FILE_STAT.write("JNE 7 " + str(INST_ADDR) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
+        INST_ADDR += 2
 
     FILE_STAT.write("# eof")
     FILE_STAT.close()
     print "Static File Ok!"
+
     fieldCount = BLOCK_SIZE
     lastSum = 0
+    countLoads = 0
     #################### DYNAMIC AND MEMORY FILE #########################
     print "Generating Data For Dynamic and Memory Files..."
     for tuple in range(len(tuples)):
@@ -106,45 +114,122 @@ for hmc_size in (4, 8, 16, 32, 64):
         basicBlock = 0
         for column in range(numberOfPredicates):
             dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
+            ########################################################################
+            ##  HMC INSTRUCTION WILL BE SENDED
+            ########################################################################
             if fieldCount == 1:
                 bitColSum[column] += int(elem[column])
+                ########################################################################
+                ##  MATCH FIND
+                ########################################################################
                 if bitColSum[column] > 0:
+                    countLoads += 1
                     lastSum = bitColSum[column]
                     bitColSum[column] = 0
                     if column == numberOfPredicates - 1:
                         fieldCount = BLOCK_SIZE + 1
                     ########################################################################
-                    ##  PREDICATE MATCH
+                    ##  APPLY PREDICATE
                     ########################################################################
                     dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                     memory_block[column][tuple] += (
                         "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(basicBlock + 2) + "\n")
                     address_base[column] += (REG_SIZE * BLOCK_SIZE)
                     ########################################################################
-                    ## CREATE THE BITMAP
+                    ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                     ########################################################################
-                    for i in range((REG_SIZE * BLOCK_SIZE) / 16):
+                    if BLOCK_SIZE == 4 and countLoads == 2:
+                        countLoads = 0
                         dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
-                        memory_block[column][tuple] += str("W 16 " + str(address_target[column]) + " " + str(basicBlock + 3) + "\n")
-                        address_target[column] += (REG_SIZE * 4)
+                        dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
+                        memory_block[column][tuple] += (
+                            "R 1 " + str(address_base[column]) + " " + str(
+                                basicBlock + 4) + "\n")
+                        address_base[column] += 1
+                        memory_block[column][tuple] += str(
+                            "W 1 " + str(address_target[column]) + " " + str(basicBlock + 3) + "\n")
+                        address_target[column] += 1
+                    elif BLOCK_SIZE > 4:
+                        for i in range(((REG_SIZE * BLOCK_SIZE) / 32)):
+                            dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
+                            dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
+                            memory_block[column][tuple] += (
+                                "R 1 " + str(address_base[column]) + " " + str(
+                                    basicBlock + 4) + "\n")
+                            address_base[column] += 1
+                            memory_block[column][tuple] += str("W 1 " + str(address_target[column]) + " " + str(basicBlock + 3) + "\n")
+                            address_target[column] += 1
                 elif column > 0:
                     if column == numberOfPredicates - 1:
                         fieldCount = BLOCK_SIZE + 1
                     if lastSum > 0:
+                        countLoads += 1
                         dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                         memory_block[column][tuple] += (
-                            "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(basicBlock + 2) + "\n")
+                            "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(
+                                basicBlock + 2) + "\n")
                         address_base[column] += (REG_SIZE * BLOCK_SIZE)
-                else:
+                        ########################################################################
+                        ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
+                        ########################################################################
+                        if BLOCK_SIZE == 4 and countLoads == 2:
+                            countLoads = 0
+                            dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
+                            dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
+                            memory_block[column][tuple] += (
+                                "R 1 " + str(address_base[column]) + " " + str(
+                                    basicBlock + 4) + "\n")
+                            address_base[column] += 1
+                            memory_block[column][tuple] += str(
+                                "W 1 " + str(address_target[column]) + " " + str(basicBlock + 3) + "\n")
+                            address_target[column] += 1
+                        elif BLOCK_SIZE > 4:
+                            for i in range(((REG_SIZE * BLOCK_SIZE) / 32)):
+                                dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
+                                dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
+                                memory_block[column][tuple] += (
+                                    "R 1 " + str(address_base[column]) + " " + str(
+                                        basicBlock + 4) + "\n")
+                                address_base[column] += 1
+                                memory_block[column][tuple] += str(
+                                    "W 1 " + str(address_target[column]) + " " + str(basicBlock + 3) + "\n")
+                                address_target[column] += 1
+                elif column == 0:
                     if column == numberOfPredicates - 1:
                         fieldCount = BLOCK_SIZE + 1
                     dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                     memory_block[column][tuple] += (
-                        "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(basicBlock + 2) + "\n")
+                        "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(
+                            basicBlock + 2) + "\n")
                     address_base[column] += (REG_SIZE * BLOCK_SIZE)
+                    ########################################################################
+                    ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
+                    ########################################################################
+                    if BLOCK_SIZE == 4 and countLoads == 2:
+                        countLoads = 0
+                        dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
+                        dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
+                        memory_block[column][tuple] += (
+                            "R 1 " + str(address_base[column]) + " " + str(
+                                basicBlock + 4) + "\n")
+                        address_base[column] += 1
+                        memory_block[column][tuple] += str(
+                            "W 1 " + str(address_target[column]) + " " + str(basicBlock + 3) + "\n")
+                        address_target[column] += 1
+                    elif BLOCK_SIZE > 4:
+                        for i in range(((REG_SIZE * BLOCK_SIZE) / 32)):
+                            dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
+                            dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
+                            memory_block[column][tuple] += (
+                                "R 1 " + str(address_base[column]) + " " + str(
+                                    basicBlock + 4) + "\n")
+                            address_base[column] += 1
+                            memory_block[column][tuple] += str(
+                                "W 1 " + str(address_target[column]) + " " + str(basicBlock + 3) + "\n")
+                            address_target[column] += 1
             else:
                 bitColSum[column] += int(elem[column])
-            basicBlock += 3
+            basicBlock += 4
         fieldCount -= 1
 
     print "Writing on Dynamic and Memory File..."

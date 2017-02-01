@@ -77,15 +77,15 @@ for hmc_size in (4, 8, 16, 32, 64):
         basicBlock += 1
         INST_ADDR += 2
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
-        FILE_STAT.write("HMC_LOCK 14 " + str(INST_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 1 -1 -1 -1\n")  # R
+        FILE_STAT.write("HMC_LOCK 14 " + str(INST_ADDR) + " 4 1 5 0 0 0 0 0 0 3 0 0 1 -1 -1 -1\n")
         INST_ADDR += 4
-        FILE_STAT.write("HMC_LD 16 " + str(INST_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 1 -1 -1 0\n")  # R
+        FILE_STAT.write("HMC_LD 16 " + str(INST_ADDR) + " 4 1 5 0 0 0 1 0 0 3 0 0 1 -1 -1 0\n")  # R
         INST_ADDR += 4
-        FILE_STAT.write("HMC_OP 18 " + str(INST_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 1 -1 -1 0\n")  # R
+        FILE_STAT.write("HMC_OP 18 " + str(INST_ADDR) + " 4 1 5 0 0 0 0 0 0 3 0 0 1 0 -1 0\n")
         INST_ADDR += 4
-        FILE_STAT.write("HMC_ST 17 " + str(INST_ADDR) + " 4 1 10 1 11 0 0 1 0 0 3 0 0 1 0 -1 -1\n")  # R
+        FILE_STAT.write("HMC_ST 17 " + str(INST_ADDR) + " 4 1 5 0 0 0 0 0 1 3 0 0 1 0 -1 -1\n")  # W
         INST_ADDR += 4
-        FILE_STAT.write("HMC_UNLOCK 15 " + str(INST_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 1 -1 -1 -1\n")  # R
+        FILE_STAT.write("HMC_UNLOCK 15 " + str(INST_ADDR) + " 4 1 9 0 0 0 0 0 0 3 0 0 1 -1 -1 -1\n")
         INST_ADDR += 4
         FILE_STAT.write("ADD 1 " + str(INST_ADDR) + " 4 1 5 1 5 0 0 0 0 0 3 0 0 0\n")
         INST_ADDR += 4
@@ -117,13 +117,14 @@ for hmc_size in (4, 8, 16, 32, 64):
                     ########################################################################
                     dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                     memory_block[column][tuple] += (
-                        "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(basicBlock + 2) + "\n")
+                        "R "
+                        + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(basicBlock + 2) + "\n")
                     address_base[column] += (REG_SIZE * BLOCK_SIZE)
                     ########################################################################
                     ## CREATE THE BITMAP
                     ########################################################################
                     memory_block[column][tuple] += str("W " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_target[column]) + " " + str(basicBlock + 2) + "\n")
-                    address_target[column] += (REG_SIZE * 4)
+                    address_target[column] += (REG_SIZE * BLOCK_SIZE)
                 elif column > 0:
                     if column == numberOfPredicates - 1:
                         fieldCount = BLOCK_SIZE + 1
@@ -136,7 +137,7 @@ for hmc_size in (4, 8, 16, 32, 64):
                         ## CREATE THE BITMAP
                         ########################################################################
                         memory_block[column][tuple] += str("W " + str(BLOCK_SIZE * REG_SIZE) + " "+ str(address_target[column]) + " " + str(basicBlock + 2) + "\n")
-                        address_target[column] += (REG_SIZE * 4)
+                        address_target[column] += (REG_SIZE * BLOCK_SIZE)
                 else:
                     if column == numberOfPredicates - 1:
                         fieldCount = BLOCK_SIZE + 1
@@ -148,7 +149,7 @@ for hmc_size in (4, 8, 16, 32, 64):
                     ## CREATE THE BITMAP
                     ########################################################################
                     memory_block[column][tuple] += str("W " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_target[column]) + " " + str(basicBlock + 2) + "\n")
-                    address_target[column] += (REG_SIZE * 4)
+                    address_target[column] += (BLOCK_SIZE * REG_SIZE)
             else:
                 bitColSum[column] += int(elem[column])
             basicBlock += 2
