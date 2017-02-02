@@ -20,7 +20,6 @@ for hmc_size in (4, 8, 16, 32, 64):
     ADDR_R = 1024 * 1024 * 1024
     ADDR_W = 1024 * 1024 * 4096
     REG_SIZE = 4
-    INST_ADDR = 1024
     BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 
     input_file = BASEDIR + "bitmap_files/resultQ06.txt"
@@ -37,7 +36,7 @@ for hmc_size in (4, 8, 16, 32, 64):
     header = header.split("|")
     numberOfTables = int(header[0])
     numberOfPredicates = int(header[(numberOfTables * 2) + 1])
-    instructionAddress = 1024
+    INST_ADDR = 1024
     basicBlock = 0
 
     tuples = FILE_INPUT.readlines()
@@ -56,7 +55,7 @@ for hmc_size in (4, 8, 16, 32, 64):
         totalAttributes[i] = int(header[i + numberOfTables + 1])
 
     AttributesByStage = [totalAttributes, totalAttributes, totalAttributes]
-    address_base = [ADDR_R, ADDR_R * 2, ADDR_R * 3]
+    address_base = [ADDR_R, ADDR_W, int(ADDR_W * 1.5)]
     address_target = [ADDR_W, int(ADDR_W * 1.5), ADDR_W * 2]
 
     FILE_DYN.write("# SiNUCA Trace Dynamic\n")
@@ -137,7 +136,7 @@ for hmc_size in (4, 8, 16, 32, 64):
                     for i in range(sizeOfMaterialization):
                         dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
                         memory_block[column][tuple] += str(
-                            "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_target[column]) + " " + str(basicBlock + 3) + "\n")
+                            "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(basicBlock + 3) + "\n")
                         address_target[column] += (REG_SIZE * 4)
                         memory_block[column][tuple] += str(
                             "W " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_target[column]) + " " + str(basicBlock + 3) + "\n")
