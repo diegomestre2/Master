@@ -24,7 +24,7 @@ for hmc_size in (4, 8, 16, 32, 64):
     INST_ADDR = 1024
     BASEDIR = "/home/diegotome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 
-    input_file = BASEDIR + "bitmap_files/input_teste.txt"
+    input_file = BASEDIR + "bitmap_files/resultQ06.txt"
     dynamic_trace = BASEDIR + "traces/HMC/Q06/columnStore/" + str(
         BLOCK_SIZE * REG_SIZE) + "/output_trace.out.tid0.dyn.out"
     memory_trace = BASEDIR + "traces/HMC/Q06/columnStore/" + str(
@@ -84,7 +84,7 @@ for hmc_size in (4, 8, 16, 32, 64):
         INST_ADDR += 2
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
-        FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")  # R HMC-SIZE
+        FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")  # R HMC_SIZE
         INST_ADDR += 4
         FILE_STAT.write("JNE 7 " + str(INST_ADDR) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
         INST_ADDR += 2
@@ -105,7 +105,6 @@ for hmc_size in (4, 8, 16, 32, 64):
         FILE_STAT.write("JNE 7 " + str(INST_ADDR) + " 2 1 2 1 3 0 0 0 0 0 4 0 0 0\n")
         INST_ADDR += 2
 
-
     FILE_STAT.write("# eof")
     FILE_STAT.close()
     print "Static File Ok!"
@@ -113,6 +112,8 @@ for hmc_size in (4, 8, 16, 32, 64):
     fieldCount = BLOCK_SIZE
     lastSum = 0
     countLoads = 0
+    loadSize = 32
+    loadCount = [0, 0, 0]
     #################### DYNAMIC AND MEMORY FILE #########################
     print "Generating Data For Dynamic and Memory Files..."
     for tuple in range(len(tuples)):
@@ -142,19 +143,22 @@ for hmc_size in (4, 8, 16, 32, 64):
                         "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(
                             basicBlock + 2) + "\n")
                     address_base[column] += (REG_SIZE * BLOCK_SIZE)
+                    loadCount[column] += 1
                     ########################################################################
                     ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                     ########################################################################
-                    for i in range(((REG_SIZE * BLOCK_SIZE) / 32)):
+                    if loadCount[column] == 2 and BLOCK_SIZE == 4:
+                        loadSize = 16
+                        loadCount[column] = 0
+                    for i in range(((REG_SIZE * BLOCK_SIZE) / loadSize)):
                         dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
                         if column > 0:
                             dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
                             memory_block[column][tuple] += (
-                                "R 1  " + str(address_base_bitmap[column]) + " " + str(
-                                    basicBlock + 4) + "\n")
-                            address_base_bitmap[column] += 1
+                                "R 1  " + str(address_target_bitmap[column - 1] - 1) + " " + str(
+                                    basicBlock + 3) + "\n")
                         memory_block[column][tuple] += str(
-                            "W 1  " + str(address_target_bitmap[column]) + " " + str(basicBlock + 3) + "\n")
+                            "W 1  " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
                         address_target_bitmap[column] += 1
                 elif column > 0:
                     if column == numberOfPredicates - 1:
@@ -166,20 +170,22 @@ for hmc_size in (4, 8, 16, 32, 64):
                             "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(
                                 basicBlock + 2) + "\n")
                         address_base[column] += (REG_SIZE * BLOCK_SIZE)
-
+                        loadCount[column] += 1
+                        if loadCount[column] == 2 and BLOCK_SIZE == 4:
+                            loadSize = 16
+                            loadCount[column] = 0
                     ########################################################################
                     ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                     ########################################################################
-                    for i in range(((REG_SIZE * BLOCK_SIZE) / 32)):
+                    for i in range(((REG_SIZE * BLOCK_SIZE) / loadSize)):
                         dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
                         dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
                         memory_block[column][tuple] += (
-                            "R 1  " + str(address_base_bitmap[column]) + " " + str(
-                                basicBlock + 4) + "\n")
-                        address_base_bitmap[column] += 1
+                            "R 1  " + str(address_target_bitmap[column - 1] - 1) + " " + str(
+                                basicBlock + 3) + "\n")
                         memory_block[column][tuple] += str(
-                            "W 1  " + str(address_target_bitmap[column]) + " " + str(basicBlock + 3) + "\n")
-                        address_target_bitmap[column] += 1
+                            "W 1  " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
+                        address_target_bitmap[column] += 2
                 elif column == 0:
                     if column == numberOfPredicates - 1:
                         fieldCount = BLOCK_SIZE + 1
@@ -188,31 +194,36 @@ for hmc_size in (4, 8, 16, 32, 64):
                         "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(
                             basicBlock + 2) + "\n")
                     address_base[column] += (REG_SIZE * BLOCK_SIZE)
+                    loadCount[column] += 1
                     ########################################################################
                     ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                     ########################################################################
-                    for i in range(((REG_SIZE * BLOCK_SIZE) / 32)):
+                    if loadCount[column] == 2 and BLOCK_SIZE == 4:
+                        loadSize = 16
+                        loadCount[column] = 0
+                    for i in range(((REG_SIZE * BLOCK_SIZE) / loadSize)):
                         dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
                         memory_block[column][tuple] += str(
-                            "W 1 " + str(address_target_bitmap[column]) + " " + str(basicBlock + 3) + "\n")
-                        address_target_bitmap[column] += 1
+                            "W 1 " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
+                        address_target_bitmap[column] += 2
             else:
                 bitColSum[column] += int(elem[column])
             basicBlock += 4
+            loadSize = 32
         fieldCount -= 1
 
-print "Writing on Dynamic and Memory File..."
-######### WRITES ON DYNAMIC AND MEMORY FILE ################3
-for column in range(numberOfPredicates):
-    for tuple in range(len(tuples)):
-        FILE_DYN.write(dynamic_block[column][tuple])
-        if memory_block[column][tuple] != 0:
-            FILE_MEM.write(memory_block[column][tuple])
+    print "Writing on Dynamic and Memory File..."
+    ######### WRITES ON DYNAMIC AND MEMORY FILE ################3
+    for column in range(numberOfPredicates):
+        for tuple in range(len(tuples)):
+            FILE_DYN.write(dynamic_block[column][tuple])
+            if memory_block[column][tuple] != 0:
+                FILE_MEM.write(memory_block[column][tuple])
 
-FILE_MEM.close()
-FILE_DYN.close()
-print "Dynamic and Memory Files Ok!"
-print "Compressing Files..."
-os.system("rm -f " + BASEDIR + "traces/HMC/Q06/columnStore/" + str(BLOCK_SIZE * REG_SIZE) + "/" + "*gz")
-os.system("gzip " + BASEDIR + "traces/HMC/Q06/columnStore/" + str(BLOCK_SIZE * REG_SIZE) + "/" + "*.out")
-print "ALL Done!"
+    FILE_MEM.close()
+    FILE_DYN.close()
+    print "Dynamic and Memory Files Ok!"
+    print "Compressing Files..."
+    os.system("rm -f " + BASEDIR + "traces/HMC/Q06/columnStore/" + str(BLOCK_SIZE * REG_SIZE) + "/" + "*gz")
+    os.system("gzip " + BASEDIR + "traces/HMC/Q06/columnStore/" + str(BLOCK_SIZE * REG_SIZE) + "/" + "*.out")
+    print "ALL Done!"
