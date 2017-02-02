@@ -6,7 +6,7 @@
 ## 16MB => 4194304
 ## 32MB => 8388608
 ## 64MB => 16777216
-## 1GB => 268435456
+## 1GB => 268435456moni
 
 ##HEADER | NumberOfTables | ...TuplesByTable ... | TotalNumberOfAttributes | NumberOfPredicates |
 
@@ -22,9 +22,9 @@ for hmc_size in (4, 8, 16, 32, 64):
     ADDR_W = 1024 * 1024 * 4096
     REG_SIZE = 4
     INST_ADDR = 1024
-    BASEDIR = "/home/diegotome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
+    BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 
-    input_file = BASEDIR + "bitmap_files/resultQ06.txt"
+    input_file = BASEDIR + "bitmap_files/input_teste.txt"
     dynamic_trace = BASEDIR + "traces/HMC/Q06/columnStore/" + str(
         BLOCK_SIZE * REG_SIZE) + "/output_trace.out.tid0.dyn.out"
     memory_trace = BASEDIR + "traces/HMC/Q06/columnStore/" + str(
@@ -96,7 +96,7 @@ for hmc_size in (4, 8, 16, 32, 64):
         INST_ADDR += 2
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # MATCH POSITION (STORE)#
-        FILE_STAT.write("MOV 9 " + str(INST_ADDR) + " 6 1 12 1 13 0 0 0 0 1 3 0 0 0\n")  # W 1Byte
+        FILE_STAT.write("MOV 9 " + str(INST_ADDR) + " 6 1 10 1 13 0 0 0 0 1 3 0 0 0\n")  # W 1Byte
         INST_ADDR += 6
         FILE_STAT.write("ADD 1 " + str(INST_ADDR) + " 4 1 1 1 1 0 0 0 0 0 3 0 0 0\n")
         INST_ADDR += 4
@@ -151,14 +151,14 @@ for hmc_size in (4, 8, 16, 32, 64):
                         loadSize = 16
                         loadCount[column] = 0
                     for i in range(((REG_SIZE * BLOCK_SIZE) / loadSize)):
-                        dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
                         if column > 0:
-                            dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
+                            dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
                             memory_block[column][tuple] += (
-                                "R 1  " + str(address_target_bitmap[column - 1] - 1) + " " + str(
+                                "R 1 " + str(address_target_bitmap[column - 1] - 1) + " " + str(
                                     basicBlock + 3) + "\n")
+                        dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
                         memory_block[column][tuple] += str(
-                            "W 1  " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
+                            "W 1 " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
                         address_target_bitmap[column] += 1
                 elif column > 0:
                     if column == numberOfPredicates - 1:
@@ -181,10 +181,10 @@ for hmc_size in (4, 8, 16, 32, 64):
                         dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
                         dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
                         memory_block[column][tuple] += (
-                            "R 1  " + str(address_target_bitmap[column - 1] - 1) + " " + str(
+                            "R 1 " + str(address_target_bitmap[column - 1] - 1) + " " + str(
                                 basicBlock + 3) + "\n")
                         memory_block[column][tuple] += str(
-                            "W 1  " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
+                            "W 1 " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
                         address_target_bitmap[column] += 2
                 elif column == 0:
                     if column == numberOfPredicates - 1:
@@ -202,7 +202,7 @@ for hmc_size in (4, 8, 16, 32, 64):
                         loadSize = 16
                         loadCount[column] = 0
                     for i in range(((REG_SIZE * BLOCK_SIZE) / loadSize)):
-                        dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
+                        dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
                         memory_block[column][tuple] += str(
                             "W 1 " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
                         address_target_bitmap[column] += 2
