@@ -22,7 +22,7 @@ REG_SIZE = 4
 
 BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 
-input_file = BASEDIR + "bitmap_files/input_teste.txt"
+input_file = BASEDIR + "bitmap_files/resultQ06.txt"
 dynamic_trace = BASEDIR + "traces/x86/Q06/rowStore/output_trace.out.tid0.dyn.out"
 memory_trace = BASEDIR + "traces/x86/Q06/rowStore/output_trace.out.tid0.mem.out"
 static_trace = BASEDIR + "traces/x86/Q06/rowStore/output_trace.out.tid0.stat.out"
@@ -179,7 +179,7 @@ for tuple in range(len(tuples)):
                 address_base[column] += (REG_SIZE * BLOCK_SIZE)
         else:
             bitColSum[column] += int(elem[column])  # Controls the sum of bits in each column
-        basicBlock += 4  # Controls the basicBlock way for each column
+        basicBlock += 3  # Controls the basicBlock way for each column
     fieldCount -= 1  # Counts the amount of tuples to process
 
 print "Writing on Dynamic and Memory File..."
