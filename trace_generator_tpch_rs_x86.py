@@ -19,10 +19,10 @@ BLOCK_SIZE = 4
 ADDR_R = 1024 * 1024 * 1024
 ADDR_W = 1024 * 1024 * 4096
 REG_SIZE = 4
-INST_ADDR = 1024
+
 BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 
-input_file = BASEDIR + "bitmap_files/resultQ06.txt"
+input_file = BASEDIR + "bitmap_files/input_teste.txt"
 dynamic_trace = BASEDIR + "traces/x86/Q06/rowStore/output_trace.out.tid0.dyn.out"
 memory_trace = BASEDIR + "traces/x86/Q06/rowStore/output_trace.out.tid0.mem.out"
 static_trace = BASEDIR + "traces/x86/Q06/rowStore/output_trace.out.tid0.stat.out"
@@ -36,7 +36,7 @@ header = FILE_INPUT.readline()
 header = header.split("|")
 numberOfTables = int(header[0])
 numberOfPredicates = int(header[(numberOfTables * 2) + 1])
-instructionAddress = 1024
+INST_ADDR = 1024
 basicBlock = 0
 
 tuples = FILE_INPUT.readlines()
@@ -55,7 +55,7 @@ for i in range(numberOfTables):
     totalAttributes[i] = int(header[i + numberOfTables + 1])
 
 AttributesByStage = [totalAttributes, totalAttributes, totalAttributes]
-address_base = [ADDR_R, ADDR_R * 2, ADDR_R * 3]
+address_base = [ADDR_R, ADDR_W, int(ADDR_W * 1.5)]
 address_target = [ADDR_W, int(ADDR_W * 1.5), ADDR_W * 2]
 
 FILE_DYN.write("# SiNUCA Trace Dynamic\n")
@@ -69,32 +69,32 @@ print "Generating Static File..."
 for i in range(numberOfPredicates):
     basicBlock += 1
     FILE_STAT.write("@" + str(basicBlock) + "\n")  # LAÇO FOR POR TUPLA#
-    FILE_STAT.write("ADD 1 " + str(instructionAddress) + " 4 1 5 1 5 0 0 0 0 0 3 0 0 0\n")
-    instructionAddress += 4
-    FILE_STAT.write("CMP 1 " + str(instructionAddress) + " 3 1 5 1 6 0 0 0 0 0 3 0 0 0\n")
-    instructionAddress += 3
-    FILE_STAT.write("JNE 7 " + str(instructionAddress) + " 2 1 6 1 7 0 0 0 0 0 4 0 0 0\n")
+    FILE_STAT.write("ADD 1 " + str(INST_ADDR) + " 4 1 5 1 5 0 0 0 0 0 3 0 0 0\n")
+    INST_ADDR += 4
+    FILE_STAT.write("CMP 1 " + str(INST_ADDR) + " 3 1 5 1 6 0 0 0 0 0 3 0 0 0\n")
+    INST_ADDR += 3
+    FILE_STAT.write("JNE 7 " + str(INST_ADDR) + " 2 1 6 1 7 0 0 0 0 0 4 0 0 0\n")
     basicBlock += 1
-    instructionAddress += 2
+    INST_ADDR += 2
     FILE_STAT.write("@" + str(basicBlock) + "\n")  # If (QUALIFICA PREDICADO)#
-    FILE_STAT.write("MOVDQU 8 " + str(instructionAddress) + " 6 1 8 1 9 0 0 1 0 0 3 0 0 0\n")  # R
-    instructionAddress += 6
-    FILE_STAT.write("CMP 1 " + str(instructionAddress) + " 3 1 9 1 10 0 0 0 0 0 3 0 0 0\n")
-    instructionAddress += 3
-    FILE_STAT.write("JNE 7 " + str(instructionAddress) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
+    FILE_STAT.write("MOVDQU 8 " + str(INST_ADDR) + " 6 1 8 1 9 0 0 1 0 0 3 0 0 0\n")  # R
+    INST_ADDR += 6
+    FILE_STAT.write("CMP 1 " + str(INST_ADDR) + " 3 1 9 1 10 0 0 0 0 0 3 0 0 0\n")
+    INST_ADDR += 3
+    FILE_STAT.write("JNE 7 " + str(INST_ADDR) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
     basicBlock += 1
-    instructionAddress += 2
+    INST_ADDR += 2
     FILE_STAT.write("@" + str(basicBlock) + "\n")  # MATERIALIZAÇÃO (LOAD -> STORE)#
-    FILE_STAT.write("MOVDQU 8 " + str(instructionAddress) + " 6 1 11 1 12 0 0 1 0 0 3 0 0 0\n")  # R
-    instructionAddress += 6
-    FILE_STAT.write("MOVDQU 9 " + str(instructionAddress) + " 6 1 12 1 13 0 0 0 0 1 3 0 0 0\n")  # W
-    instructionAddress += 6
-    FILE_STAT.write("ADD 1 " + str(instructionAddress) + " 4 1 1 1 1 0 0 0 0 0 3 0 0 0\n")
-    instructionAddress += 4
-    FILE_STAT.write("CMP 1 " + str(instructionAddress) + " 3 1 1 1 2 0 0 0 0 0 3 0 0 0\n")
-    instructionAddress += 3
-    FILE_STAT.write("JNE 7 " + str(instructionAddress) + " 2 1 2 1 3 0 0 0 0 0 4 0 0 0\n")
-    instructionAddress += 2
+    FILE_STAT.write("MOVDQU 8 " + str(INST_ADDR) + " 6 1 11 1 12 0 0 1 0 0 3 0 0 0\n")  # R
+    INST_ADDR += 6
+    FILE_STAT.write("MOVDQU 9 " + str(INST_ADDR) + " 6 1 12 1 13 0 0 0 0 1 3 0 0 0\n")  # W
+    INST_ADDR += 6
+    FILE_STAT.write("ADD 1 " + str(INST_ADDR) + " 4 1 1 1 1 0 0 0 0 0 3 0 0 0\n")
+    INST_ADDR += 4
+    FILE_STAT.write("CMP 1 " + str(INST_ADDR) + " 3 1 1 1 2 0 0 0 0 0 3 0 0 0\n")
+    INST_ADDR += 3
+    FILE_STAT.write("JNE 7 " + str(INST_ADDR) + " 2 1 2 1 3 0 0 0 0 0 4 0 0 0\n")
+    INST_ADDR += 2
     # basicBlock += 1
     # FILE_STAT.write("@" + str(basicBlock) + "\n")  # LAÇO FOR POR ATRIBUTO#
     # FILE_STAT.write("ADD 1 " + str(instructionAddress) + " 4 1 14 1 14 0 0 0 0 0 3 0 0 0\n")
@@ -146,7 +146,8 @@ for tuple in range(len(tuples)):
                 for i in range(sizeOfMaterialization):
                     dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
                     memory_block[column][tuple] += str(
-                        "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_target[column]) + " " + str(
+                        "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(
+                            address_base[column] - (REG_SIZE * BLOCK_SIZE)) + " " + str(
                             basicBlock + 3) + "\n")
                     address_target[column] += (REG_SIZE * 4)
                     memory_block[column][tuple] += str(
