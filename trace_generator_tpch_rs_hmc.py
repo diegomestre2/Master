@@ -122,9 +122,9 @@ for hmc_size in (4, 8, 16, 32, 64):
                     ########################################################################
                     dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                     memory_block[column][tuple] += (
-                        "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(
+                        "R " + str(REG_SIZE * 4) + " " + str(address_base[column]) + " " + str(
                             basicBlock + 2) + "\n")
-                    address_base[column] += (REG_SIZE * BLOCK_SIZE)
+                    address_base[column] += (REG_SIZE * 4)
                     ########################################################################
                     ## MATERIALIZATION ALL TUPLES
                     ########################################################################
@@ -137,10 +137,10 @@ for hmc_size in (4, 8, 16, 32, 64):
                         dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
                         memory_block[column][tuple] += str(
                             "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(basicBlock + 3) + "\n")
-                        address_target[column] += (REG_SIZE * 4)
+                        address_base[column] += (BLOCK_SIZE * REG_SIZE)
                         memory_block[column][tuple] += str(
                             "W " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_target[column]) + " " + str(basicBlock + 3) + "\n")
-                        address_target[column] += (REG_SIZE * 4)
+                        address_target[column] += (BLOCK_SIZE * REG_SIZE)
                 elif column > 0:
                     if column == numberOfPredicates - 1:
                         fieldCount = BLOCK_SIZE + 1
@@ -150,9 +150,9 @@ for hmc_size in (4, 8, 16, 32, 64):
                         ########################################################################
                         dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                         memory_block[column][tuple] += (
-                            "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(
+                            "R " + str(REG_SIZE * 4) + " " + str(address_base[column]) + " " + str(
                                 basicBlock + 2) + "\n")
-                        address_base[column] += (REG_SIZE * BLOCK_SIZE)
+                        address_base[column] += (REG_SIZE * 4)
                 else:
                     if column == numberOfPredicates - 1:
                         fieldCount = BLOCK_SIZE + 1
@@ -161,9 +161,9 @@ for hmc_size in (4, 8, 16, 32, 64):
                     ########################################################################
                     dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                     memory_block[column][tuple] += (
-                        "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(
+                        "R " + str(REG_SIZE * 4) + " " + str(address_base[column]) + " " + str(
                             basicBlock + 2) + "\n")
-                    address_base[column] += (REG_SIZE * BLOCK_SIZE)
+                    address_base[column] += (REG_SIZE * 4)
             else:
                 bitColSum[column] += int(elem[column]) # Controls the sum of bits in each column
             basicBlock += 3                            # Controls the basicBlock way for each column
