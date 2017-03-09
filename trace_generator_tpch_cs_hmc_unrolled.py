@@ -25,11 +25,11 @@ for hmc_size in (4, 8, 16, 32, 64):
     BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 
     input_file = BASEDIR + "bitmap_files/input_teste.txt"
-    dynamic_trace = BASEDIR + "traces/HMC/Q06/columnStore/" + str(
+    dynamic_trace = BASEDIR + "traces/HMC/Q06/columnStore/unrolled/" + str(
         BLOCK_SIZE * REG_SIZE) + "/output_trace.out.tid0.dyn.out"
-    memory_trace = BASEDIR + "traces/HMC/Q06/columnStore/" + str(
+    memory_trace = BASEDIR + "traces/HMC/Q06/columnStore/unrolled/" + str(
         BLOCK_SIZE * REG_SIZE) + "/output_trace.out.tid0.mem.out"
-    static_trace = BASEDIR + "traces/HMC/Q06/columnStore/" + str(
+    static_trace = BASEDIR + "traces/HMC/Q06/columnStore/unrolled/" + str(
         BLOCK_SIZE * REG_SIZE) + "/output_trace.out.tid0.stat.out"
 
     FILE_INPUT = open(input_file, 'r')
@@ -245,6 +245,6 @@ for hmc_size in (4, 8, 16, 32, 64):
     FILE_DYN.close()
     print "Dynamic and Memory Files Ok!"
     print "Compressing Files..."
-    os.system("rm -f " + BASEDIR + "traces/HMC/Q06/columnStore/" + str(BLOCK_SIZE * REG_SIZE) + "/" + "*gz")
-    os.system("gzip " + BASEDIR + "traces/HMC/Q06/columnStore/" + str(BLOCK_SIZE * REG_SIZE) + "/" + "*.out")
+    os.system("rm -f " + BASEDIR + "traces/HMC/Q06/columnStore/unrolled/" + str(BLOCK_SIZE * REG_SIZE) + "/" + "*gz")
+    os.system("gzip " + BASEDIR + "traces/HMC/Q06/columnStore/unrolled/" + str(BLOCK_SIZE * REG_SIZE) + "/" + "*.out")
     print "ALL Done!"
