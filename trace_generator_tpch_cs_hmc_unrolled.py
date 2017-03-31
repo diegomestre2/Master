@@ -24,7 +24,7 @@ for hmc_size in (4, 8, 16, 32, 64):
     INST_ADDR = 1024
     BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 
-    input_file = BASEDIR + "bitmap_files/input_teste.txt"
+    input_file = BASEDIR + "bitmap_files/resultQ06.txt"
     dynamic_trace = BASEDIR + "traces/HMC/Q06/columnStore/unrolled/" + str(
         BLOCK_SIZE * REG_SIZE) + "/output_trace.out.tid0.dyn.out"
     memory_trace = BASEDIR + "traces/HMC/Q06/columnStore/unrolled/" + str(
@@ -85,12 +85,19 @@ for hmc_size in (4, 8, 16, 32, 64):
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
         FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")  # R HMC_SIZE
+        INST_ADDR += 4
         FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")  # R HMC_SIZE
+        INST_ADDR += 4
         FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")  # R HMC_SIZE
+        INST_ADDR += 4
         FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")  # R HMC_SIZE
+        INST_ADDR += 4
         FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")  # R HMC_SIZE
+        INST_ADDR += 4
         FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")  # R HMC_SIZE
+        INST_ADDR += 4
         FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")  # R HMC_SIZE
+        INST_ADDR += 4
         FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")  # R HMC_SIZE
         INST_ADDR += 4
         FILE_STAT.write("JNE 7 " + str(INST_ADDR) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
@@ -98,18 +105,39 @@ for hmc_size in (4, 8, 16, 32, 64):
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # READ BITMAP)#
         FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 13 1 14 0 0 1 0 0 3 0 0 0\n")  # R 1Byte
+        INST_ADDR += 4
         FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 13 1 14 0 0 1 0 0 3 0 0 0\n")  # R 1Byte
+        INST_ADDR += 4
         FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 13 1 14 0 0 1 0 0 3 0 0 0\n")  # R 1Byte
+        INST_ADDR += 4
         FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 13 1 14 0 0 1 0 0 3 0 0 0\n")  # R 1Byte
+        INST_ADDR += 4
         FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 13 1 14 0 0 1 0 0 3 0 0 0\n")  # R 1Byte
+        INST_ADDR += 4
         FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 13 1 14 0 0 1 0 0 3 0 0 0\n")  # R 1Byte
+        INST_ADDR += 4
         FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 13 1 14 0 0 1 0 0 3 0 0 0\n")  # R 1Byte
+        INST_ADDR += 4
         FILE_STAT.write("HMC_CMP 12 " + str(INST_ADDR) + " 4 1 13 1 14 0 0 1 0 0 3 0 0 0\n")  # R 1Byte
         INST_ADDR += 4
         FILE_STAT.write("JNE 7 " + str(INST_ADDR) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
         INST_ADDR += 2
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # MATCH POSITION (STORE)#
+        FILE_STAT.write("MOV 9 " + str(INST_ADDR) + " 6 1 10 1 13 0 0 0 0 1 3 0 0 0\n")  # W 1Byte
+        INST_ADDR += 6
+        FILE_STAT.write("MOV 9 " + str(INST_ADDR) + " 6 1 10 1 13 0 0 0 0 1 3 0 0 0\n")  # W 1Byte
+        INST_ADDR += 6
+        FILE_STAT.write("MOV 9 " + str(INST_ADDR) + " 6 1 10 1 13 0 0 0 0 1 3 0 0 0\n")  # W 1Byte
+        INST_ADDR += 6
+        FILE_STAT.write("MOV 9 " + str(INST_ADDR) + " 6 1 10 1 13 0 0 0 0 1 3 0 0 0\n")  # W 1Byte
+        INST_ADDR += 6
+        FILE_STAT.write("MOV 9 " + str(INST_ADDR) + " 6 1 10 1 13 0 0 0 0 1 3 0 0 0\n")  # W 1Byte
+        INST_ADDR += 6
+        FILE_STAT.write("MOV 9 " + str(INST_ADDR) + " 6 1 10 1 13 0 0 0 0 1 3 0 0 0\n")  # W 1Byte
+        INST_ADDR += 6
+        FILE_STAT.write("MOV 9 " + str(INST_ADDR) + " 6 1 10 1 13 0 0 0 0 1 3 0 0 0\n")  # W 1Byte
+        INST_ADDR += 6
         FILE_STAT.write("MOV 9 " + str(INST_ADDR) + " 6 1 10 1 13 0 0 0 0 1 3 0 0 0\n")  # W 1Byte
         INST_ADDR += 6
         FILE_STAT.write("ADD 1 " + str(INST_ADDR) + " 4 1 1 1 1 0 0 0 0 0 3 0 0 0\n")
@@ -129,6 +157,7 @@ for hmc_size in (4, 8, 16, 32, 64):
     loadSize = 32
     loadCount = [0, 0, 0]
     unrolledCount = [0, 0, 0]
+    unrolledCountBitmap = [0, 0, 0]
     #################### DYNAMIC AND MEMORY FILE #########################
     print "Generating Data For Dynamic and Memory Files..."
     for tuple in range(len(tuples)):
@@ -151,15 +180,18 @@ for hmc_size in (4, 8, 16, 32, 64):
                     if column == numberOfPredicates - 1:
                         fieldCount = BLOCK_SIZE + 1
                     ########################################################################
-                    ##  APPLY PREDICATE
+                    ##  APPLY PREDICATE WHEN THERE IS 8 VALUES
+                    ########################################################################
+                    if unrolledCount[column] == 8 or unrolledCount[column] == 0:
+                        unrolledCount[column] = 0
+                        dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
+                        for j in range(8):
+                            memory_block[column][tuple] += ("R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(basicBlock + 2) + "\n")
+                            address_base[column] += (REG_SIZE * BLOCK_SIZE)
+                    ########################################################################
+                    ##  MEMORY IS WRITTEN TO EVERY ACCESS
                     ########################################################################
                     unrolledCount[column] += 1
-                    if unrolledCount[column] == 8:
-                        dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
-                    memory_block[column][tuple] += (
-                        "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(
-                            basicBlock + 2) + "\n")
-                    address_base[column] += (REG_SIZE * BLOCK_SIZE)
                     loadCount[column] += 1
                     ########################################################################
                     ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
@@ -169,26 +201,35 @@ for hmc_size in (4, 8, 16, 32, 64):
                         loadCount[column] = 0
                     for i in range(((REG_SIZE * BLOCK_SIZE) / loadSize)):
                         if column > 0:
-                            dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
-                            memory_block[column][tuple] += (
-                                "R 1 " + str(address_target_bitmap[column - 1] - 1) + " " + str(
-                                    basicBlock + 3) + "\n")
-                        dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
-                        memory_block[column][tuple] += str(
-                            "W 1 " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
-                        address_target_bitmap[column] += 1
+                            if unrolledCountBitmap[column] == 8 or unrolledCountBitmap[column] == 0:
+                                unrolledCountBitmap[column] = 0
+                                dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
+                                for j in range(8):
+                                    memory_block[column][tuple] += (
+                                        "R 1 " + str(address_target_bitmap[column - 1] - 1) + " " + str(
+                                            basicBlock + 3) + "\n")
+                        if unrolledCountBitmap[column] == 8 or unrolledCountBitmap[column] == 0:
+                            unrolledCountBitmap[column] = 0
+                            dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
+                            for j in range(8):
+                                memory_block[column][tuple] += str(
+                                    "W 1 " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
+                                address_target_bitmap[column] += 1
+                        unrolledCountBitmap[column] += 1
                 elif column > 0:
                     if column == numberOfPredicates - 1:
                         fieldCount = BLOCK_SIZE + 1
                     if lastSum > 0:
                         countLoads += 1
-                        unrolledCount[column] += 1
-                        if unrolledCount[column] == 8:
+                        if unrolledCount[column] == 8 or unrolledCount[column] == 0:
+                            unrolledCount[column] = 0
                             dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
-                        memory_block[column][tuple] += (
-                            "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(
-                                basicBlock + 2) + "\n")
-                        address_base[column] += (REG_SIZE * BLOCK_SIZE)
+                            for j in range(8):
+                                memory_block[column][tuple] += (
+                                    "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(
+                                        basicBlock + 2) + "\n")
+                                address_base[column] += (REG_SIZE * BLOCK_SIZE)
+                        unrolledCountBitmap[column] += 1
                         loadCount[column] += 1
                         if loadCount[column] == 2 and BLOCK_SIZE == 4:
                             loadSize = 16
@@ -197,24 +238,28 @@ for hmc_size in (4, 8, 16, 32, 64):
                     ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                     ########################################################################
                     for i in range(((REG_SIZE * BLOCK_SIZE) / loadSize)):
-                        dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
-                        dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
-                        memory_block[column][tuple] += (
-                            "R 1 " + str(address_target_bitmap[column - 1] - 1) + " " + str(
-                                basicBlock + 3) + "\n")
-                        memory_block[column][tuple] += str(
-                            "W 1 " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
-                        address_target_bitmap[column] += 2
+                        if unrolledCountBitmap[column] == 8 or unrolledCountBitmap[column] == 0:
+                            unrolledCountBitmap[column] = 0
+                            dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
+                            dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
+                            for j in range(8):
+                                memory_block[column][tuple] += (
+                                    "R 1 " + str(address_target_bitmap[column - 1] - 1) + " " + str(
+                                        basicBlock + 3) + "\n")
+                                memory_block[column][tuple] += str(
+                                    "W 1 " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
+                                address_target_bitmap[column] += 2
+                        unrolledCountBitmap[column] += 1
                 elif column == 0:
                     if column == numberOfPredicates - 1:
                         fieldCount = BLOCK_SIZE + 1
-                    unrolledCount[column] += 1
-                    if unrolledCount[column] == 8:
+                    if unrolledCountBitmap[column] == 8 or unrolledCountBitmap[column] == 0:
+                        unrolledCountBitmap[column] = 0
                         dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
-                    memory_block[column][tuple] += (
-                        "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(
-                            basicBlock + 2) + "\n")
-                    address_base[column] += (REG_SIZE * BLOCK_SIZE)
+                        for j in range(8):
+                            memory_block[column][tuple] += ("R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(basicBlock + 2) + "\n")
+                            address_base[column] += (REG_SIZE * BLOCK_SIZE)
+                    unrolledCount[column] += 1
                     loadCount[column] += 1
                     ########################################################################
                     ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
@@ -223,10 +268,14 @@ for hmc_size in (4, 8, 16, 32, 64):
                         loadSize = 16
                         loadCount[column] = 0
                     for i in range(((REG_SIZE * BLOCK_SIZE) / loadSize)):
-                        dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
-                        memory_block[column][tuple] += str(
-                            "W 1 " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
-                        address_target_bitmap[column] += 2
+                        if unrolledCountBitmap[column] == 8 or unrolledCountBitmap[column] == 0:
+                            unrolledCountBitmap[column] = 0
+                            dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
+                            for j in range(8):
+                                memory_block[column][tuple] += str(
+                                    "W 1 " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
+                                address_target_bitmap[column] += 2
+                        unrolledCountBitmap[column] += 1
             else:
                 bitColSum[column] += int(elem[column])
             basicBlock += 4
