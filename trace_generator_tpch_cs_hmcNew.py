@@ -16,16 +16,17 @@ import sys
 hmc_size = 0
 for hmc_size in (4, 8, 16, 32, 64):
     BLOCK_SIZE = hmc_size
-    ADDR_R = 1024 * 1024 * 1024
-    ADDR_W = 1024 * 1024 * 4096
-    REG_SIZE = 4
-    INST_ADDR = 1024
-    BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 
-    input_file = BASEDIR + "bitmap_files/resultQ06.txt"
-    dynamic_trace = BASEDIR + "traces/HMC_NEW/Q06/columnStore/" + str(BLOCK_SIZE * REG_SIZE) + "/output_trace.out.tid0.dyn.out"
-    memory_trace = BASEDIR + "traces/HMC_NEW/Q06/columnStore/" + str(BLOCK_SIZE * REG_SIZE) + "/output_trace.out.tid0.mem.out"
-    static_trace = BASEDIR + "traces/HMC_NEW/Q06/columnStore/" + str(BLOCK_SIZE * REG_SIZE) + "/output_trace.out.tid0.stat.out"
+    DATA_ADDR_READ = 1024 * 1024 * 1024
+    DATA_ADDR_WRITE = 1024 * 1024 * 4096
+    REGISTER_SIZE = 4
+    INSTRUCTION_ADDR = 1024
+    BASE_DIRECTORY = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
+
+    input_file = BASE_DIRECTORY + "bitmap_files/resultQ06.txt"
+    dynamic_trace = BASE_DIRECTORY + "traces/HMC_NEW/Q06/columnStore/" + str(BLOCK_SIZE * REGISTER_SIZE) + "/output_trace.out.tid0.dyn.out"
+    memory_trace = BASE_DIRECTORY + "traces/HMC_NEW/Q06/columnStore/" + str(BLOCK_SIZE * REGISTER_SIZE) + "/output_trace.out.tid0.mem.out"
+    static_trace = BASE_DIRECTORY + "traces/HMC_NEW/Q06/columnStore/" + str(BLOCK_SIZE * REGISTER_SIZE) + "/output_trace.out.tid0.stat.out"
 
     FILE_INPUT = open(input_file, 'r')
     FILE_DYN = open(dynamic_trace, 'w')
@@ -55,8 +56,13 @@ for hmc_size in (4, 8, 16, 32, 64):
         totalAttributes[i] = int(header[i + numberOfTables + 1])
 
     AttributesByStage = [totalAttributes, totalAttributes, totalAttributes]
-    address_base = [ADDR_R, ADDR_R * 2, ADDR_R * 3]
-    address_target = [ADDR_W, int(ADDR_W * 1.5), ADDR_W * 2]
+    address_base = [DATA_ADDR_READ, DATA_ADDR_READ + (qtdTuples * REGISTER_SIZE),
+                    DATA_ADDR_READ + (qtdTuples * REGISTER_SIZE * 2)]
+    address_target = [DATA_ADDR_WRITE, DATA_ADDR_WRITE + (qtdTuples * REGISTER_SIZE) + 1,
+                      DATA_ADDR_WRITE + (qtdTuples * REGISTER_SIZE * 2) + 1]
+    address_target_bitmap = [DATA_ADDR_READ + (qtdTuples * REGISTER_SIZE * 3),
+                             DATA_ADDR_READ + (qtdTuples * REGISTER_SIZE * 3) + qtdTuples,
+                             DATA_ADDR_READ + (qtdTuples * REGISTER_SIZE * 3) + (2 * qtdTuples)]
 
     FILE_DYN.write("# SiNUCA Trace Dynamic\n")
     FILE_MEM.write("# SiNUCA Trace Memory\n")
@@ -69,28 +75,28 @@ for hmc_size in (4, 8, 16, 32, 64):
     for i in range(numberOfPredicates):
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # COLUMN-AT-A-TIME#
-        FILE_STAT.write("ADD 1 " + str(INST_ADDR) + " 4 1 5 1 5 0 0 0 0 0 3 0 0 0\n")
-        INST_ADDR += 4
-        FILE_STAT.write("CMP 1 " + str(INST_ADDR) + " 3 1 5 1 6 0 0 0 0 0 3 0 0 0\n")
-        INST_ADDR += 3
-        FILE_STAT.write("JNE 7 " + str(INST_ADDR) + " 2 1 6 1 7 0 0 0 0 0 4 0 0 0\n")
+        FILE_STAT.write("ADD 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 5 0 0 0 0 0 3 0 0 0\n")
+        INSTRUCTION_ADDR += 4
+        FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 3 1 5 1 6 0 0 0 0 0 3 0 0 0\n")
+        INSTRUCTION_ADDR += 3
+        FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 6 1 7 0 0 0 0 0 4 0 0 0\n")
         basicBlock += 1
-        INST_ADDR += 2
+        INSTRUCTION_ADDR += 2
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
-        FILE_STAT.write("HMC_LOCK 14 " + str(INST_ADDR) + " 4 1 5 0 0 0 0 0 0 3 0 0 1 -1 -1 -1\n")
-        INST_ADDR += 4
-        FILE_STAT.write("HMC_LD 16 " + str(INST_ADDR) + " 4 1 5 0 0 0 1 0 0 3 0 0 1 -1 -1 0\n")  # R
-        INST_ADDR += 4
-        FILE_STAT.write("HMC_OP 18 " + str(INST_ADDR) + " 4 1 5 0 0 0 0 0 0 3 0 0 1 0 -1 0\n")
-        INST_ADDR += 4
-        FILE_STAT.write("HMC_ST 17 " + str(INST_ADDR) + " 4 1 5 0 0 0 0 0 1 3 0 0 1 0 -1 -1\n")  # W
-        INST_ADDR += 4
-        FILE_STAT.write("HMC_UNLOCK 15 " + str(INST_ADDR) + " 4 1 9 0 0 0 0 0 0 3 0 0 1 -1 -1 -1\n")
-        INST_ADDR += 4
-        FILE_STAT.write("ADD 1 " + str(INST_ADDR) + " 4 1 5 1 5 0 0 0 0 0 3 0 0 0\n")
-        INST_ADDR += 4
-        FILE_STAT.write("JNE 7 " + str(INST_ADDR) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
-        INST_ADDR += 2
+        FILE_STAT.write("HMC_LOCK 14 " + str(INSTRUCTION_ADDR) + " 4 1 5 0 0 0 0 0 0 3 0 0 1 -1 -1 -1\n")
+        INSTRUCTION_ADDR += 4
+        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 5 0 0 0 1 0 0 3 0 0 1 -1 -1 0\n")  # R
+        INSTRUCTION_ADDR += 4
+        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 5 0 0 0 0 0 0 3 0 0 1 0 -1 0\n")
+        INSTRUCTION_ADDR += 4
+        FILE_STAT.write("HMC_ST 17 " + str(INSTRUCTION_ADDR) + " 4 1 5 0 0 0 0 0 1 3 0 0 1 0 -1 -1\n")  # W
+        INSTRUCTION_ADDR += 4
+        FILE_STAT.write("HMC_UNLOCK 15 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 0 0 0 3 0 0 1 -1 -1 -1\n")
+        INSTRUCTION_ADDR += 4
+        FILE_STAT.write("ADD 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 5 0 0 0 0 0 3 0 0 0\n")
+        INSTRUCTION_ADDR += 4
+        FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
+        INSTRUCTION_ADDR += 2
 
     FILE_STAT.write("# eof")
     FILE_STAT.close()
@@ -105,9 +111,9 @@ for hmc_size in (4, 8, 16, 32, 64):
         basicBlock = 0
         for column in range(numberOfPredicates):
             dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
+            bitColSum[column] += int(elem[column])
             if fieldCount == 1:
-                bitColSum[column] += int(elem[column])
-                if bitColSum[column] > 0:
+                if bitColSum[column] > 0 or column == 0:
                     lastSum = bitColSum[column]
                     bitColSum[column] = 0
                     if column == numberOfPredicates - 1:
@@ -118,40 +124,26 @@ for hmc_size in (4, 8, 16, 32, 64):
                     dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                     memory_block[column][tuple] += (
                         "R "
-                        + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(basicBlock + 2) + "\n")
-                    address_base[column] += (REG_SIZE * BLOCK_SIZE)
+                        + str(BLOCK_SIZE * REGISTER_SIZE) + " " + str(address_base[column]) + " " + str(basicBlock + 2) + "\n")
+                    address_base[column] += (REGISTER_SIZE * BLOCK_SIZE)
                     ########################################################################
                     ## CREATE THE BITMAP
                     ########################################################################
-                    memory_block[column][tuple] += str("W " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_target[column]) + " " + str(basicBlock + 2) + "\n")
-                    address_target[column] += (REG_SIZE * BLOCK_SIZE)
+                    memory_block[column][tuple] += str("W "+ str((REGISTER_SIZE * HMC_OPERATION_CAPACITY) / loadSize) + " " + str(address_target_bitmap) + " " + str(basicBlock + 2) + "\n")
+                    address_target[column] += (REGISTER_SIZE * BLOCK_SIZE)
                 elif column > 0:
                     if column == numberOfPredicates - 1:
                         fieldCount = BLOCK_SIZE + 1
                     if lastSum > 0:
                         dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                         memory_block[column][tuple] += (
-                            "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(basicBlock + 2) + "\n")
-                        address_base[column] += (REG_SIZE * BLOCK_SIZE)
+                            "R " + str(BLOCK_SIZE * REGISTER_SIZE) + " " + str(address_base[column]) + " " + str(basicBlock + 2) + "\n")
+                        address_base[column] += (REGISTER_SIZE * BLOCK_SIZE)
                         ########################################################################
                         ## CREATE THE BITMAP
                         ########################################################################
-                        memory_block[column][tuple] += str("W " + str(BLOCK_SIZE * REG_SIZE) + " "+ str(address_target[column]) + " " + str(basicBlock + 2) + "\n")
-                        address_target[column] += (REG_SIZE * BLOCK_SIZE)
-                else:
-                    if column == numberOfPredicates - 1:
-                        fieldCount = BLOCK_SIZE + 1
-                    dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
-                    memory_block[column][tuple] += (
-                        "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(basicBlock + 2) + "\n")
-                    address_base[column] += (REG_SIZE * BLOCK_SIZE)
-                    ########################################################################
-                    ## CREATE THE BITMAP
-                    ########################################################################
-                    memory_block[column][tuple] += str("W " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_target[column]) + " " + str(basicBlock + 2) + "\n")
-                    address_target[column] += (BLOCK_SIZE * REG_SIZE)
-            else:
-                bitColSum[column] += int(elem[column])
+                        memory_block[column][tuple] += str("W 1" + " " + str(address_target_bitmap) + " " + str(basicBlock + 2) + "\n")
+                        address_target[column] += (REGISTER_SIZE * BLOCK_SIZE)
             basicBlock += 2
         fieldCount -= 1
 
@@ -167,6 +159,6 @@ for hmc_size in (4, 8, 16, 32, 64):
     FILE_DYN.close()
     print "Dynamic and Memory Files Ok!"
     print "Compressing Files..."
-    os.system("rm -f " + BASEDIR + "traces/HMC_NEW/Q06/columnStore/" + str(BLOCK_SIZE * REG_SIZE) + "/" + "*gz")
-    os.system("gzip " + BASEDIR + "traces/HMC_NEW/Q06/columnStore/" + str(BLOCK_SIZE * REG_SIZE) + "/" + "*.out")
+    os.system("rm -f " + BASE_DIRECTORY + "traces/HMC_NEW/Q06/columnStore/" + str(BLOCK_SIZE * REGISTER_SIZE) + "/" + "*gz")
+    os.system("gzip " + BASE_DIRECTORY + "traces/HMC_NEW/Q06/columnStore/" + str(BLOCK_SIZE * REGISTER_SIZE) + "/" + "*.out")
     print "ALL Done!"

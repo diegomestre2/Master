@@ -69,7 +69,6 @@ for operandSize in (4, 8, 16, 32, 64):
                              int(DATA_ADDR_READ + (qtdTuples * REGISTER_SIZE * 3) + qtdTuples),
                              int(DATA_ADDR_READ + (qtdTuples * REGISTER_SIZE * 3) + (2 * qtdTuples))]
 
-
     FILE_STAT = open(static_trace, 'w')
     FILE_STAT.write("# SiNUCA Trace Static\n")
 
@@ -112,7 +111,6 @@ for operandSize in (4, 8, 16, 32, 64):
     FILE_STAT.write("# eof")
     FILE_STAT.close()
     print "Static File Ok!"
-
 
     FILE_DYN = open(dynamic_trace, 'w')
     FILE_MEM = open(memory_trace, 'w')
