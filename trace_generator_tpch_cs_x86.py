@@ -14,21 +14,17 @@ import subprocess
 import os
 import sys
 
-BLOCK_SIZE = 4
-ADDR_R = 1024 * 1024 * 1024
-ADDR_W = 1024 * 1024 * 4096
-REG_SIZE = 4
-BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
+DATA_ADDR_READ = 1024 * 1024 * 1024
+DATA_ADDR_WRITE = 1024 * 1024 * 4096
+REGISTER_SIZE = 16
 
+BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 input_file = BASEDIR + "bitmap_files/resultQ06.txt"
 dynamic_trace = BASEDIR + "traces/x86/Q06/columnStore/output_trace.out.tid0.dyn.out"
 memory_trace = BASEDIR + "traces/x86/Q06/columnStore/output_trace.out.tid0.mem.out"
 static_trace = BASEDIR + "traces/x86/Q06/columnStore/output_trace.out.tid0.stat.out"
 
 FILE_INPUT = open(input_file, 'r')
-FILE_DYN = open(dynamic_trace, 'w')
-FILE_MEM = open(memory_trace, 'w')
-FILE_STAT = open(static_trace, 'w')
 
 header = FILE_INPUT.readline()
 header = header.split("|")
@@ -36,8 +32,8 @@ numberOfTables = int(header[0])
 numberOfPredicates = int(header[(numberOfTables * 2) + 1])
 INST_ADDR = 1024
 basicBlock = 0
-
 tuples = FILE_INPUT.readlines()
+
 FILE_INPUT.close()
 
 qtdTuples = len(tuples)
@@ -53,13 +49,18 @@ for i in range(numberOfTables):
     totalAttributes[i] = int(header[i + numberOfTables + 1])
 
 AttributesByStage = [totalAttributes, totalAttributes, totalAttributes]
-address_base = [ADDR_R, ADDR_R * 2, ADDR_R * 3]
-address_base_bitmap = [ADDR_R * 9, int(ADDR_R * 9.2), int(ADDR_R * 9.3)]
-address_target = [ADDR_W, int(ADDR_W * 1.5), ADDR_W * 2]
-address_target_bitmap = [int(ADDR_R * 3.7), int(ADDR_R * 3.8), int(ADDR_R * 3.9)]
+address_base = [DATA_ADDR_READ, DATA_ADDR_READ + (qtdTuples * REGISTER_SIZE),  # READ
+                DATA_ADDR_READ + (qtdTuples * REGISTER_SIZE * 2)]
 
-FILE_DYN.write("# SiNUCA Trace Dynamic\n")
-FILE_MEM.write("# SiNUCA Trace Memory\n")
+address_target = [DATA_ADDR_WRITE, DATA_ADDR_WRITE + (qtdTuples * REGISTER_SIZE) + 1,  # WRITE
+                  DATA_ADDR_WRITE + (qtdTuples * REGISTER_SIZE * 2) + 1]
+
+address_target_bitmap = [int(DATA_ADDR_READ + (qtdTuples * REGISTER_SIZE * 3)),  # BITMAP
+                         int(DATA_ADDR_READ + (qtdTuples * REGISTER_SIZE * 3) + qtdTuples),
+                         int(DATA_ADDR_READ + (qtdTuples * REGISTER_SIZE * 3) + (2 * qtdTuples))]
+
+
+FILE_STAT = open(static_trace, 'w')
 FILE_STAT.write("# SiNUCA Trace Static\n")
 
 basicBlock = 0
@@ -101,8 +102,13 @@ FILE_STAT.write("# eof")
 FILE_STAT.close()
 print "Static File Ok!"
 
-fieldCount = BLOCK_SIZE
-lastSum = 0
+FILE_DYN = open(dynamic_trace, 'w')
+FILE_MEM = open(memory_trace, 'w')
+FILE_DYN.write("# SiNUCA Trace Dynamic\n")
+FILE_MEM.write("# SiNUCA Trace Memory\n")
+
+fieldsByInstruction = REGISTER_SIZE / 4
+lastFieldSum = 0
 countLoads = 0
 loadCount = [0, 0, 0]
 #################### DYNAMIC AND MEMORY FILE #########################
@@ -113,27 +119,27 @@ for tuple in range(len(tuples)):
     basicBlock = 0
     for column in range(numberOfPredicates):
         dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
+        bitColSum[column] += int(elem[column])
         ########################################################################
         ##  HMC INSTRUCTION WILL BE SENDED
         ########################################################################
-        if fieldCount == 1:
-            bitColSum[column] += int(elem[column])
+        if fieldsByInstruction == 1:
             ########################################################################
             ##  MATCH FOUND
             ########################################################################
-            if bitColSum[column] > 0:
-                lastSum = bitColSum[column]
+            if bitColSum[column] > 0 or column == 0:
+                lastFieldSum = bitColSum[column]
                 bitColSum[column] = 0
                 if column == numberOfPredicates - 1:
-                    fieldCount = BLOCK_SIZE + 1
+                    fieldsByInstruction = REGISTER_SIZE / 4 + 1
                 ########################################################################
                 ##  APPLY PREDICATE
                 ########################################################################
                 dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                 memory_block[column][tuple] += (
-                    "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(
+                    "R " + str(REGISTER_SIZE) + " " + str(address_base[column]) + " " + str(
                         basicBlock + 2) + "\n")
-                address_base[column] += (REG_SIZE * BLOCK_SIZE)
+                address_base[column] += (REGISTER_SIZE)
                 loadCount[column] += 1
                 ########################################################################
                 ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
@@ -145,56 +151,39 @@ for tuple in range(len(tuples)):
                         memory_block[column][tuple] += (
                             "R 1 " + str(address_target_bitmap[column - 1] - 1) + " " + str(
                                 basicBlock + 3) + "\n")
+                        address_target_bitmap[column - 1] += 1
                     dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
                     memory_block[column][tuple] += str(
                         "W 1 " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
                     address_target_bitmap[column] += 1
             elif column > 0:
                 if column == numberOfPredicates - 1:
-                    fieldCount = BLOCK_SIZE + 1
-                if lastSum > 0:
+                    fieldsByInstruction = REGISTER_SIZE / 4 + 1
+                if lastFieldSum > 0:
                     countLoads += 1
                     dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                     memory_block[column][tuple] += (
-                        "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(
+                        "R " + str(REGISTER_SIZE) + " " + str(address_base[column]) + " " + str(
                             basicBlock + 2) + "\n")
-                    address_base[column] += (REG_SIZE * BLOCK_SIZE)
+                    address_base[column] += (REGISTER_SIZE)
                     loadCount[column] += 1
                     if loadCount[column] == 2:
                         loadCount[column] = 0
                         ########################################################################
                         ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                         ########################################################################
+
                         dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
                         dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
                         memory_block[column][tuple] += (
                             "R 1 " + str(address_target_bitmap[column - 1] - 1) + " " + str(
                                 basicBlock + 3) + "\n")
+                        address_target_bitmap[column - 1] += 1
                         memory_block[column][tuple] += str(
                             "W 1 " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
-                        address_target_bitmap[column] += 2
-            elif column == 0:
-                if column == numberOfPredicates - 1:
-                    fieldCount = BLOCK_SIZE + 1
-                dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
-                memory_block[column][tuple] += (
-                    "R " + str(BLOCK_SIZE * REG_SIZE) + " " + str(address_base[column]) + " " + str(
-                        basicBlock + 2) + "\n")
-                address_base[column] += (REG_SIZE * BLOCK_SIZE)
-                loadCount[column] += 1
-                ########################################################################
-                ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
-                ########################################################################
-                if loadCount[column] == 2:
-                    loadCount[column] = 0
-                    dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
-                    memory_block[column][tuple] += str(
-                        "W 1 " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
-                    address_target_bitmap[column] += 2
-        else:
-            bitColSum[column] += int(elem[column])
+                        address_target_bitmap[column] += 1
         basicBlock += 4
-    fieldCount -= 1
+    fieldsByInstruction -= 1
 
 print "Writing on Dynamic and Memory File..."
 ######### WRITES ON DYNAMIC AND MEMORY FILE ################3
@@ -208,6 +197,7 @@ FILE_MEM.close()
 FILE_DYN.close()
 print "Dynamic and Memory Files Ok!"
 print "Compressing Files..."
+
 os.system("rm -f " + BASEDIR + "traces/x86/Q06/columnStore/" + "*gz")
 os.system("gzip " + BASEDIR + "traces/x86/Q06/columnStore/" + "*.out")
 print "ALL Done!"
