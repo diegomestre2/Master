@@ -160,13 +160,13 @@ for HMC_OPERATION_CAPACITY in (16, 32, 64, 128, 256):
                             memory_block[column][tuple] += (
                                 "R " + str(HMC_OPERATION_CAPACITY / loadSize) + " " + str(address_target_bitmap[column - 1] - 1) + " " + str(
                                     basicBlock + 3) + "\n")
-                            address_target_bitmap[column - 1] += 1
+                            address_target_bitmap[column - 1] += (HMC_OPERATION_CAPACITY / loadSize)
                         # if column > 0
                         dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
                         memory_block[column][tuple] += str(
                             "W " + str(HMC_OPERATION_CAPACITY / loadSize) + " " + str(
                                 address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
-                        address_target_bitmap[column] += 1
+                        address_target_bitmap[column] += (HMC_OPERATION_CAPACITY / loadSize)
                 elif column > 0:
                     if column == numberOfPredicates - 1:
                         fieldsByInstruction = (HMC_OPERATION_CAPACITY / 4) + 1
@@ -192,11 +192,11 @@ for HMC_OPERATION_CAPACITY in (16, 32, 64, 128, 256):
                                 "R " + str(HMC_OPERATION_CAPACITY / loadSize) + " " + str(
                                     address_target_bitmap[column - 1] - 1) + " " + str(
                                     basicBlock + 3) + "\n")
-                            address_target_bitmap[column - 1] += 1
+                            address_target_bitmap[column - 1] += (HMC_OPERATION_CAPACITY / loadSize)
                             memory_block[column][tuple] += str(
                                 "W " + str(HMC_OPERATION_CAPACITY / loadSize) + " " + str(
                                     address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
-                            address_target_bitmap[column] += 1
+                            address_target_bitmap[column] += (HMC_OPERATION_CAPACITY / loadSize)
                     # if lastSum > 0:
                 # elif column > 0:
             # if fieldCount == 1:
