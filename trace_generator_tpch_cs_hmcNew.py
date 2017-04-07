@@ -24,9 +24,9 @@ for hmc_size in (16, 32, 64, 128, 256):
     BASE_DIRECTORY = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 
     input_file = BASE_DIRECTORY + "bitmap_files/resultQ06.txt"
-    dynamic_trace = BASE_DIRECTORY + "traces/HMC_NEW/Q06/columnStore/" + str(HMC_OPERATION_CAPACITY) + "/output_trace.out.tid0.dyn.out"
-    memory_trace = BASE_DIRECTORY + "traces/HMC_NEW/Q06/columnStore/" + str(HMC_OPERATION_CAPACITY) + "/output_trace.out.tid0.mem.out"
-    static_trace = BASE_DIRECTORY + "traces/HMC_NEW/Q06/columnStore/" + str(HMC_OPERATION_CAPACITY) + "/output_trace.out.tid0.stat.out"
+    dynamic_trace = BASE_DIRECTORY + "traces/HMC_NEW/Q06/columnStore/" + str(HMC_OPERATION_CAPACITY) + "/unrolled/output_trace.out.tid0.dyn.out"
+    memory_trace = BASE_DIRECTORY + "traces/HMC_NEW/Q06/columnStore/" + str(HMC_OPERATION_CAPACITY) + "/unrolled/output_trace.out.tid0.mem.out"
+    static_trace = BASE_DIRECTORY + "traces/HMC_NEW/Q06/columnStore/" + str(HMC_OPERATION_CAPACITY) + "/unrolled/output_trace.out.tid0.stat.out"
 
     FILE_INPUT = open(input_file, 'r')
     FILE_DYN = open(dynamic_trace, 'w')
@@ -89,9 +89,27 @@ for hmc_size in (16, 32, 64, 128, 256):
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
         FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 5 0 0 0 1 0 0 3 0 0 1 -1 -1 0\n")  # R
         INSTRUCTION_ADDR += 4
+        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 6 0 0 0 1 0 0 3 0 0 1 -1 -1 1\n")  # R
+        INSTRUCTION_ADDR += 4
+        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 7 0 0 0 1 0 0 3 0 0 1 -1 -1 2\n")  # R
+        INSTRUCTION_ADDR += 4
+        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 8 0 0 0 1 0 0 3 0 0 1 -1 -1 3\n")  # R
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 5 0 0 0 0 0 0 3 0 0 1 0 -1 0\n")
         INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_ST 17 " + str(INSTRUCTION_ADDR) + " 4 1 5 0 0 0 0 0 1 3 0 0 1 0 -1 -1\n")  # W
+        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 5 0 0 0 0 0 0 3 0 0 1 1 -1 1\n")
+        INSTRUCTION_ADDR += 4
+        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 5 0 0 0 0 0 0 3 0 0 1 2 -1 2\n")
+        INSTRUCTION_ADDR += 4
+        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 5 0 0 0 0 0 0 3 0 0 1 3 -1 3\n")
+        INSTRUCTION_ADDR += 4
+        FILE_STAT.write("HMC_ST 17 " + str(INSTRUCTION_ADDR) + " 4 1 5 0 0 0 0 0 1 3 0 0 1 5 -1 -1\n")  # W
+        INSTRUCTION_ADDR += 4
+        FILE_STAT.write("HMC_ST 17 " + str(INSTRUCTION_ADDR) + " 4 1 6 0 0 0 0 0 1 3 0 0 1 6 -1 -1\n")  # W
+        INSTRUCTION_ADDR += 4
+        FILE_STAT.write("HMC_ST 17 " + str(INSTRUCTION_ADDR) + " 4 1 7 0 0 0 0 0 1 3 0 0 1 7 -1 -1\n")  # W
+        INSTRUCTION_ADDR += 4
+        FILE_STAT.write("HMC_ST 17 " + str(INSTRUCTION_ADDR) + " 4 1 8 0 0 0 0 0 1 3 0 0 1 8 -1 -1\n")  # W
         INSTRUCTION_ADDR += 4
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
@@ -106,7 +124,7 @@ for hmc_size in (16, 32, 64, 128, 256):
     FILE_STAT.close()
     print "Static File Ok!"
 
-    fieldsByInstruction = HMC_OPERATION_CAPACITY / 4
+    fieldsByInstruction = HMC_OPERATION_CAPACITY
     lastFieldsSum = 0
     loadSize = 32
     #################### DYNAMIC AND MEMORY FILE #########################
@@ -129,33 +147,13 @@ for hmc_size in (16, 32, 64, 128, 256):
                     lastFieldsSum = bitColSum[column]
                     bitColSum[column] = 0
                     if column == numberOfPredicates - 1:
-                        fieldsByInstruction = (HMC_OPERATION_CAPACITY / 4) + 1
+                        fieldsByInstruction = (HMC_OPERATION_CAPACITY) + 1
                     ########################################################################
                     ##  APPLY PREDICATE
                     ########################################################################
                     dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                     dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
-                    memory_block[column][tuple] += (
-                        "R " + str(HMC_OPERATION_CAPACITY) + " " + str(address_base[column]) + " " + str(
-                            basicBlock + 3) + "\n")
-                    address_base[column] += HMC_OPERATION_CAPACITY
-                    ########################################################################
-                    # CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
-                    ########################################################################
-                    if HMC_OPERATION_CAPACITY == 16:
-                        loadSize = 16
-                    memory_block[column][tuple] += str(
-                        "W " + str(HMC_OPERATION_CAPACITY / loadSize) + " " + str(
-                            address_target_bitmap[column]) + " " + str(basicBlock + 3) + "\n")
-                    address_target_bitmap[column] += (HMC_OPERATION_CAPACITY / loadSize)
-                    dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
-                elif column > 0:
-                    if column == numberOfPredicates - 1:
-                        fieldsByInstruction = (HMC_OPERATION_CAPACITY / 4) + 1
-                    if lastFieldsSum > 0:
-                        lastFieldsSum = 0
-                        dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
-                        dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
+                    for i in range(4):
                         memory_block[column][tuple] += (
                             "R " + str(HMC_OPERATION_CAPACITY) + " " + str(address_base[column]) + " " + str(
                                 basicBlock + 3) + "\n")
@@ -163,12 +161,36 @@ for hmc_size in (16, 32, 64, 128, 256):
                         ########################################################################
                         # CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                         ########################################################################
-                        if HMC_OPERATION_CAPACITY == 16:
+                    if HMC_OPERATION_CAPACITY == 16:
                             loadSize = 16
+                    for i in range(4):
                         memory_block[column][tuple] += str(
                             "W " + str(HMC_OPERATION_CAPACITY / loadSize) + " " + str(
                                 address_target_bitmap[column]) + " " + str(basicBlock + 3) + "\n")
                         address_target_bitmap[column] += (HMC_OPERATION_CAPACITY / loadSize)
+                    dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
+                elif column > 0:
+                    if column == numberOfPredicates - 1:
+                        fieldsByInstruction = (HMC_OPERATION_CAPACITY) + 1
+                    if lastFieldsSum > 0:
+                        lastFieldsSum = 0
+                        dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
+                        dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
+                        for i in range(4):
+                            memory_block[column][tuple] += (
+                                "R " + str(HMC_OPERATION_CAPACITY) + " " + str(address_base[column]) + " " + str(
+                                    basicBlock + 3) + "\n")
+                            address_base[column] += HMC_OPERATION_CAPACITY
+                            ########################################################################
+                            # CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
+                            ########################################################################
+                        if HMC_OPERATION_CAPACITY == 16:
+                                loadSize = 16
+                        for i in range(4):
+                            memory_block[column][tuple] += str(
+                                "W " + str(HMC_OPERATION_CAPACITY / loadSize) + " " + str(
+                                    address_target_bitmap[column]) + " " + str(basicBlock + 3) + "\n")
+                            address_target_bitmap[column] += (HMC_OPERATION_CAPACITY / loadSize)
                         dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
                     # if lastSum > 0:
                 # elif column > 0:
@@ -189,6 +211,6 @@ for hmc_size in (16, 32, 64, 128, 256):
     FILE_DYN.close()
     print "Dynamic and Memory Files Ok!"
     print "Compressing Files..."
-    os.system("rm -f " + BASE_DIRECTORY + "traces/HMC_NEW/Q06/columnStore/" + str(HMC_OPERATION_CAPACITY) + "/" + "*gz")
-    os.system("gzip " + BASE_DIRECTORY + "traces/HMC_NEW/Q06/columnStore/" + str(HMC_OPERATION_CAPACITY) + "/" + "*.out")
+    os.system("rm -f " + BASE_DIRECTORY + "traces/HMC_NEW/Q06/columnStore/" + str(HMC_OPERATION_CAPACITY) + "/unrolled/" + "*gz")
+    os.system("gzip " + BASE_DIRECTORY + "traces/HMC_NEW/Q06/columnStore/" + str(HMC_OPERATION_CAPACITY) + "/unrolled/" + "*.out")
     print "ALL Done!"
