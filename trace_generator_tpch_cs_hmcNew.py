@@ -266,11 +266,11 @@ for hmc_size in (16, 32, 64, 128, 256):
         INSTRUCTION_ADDR += 4
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 5 0 0 0 1 0 0 3 0 0 1 -1 -1 0\n")  # R
+        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 1 0 0 0 1 0 0 3 0 0 1 -1 -1 0\n")  # R
         INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 5 0 0 0 0 0 0 3 0 0 1 0 -1 0\n")
+        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 2 0 0 0 0 0 0 3 0 0 1 0 -1 0\n")
         INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_ST 17 " + str(INSTRUCTION_ADDR) + " 4 1 5 0 0 0 0 0 1 3 0 0 1 0 -1 -1\n")  # W
+        FILE_STAT.write("HMC_ST 17 " + str(INSTRUCTION_ADDR) + " 4 1 1 0 0 0 0 0 1 3 0 0 1 0 -1 -1\n")  # W
         INSTRUCTION_ADDR += 4
         FILE_STAT.write("ADD 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 5 0 0 0 0 0 3 0 0 0\n")
         INSTRUCTION_ADDR += 4
@@ -305,7 +305,7 @@ for hmc_size in (16, 32, 64, 128, 256):
             ##  HMC INSTRUCTION WILL BE SENDED
             ########################################################################
             if fieldsByInstruction == 1:
-                if tuple == (HMC_OPERATION_CAPACITY / 4):
+                if tuple == (HMC_OPERATION_CAPACITY / 4) - 1:
                     dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                 ########################################################################
                 ##  MATCH FOUND
@@ -354,10 +354,10 @@ for hmc_size in (16, 32, 64, 128, 256):
                         # if lastSum > 0:
                         # elif column > 0:
             # if fieldCount == 1:
-            basicBlock += 4
             loadSize = 32
-            if tuple == qtdTuples:
+            if tuple == qtdTuples - 1:
                 dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
+            basicBlock += 4
         fieldsByInstruction -= 1
 
     print "Writing on Dynamic and Memory File..."
