@@ -193,7 +193,7 @@ for hmc_size in (16, 32, 64, 128, 256):
         HMC_OPERATION_CAPACITY) + "/innerLock/" + "*.out")
     print "ALL Done!"
 
-    ################ OutdoorLock #####################
+    ################ OuterLock #####################
 
     DATA_ADDR_READ = 1024 * 1024 * 1024
     DATA_ADDR_WRITE = 1024 * 1024 * 4096
@@ -204,11 +204,11 @@ for hmc_size in (16, 32, 64, 128, 256):
     input_file = BASEDIR + "bitmap_files/resultQ06.txt"
 
     dynamic_trace = BASEDIR + "traces/Query06/columnStore/HMC_NEW/" + str(
-        HMC_OPERATION_CAPACITY) + "/outdoorLock/output_trace.out.tid0.dyn.out"
+        HMC_OPERATION_CAPACITY) + "/outerLock/output_trace.out.tid0.dyn.out"
     memory_trace = BASEDIR + "traces/Query06/columnStore/HMC_NEW/" + str(
-        HMC_OPERATION_CAPACITY) + "/outdoorLock/output_trace.out.tid0.mem.out"
+        HMC_OPERATION_CAPACITY) + "/outerLock/output_trace.out.tid0.mem.out"
     static_trace = BASEDIR + "traces/Query06/columnStore/HMC_NEW/" + str(
-        HMC_OPERATION_CAPACITY) + "/outdoorLock/output_trace.out.tid0.stat.out"
+        HMC_OPERATION_CAPACITY) + "/outerLock/output_trace.out.tid0.stat.out"
 
     ################### TREATING FILE INPUT ###################
     FILE_INPUT = open(input_file, 'r')
@@ -374,7 +374,7 @@ for hmc_size in (16, 32, 64, 128, 256):
 
     print "Compressing Files..."
     os.system("rm -f " + BASEDIR + "traces/Query06/columnStore/HMC_NEW/" + str(
-        HMC_OPERATION_CAPACITY) + "/outdoorLock/" + "*gz")
+        HMC_OPERATION_CAPACITY) + "/outerLock/" + "*gz")
     os.system("gzip " + BASEDIR + "traces/Query06/columnStore/HMC_NEW/" + str(
-        HMC_OPERATION_CAPACITY) + "/outdoorLock/" + "*.out")
+        HMC_OPERATION_CAPACITY) + "/outerLock/" + "*.out")
     print "ALL Done!"
