@@ -22,9 +22,9 @@ DATA_SIZE = 4
 
 BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 input_file = BASEDIR + "bitmap_files/resultQ06.txt"
-dynamic_trace = BASEDIR + "traces/x86/Q06/columnStore/output_trace.out.tid0.dyn.out"
-memory_trace = BASEDIR + "traces/x86/Q06/columnStore/output_trace.out.tid0.mem.out"
-static_trace = BASEDIR + "traces/x86/Q06/columnStore/output_trace.out.tid0.stat.out"
+dynamic_trace = BASEDIR + "traces/Query06/columnStore/x86/output_trace.out.tid0.dyn.out"
+memory_trace = BASEDIR + "traces/Query06/columnStore/x86/output_trace.out.tid0.mem.out"
+static_trace = BASEDIR + "traces/Query06/columnStore/x86/output_trace.out.tid0.stat.out"
 ################### TREATING FILE INPUT ###################
 FILE_INPUT = open(input_file, 'r')
 
@@ -64,6 +64,7 @@ FILE_STAT = open(static_trace, 'w')
 FILE_STAT.write("# SiNUCA Trace Static\n")
 
 basicBlock = 0
+print("Generating Traces Files For x86 - 16 Bytes")
 #################### STATIC FILE #########################
 print "Generating Static File..."
 for tuple in range(numberOfPredicates):
@@ -196,6 +197,6 @@ FILE_DYN.close()
 print "Dynamic and Memory Files Ok!"
 print "Compressing Files..."
 
-os.system("rm -f " + BASEDIR + "traces/x86/Q06/columnStore/" + "*gz")
-os.system("gzip " + BASEDIR + "traces/x86/Q06/columnStore/" + "*.out")
+os.system("rm -f " + BASEDIR + "traces/Query06/columnStore/x86/" + "*gz")
+os.system("gzip " + BASEDIR + "traces/Query06/columnStore/x86/" + "*.out")
 print "ALL Done!"
