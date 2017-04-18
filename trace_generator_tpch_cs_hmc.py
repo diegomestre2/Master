@@ -21,13 +21,13 @@ for HMC_OPERATION_CAPACITY in (16, 32, 64, 128, 256):
 
     BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
     input_file = BASEDIR + "bitmap_files/resultQ06.txt"
-    dynamic_trace = BASEDIR + "traces/HMC/Q06/columnStore/" + str(
+    dynamic_trace = BASEDIR + "traces/Query06/columnStore/HMC/" + str(
         HMC_OPERATION_CAPACITY) + "/output_trace.out.tid0.dyn.out"
 
-    memory_trace = BASEDIR + "traces/HMC/Q06/columnStore/" + str(
+    memory_trace = BASEDIR + "traces/Query06/columnStore/HMC/" + str(
         HMC_OPERATION_CAPACITY) + "/output_trace.out.tid0.mem.out"
 
-    static_trace = BASEDIR + "traces/HMC/Q06/columnStore/" + str(
+    static_trace = BASEDIR + "traces/Query06/columnStore/HMC/" + str(
         HMC_OPERATION_CAPACITY) + "/output_trace.out.tid0.stat.out"
 
     ################### TREATING FILE INPUT ###################
@@ -217,6 +217,6 @@ for HMC_OPERATION_CAPACITY in (16, 32, 64, 128, 256):
     print "Dynamic and Memory Files Ok!"
 
     print "Compressing Files..."
-    os.system("rm -f " + BASEDIR + "traces/HMC/Q06/columnStore/" + str(HMC_OPERATION_CAPACITY) + "/" + "*gz")
-    os.system("gzip " + BASEDIR + "traces/HMC/Q06/columnStore/" + str(HMC_OPERATION_CAPACITY) + "/" + "*.out")
+    os.system("rm -f " + BASEDIR + "traces/Query06/columnStore/HMC/" + str(HMC_OPERATION_CAPACITY) + "/" + "*gz")
+    os.system("gzip " + BASEDIR + "traces/Query06/columnStore/HMC/" + str(HMC_OPERATION_CAPACITY) + "/" + "*.out")
     print "ALL Done!"
