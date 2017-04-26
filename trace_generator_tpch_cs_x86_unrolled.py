@@ -14,17 +14,47 @@ import subprocess
 import os
 import sys
 
+VECTOR_SIZE = 1000
+QUERY = "Query06"
+QUERY_ENGINE = "vectorized"
+BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
+
+def writeOnDynamicAndMemoryFilesVectorized():
+    global column, tuple
+    vectorCounter = 0
+    startIndex = 0
+    ######### WRITES ON DYNAMIC AND MEMORY FILE  VECTORIZED ################
+    while vectorCounter < len(tuples):
+        for column in range(numberOfPredicates):
+            startIndex = vectorCounter
+            for tuple in range(startIndex, (startIndex + VECTOR_SIZE)):
+                if tuple == len(tuples):
+                    break
+                FILE_DYN.write(dynamic_block[column][tuple])
+                if memory_block[column][tuple] != 0:
+                    FILE_MEM.write(memory_block[column][tuple])
+        vectorCounter += VECTOR_SIZE
+
+def writeOnDynamicAndMemoryFilesPipelined():
+    global column, tuple
+    ######### WRITES ON DYNAMIC AND MEMORY FILE COLUMN-AT-A-TIME################3
+    for column in range(numberOfPredicates):
+        for tuple in range(len(tuples)):
+            FILE_DYN.write(dynamic_block[column][tuple])
+            if memory_block[column][tuple] != 0:
+                FILE_MEM.write(memory_block[column][tuple])
+
 DATA_ADDR_READ = 1024 * 1024 * 1024
 DATA_ADDR_WRITE = 1024 * 1024 * 4096
 REGISTER_SIZE = 16
 INSTRUCTION_ADDR = 1024
 DATA_SIZE = 4
 
-BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
+
 input_file = BASEDIR + "bitmap_files/resultQ06.txt"
-dynamic_trace = BASEDIR + "traces/Query06/columnStore/x86/unrolled4x/output_trace.out.tid0.dyn.out"
-memory_trace = BASEDIR + "traces/Query06/columnStore/x86/unrolled4x/output_trace.out.tid0.mem.out"
-static_trace = BASEDIR + "traces/Query06/columnStore/x86/unrolled4x/output_trace.out.tid0.stat.out"
+dynamic_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/unrolled4x/output_trace.out.tid0.dyn.out"
+memory_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/unrolled4x/output_trace.out.tid0.mem.out"
+static_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/unrolled4x/output_trace.out.tid0.stat.out"
 ################### TREATING FILE INPUT ###################
 FILE_INPUT = open(input_file, 'r')
 
@@ -136,12 +166,12 @@ for tuple in range(len(tuples)):
     elem = elem.split()
     basicBlock = 0
     for column in range(numberOfPredicates):
-        dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
         bitColSum[column] += int(elem[column])
         ########################################################################
         ##  HMC INSTRUCTION WILL BE SENDED
         ########################################################################
         if fieldsByInstruction == 1:
+            dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
             ########################################################################
             ##  MATCH FOUND
             ########################################################################
@@ -203,20 +233,18 @@ for tuple in range(len(tuples)):
     fieldsByInstruction -= 1
 
 print "Writing on Dynamic and Memory File..."
-######### WRITES ON DYNAMIC AND MEMORY FILE ################3
-for column in range(numberOfPredicates):
-    for tuple in range(len(tuples)):
-        FILE_DYN.write(dynamic_block[column][tuple])
-        if memory_block[column][tuple] != 0:
-            FILE_MEM.write(memory_block[column][tuple])
+if QUERY_ENGINE == "pipelined":
+    writeOnDynamicAndMemoryFilesPipelined()
+else:
+    writeOnDynamicAndMemoryFilesVectorized()
 
 FILE_MEM.close()
 FILE_DYN.close()
 print "Dynamic and Memory Files Ok!"
 print "Compressing Files..."
 
-os.system("rm -f " + BASEDIR + "traces/Query06/columnStore/x86/unrolled4x/" + "*gz")
-os.system("gzip " + BASEDIR + "traces/Query06/columnStore/x86/unrolled4x/" + "*.out")
+os.system("rm -f " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/unrolled4x/" + "*gz")
+os.system("gzip " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/unrolled4x/" + "*.out")
 print "ALL Done!"
 
 ##################### Unrolled 8x ############################
@@ -229,9 +257,9 @@ DATA_SIZE = 4
 
 BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 input_file = BASEDIR + "bitmap_files/resultQ06.txt"
-dynamic_trace = BASEDIR + "traces/Query06/columnStore/x86/unrolled8x/output_trace.out.tid0.dyn.out"
-memory_trace = BASEDIR + "traces/Query06/columnStore/x86/unrolled8x/output_trace.out.tid0.mem.out"
-static_trace = BASEDIR + "traces/Query06/columnStore/x86/unrolled8x/output_trace.out.tid0.stat.out"
+dynamic_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/unrolled8x/output_trace.out.tid0.dyn.out"
+memory_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/unrolled8x/output_trace.out.tid0.mem.out"
+static_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/unrolled8x/output_trace.out.tid0.stat.out"
 ################### TREATING FILE INPUT ###################
 FILE_INPUT = open(input_file, 'r')
 
@@ -367,12 +395,12 @@ for tuple in range(len(tuples)):
     elem = elem.split()
     basicBlock = 0
     for column in range(numberOfPredicates):
-        dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
         bitColSum[column] += int(elem[column])
         ########################################################################
         ##  HMC INSTRUCTION WILL BE SENDED
         ########################################################################
         if fieldsByInstruction == 1:
+            dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
             ########################################################################
             ##  MATCH FOUND
             ########################################################################
@@ -434,23 +462,21 @@ for tuple in range(len(tuples)):
     fieldsByInstruction -= 1
 
 print "Writing on Dynamic and Memory File..."
-######### WRITES ON DYNAMIC AND MEMORY FILE ################3
-for column in range(numberOfPredicates):
-    for tuple in range(len(tuples)):
-        FILE_DYN.write(dynamic_block[column][tuple])
-        if memory_block[column][tuple] != 0:
-            FILE_MEM.write(memory_block[column][tuple])
+if QUERY_ENGINE == "pipelined":
+    writeOnDynamicAndMemoryFilesPipelined()
+else:
+    writeOnDynamicAndMemoryFilesVectorized()
 
 FILE_MEM.close()
 FILE_DYN.close()
 print "Dynamic and Memory Files Ok!"
 print "Compressing Files..."
 
-os.system("rm -f " + BASEDIR + "traces/Query06/columnStore/x86/unrolled8x/" + "*gz")
-os.system("gzip " + BASEDIR + "traces/Query06/columnStore/x86/unrolled8x/" + "*.out")
+os.system("rm -f " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/unrolled8x/" + "*gz")
+os.system("gzip " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/unrolled8x/" + "*.out")
 print "ALL Done!"
 
-##################### Unrolled 8x ############################
+##################### Unrolled 16x ############################
 
 DATA_ADDR_READ = 1024 * 1024 * 1024
 DATA_ADDR_WRITE = 1024 * 1024 * 4096
@@ -460,9 +486,9 @@ DATA_SIZE = 4
 
 BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 input_file = BASEDIR + "bitmap_files/resultQ06.txt"
-dynamic_trace = BASEDIR + "traces/Query06/columnStore/x86/unrolled16x/output_trace.out.tid0.dyn.out"
-memory_trace = BASEDIR + "traces/Query06/columnStore/x86/unrolled16x/output_trace.out.tid0.mem.out"
-static_trace = BASEDIR + "traces/Query06/columnStore/x86/unrolled16x/output_trace.out.tid0.stat.out"
+dynamic_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/unrolled16x/output_trace.out.tid0.dyn.out"
+memory_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/unrolled16x/output_trace.out.tid0.mem.out"
+static_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/unrolled16x/output_trace.out.tid0.stat.out"
 ################### TREATING FILE INPUT ###################
 FILE_INPUT = open(input_file, 'r')
 
@@ -646,12 +672,12 @@ for tuple in range(len(tuples)):
     elem = elem.split()
     basicBlock = 0
     for column in range(numberOfPredicates):
-        dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
         bitColSum[column] += int(elem[column])
         ########################################################################
         ##  HMC INSTRUCTION WILL BE SENDED
         ########################################################################
         if fieldsByInstruction == 1:
+            dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
             ########################################################################
             ##  MATCH FOUND
             ########################################################################
@@ -713,18 +739,16 @@ for tuple in range(len(tuples)):
     fieldsByInstruction -= 1
 
 print "Writing on Dynamic and Memory File..."
-######### WRITES ON DYNAMIC AND MEMORY FILE ################3
-for column in range(numberOfPredicates):
-    for tuple in range(len(tuples)):
-        FILE_DYN.write(dynamic_block[column][tuple])
-        if memory_block[column][tuple] != 0:
-            FILE_MEM.write(memory_block[column][tuple])
+if QUERY_ENGINE == "pipelined":
+    writeOnDynamicAndMemoryFilesPipelined()
+else:
+    writeOnDynamicAndMemoryFilesVectorized()
 
 FILE_MEM.close()
 FILE_DYN.close()
 print "Dynamic and Memory Files Ok!"
 print "Compressing Files..."
 
-os.system("rm -f " + BASEDIR + "traces/Query06/columnStore/x86/unrolled16x/" + "*gz")
-os.system("gzip " + BASEDIR + "traces/Query06/columnStore/x86/unrolled16x/" + "*.out")
+os.system("rm -f " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/unrolled16x/" + "*gz")
+os.system("gzip " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/unrolled16x/" + "*.out")
 print "ALL Done!"

@@ -14,17 +14,47 @@ import subprocess
 import os
 import sys
 
+
+VECTOR_SIZE = 1000
+QUERY = "Query06"
+QUERY_ENGINE = "vectorized"
+BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
+
+def writeOnDynamicAndMemoryFilesVectorized():
+    global column, tuple
+    vectorCounter = 0
+    startIndex = 0
+    ######### WRITES ON DYNAMIC AND MEMORY FILE  VECTORIZED ################
+    while vectorCounter < len(tuples):
+        for column in range(numberOfPredicates):
+            startIndex = vectorCounter
+            for tuple in range(startIndex, (startIndex + VECTOR_SIZE)):
+                if tuple == len(tuples):
+                    break
+                FILE_DYN.write(dynamic_block[column][tuple])
+                if memory_block[column][tuple] != 0:
+                    FILE_MEM.write(memory_block[column][tuple])
+        vectorCounter += VECTOR_SIZE
+
+def writeOnDynamicAndMemoryFilesPipelined():
+    global column, tuple
+    ######### WRITES ON DYNAMIC AND MEMORY FILE COLUMN-AT-A-TIME################3
+    for column in range(numberOfPredicates):
+        for tuple in range(len(tuples)):
+            FILE_DYN.write(dynamic_block[column][tuple])
+            if memory_block[column][tuple] != 0:
+                FILE_MEM.write(memory_block[column][tuple])
+
 DATA_ADDR_READ = 1024 * 1024 * 1024
 DATA_ADDR_WRITE = 1024 * 1024 * 4096
 REGISTER_SIZE = 16
 INSTRUCTION_ADDR = 1024
 DATA_SIZE = 4
 
-BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 input_file = BASEDIR + "bitmap_files/resultQ06.txt"
-dynamic_trace = BASEDIR + "traces/Query06/columnStore/x86/output_trace.out.tid0.dyn.out"
-memory_trace = BASEDIR + "traces/Query06/columnStore/x86/output_trace.out.tid0.mem.out"
-static_trace = BASEDIR + "traces/Query06/columnStore/x86/output_trace.out.tid0.stat.out"
+dynamic_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/output_trace.out.tid0.dyn.out"
+memory_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/output_trace.out.tid0.mem.out"
+static_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/output_trace.out.tid0.stat.out"
 ################### TREATING FILE INPUT ###################
 FILE_INPUT = open(input_file, 'r')
 
@@ -185,18 +215,19 @@ for tuple in range(len(tuples)):
     fieldsByInstruction -= 1
 
 print "Writing on Dynamic and Memory File..."
-######### WRITES ON DYNAMIC AND MEMORY FILE ################3
-for column in range(numberOfPredicates):
-    for tuple in range(len(tuples)):
-        FILE_DYN.write(dynamic_block[column][tuple])
-        if memory_block[column][tuple] != 0:
-            FILE_MEM.write(memory_block[column][tuple])
+vectorCounter = 0
+startIndex = 0
+######### WRITES ON DYNAMIC AND MEMORY FILE ################
+if QUERY_ENGINE == "pipelined":
+    writeOnDynamicAndMemoryFilesPipelined()
+else:
+    writeOnDynamicAndMemoryFilesVectorized()
 
 FILE_MEM.close()
 FILE_DYN.close()
 print "Dynamic and Memory Files Ok!"
 print "Compressing Files..."
 
-os.system("rm -f " + BASEDIR + "traces/Query06/columnStore/x86/" + "*gz")
-os.system("gzip " + BASEDIR + "traces/Query06/columnStore/x86/" + "*.out")
+os.system("rm -f " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/" + "*gz")
+os.system("gzip " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/" + "*.out")
 print "ALL Done!"
