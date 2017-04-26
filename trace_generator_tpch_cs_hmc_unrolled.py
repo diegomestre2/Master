@@ -11,6 +11,36 @@
 ##HEADER | NumberOfTables | [...TuplesByTable ...] | TotalNumberOfAttributes | NumberOfPredicates |
 
 import os
+VECTOR_SIZE = 1000
+QUERY = "Query06"
+QUERY_ENGINE = "vectorized"
+BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
+
+def writeOnDynamicAndMemoryFilesVectorized():
+    global column, tuple
+    vectorCounter = 0
+    startIndex = 0
+    ######### WRITES ON DYNAMIC AND MEMORY FILE  VECTORIZED ################
+    while vectorCounter < len(tuples):
+        for column in range(numberOfPredicates):
+            startIndex = vectorCounter
+            for tuple in range(startIndex, (startIndex + VECTOR_SIZE)):
+                if tuple == len(tuples):
+                    break
+                FILE_DYN.write(dynamic_block[column][tuple])
+                if memory_block[column][tuple] != 0:
+                    FILE_MEM.write(memory_block[column][tuple])
+        vectorCounter += VECTOR_SIZE
+
+
+def writeOnDynamicAndMemoryFilesPipelined():
+    global column, tuple
+    ######### WRITES ON DYNAMIC AND MEMORY FILE COLUMN-AT-A-TIME################3
+    for column in range(numberOfPredicates):
+        for tuple in range(len(tuples)):
+            FILE_DYN.write(dynamic_block[column][tuple])
+            if memory_block[column][tuple] != 0:
+                FILE_MEM.write(memory_block[column][tuple])
 
 for HMC_OPERATION_CAPACITY in (16, 32, 64, 128, 256):
 
@@ -19,15 +49,14 @@ for HMC_OPERATION_CAPACITY in (16, 32, 64, 128, 256):
     DATA_SIZE = 4 #Bytes
     INSTRUCTION_ADDR = 1024 #Bytes
 
-    BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
     input_file = BASEDIR + "bitmap_files/resultQ06.txt"
-    dynamic_trace = BASEDIR + "traces/Query06/columnStore/HMC/" + str(
+    dynamic_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/" + str(
         HMC_OPERATION_CAPACITY) + "/unrolled4x/output_trace.out.tid0.dyn.out"
 
-    memory_trace = BASEDIR + "traces/Query06/columnStore/HMC/" + str(
+    memory_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/" + str(
         HMC_OPERATION_CAPACITY) + "/unrolled4x/output_trace.out.tid0.mem.out"
 
-    static_trace = BASEDIR + "traces/Query06/columnStore/HMC/" + str(
+    static_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/"  + str(
         HMC_OPERATION_CAPACITY) + "/unrolled4x/output_trace.out.tid0.stat.out"
 
     ################### TREATING FILE INPUT ###################
@@ -212,20 +241,21 @@ for HMC_OPERATION_CAPACITY in (16, 32, 64, 128, 256):
         fieldsByInstruction -= 1
 
     print "Writing on Dynamic and Memory File..."
-    ######### WRITES ON DYNAMIC AND MEMORY FILE ################3
-    for column in range(numberOfPredicates):
-        for tuple in range(len(tuples)):
-            FILE_DYN.write(dynamic_block[column][tuple])
-            if memory_block[column][tuple] != 0:
-                FILE_MEM.write(memory_block[column][tuple])
+    vectorCounter = 0
+    startIndex = 0
+    ######### WRITES ON DYNAMIC AND MEMORY FILE ################
+    if QUERY_ENGINE == "pipelined":
+        writeOnDynamicAndMemoryFilesPipelined()
+    else:
+        writeOnDynamicAndMemoryFilesVectorized()
 
     FILE_MEM.close()
     FILE_DYN.close()
     print "Dynamic and Memory Files Ok!"
 
     print "Compressing Files..."
-    os.system("rm -f " + BASEDIR + "traces/Query06/columnStore/HMC/" + str(HMC_OPERATION_CAPACITY) + "/unrolled4x/" + "*gz")
-    os.system("gzip " + BASEDIR + "traces/Query06/columnStore/HMC/" + str(HMC_OPERATION_CAPACITY) + "/unrolled4x/" + "*.out")
+    os.system("rm -f " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/"  + str(HMC_OPERATION_CAPACITY) + "/unrolled4x/" + "*gz")
+    os.system("gzip " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/"  + str(HMC_OPERATION_CAPACITY) + "/unrolled4x/" + "*.out")
     print "ALL Done!"
 
     ########### UNROLLED 8x ########################
@@ -235,15 +265,14 @@ for HMC_OPERATION_CAPACITY in (16, 32, 64, 128, 256):
     DATA_SIZE = 4 #Bytes
     INSTRUCTION_ADDR = 1024 #Bytes
 
-    BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
     input_file = BASEDIR + "bitmap_files/resultQ06.txt"
-    dynamic_trace = BASEDIR + "traces/Query06/columnStore/HMC/" + str(
+    dynamic_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/" + str(
         HMC_OPERATION_CAPACITY) + "/unrolled8x/output_trace.out.tid0.dyn.out"
 
-    memory_trace = BASEDIR + "traces/Query06/columnStore/HMC/" + str(
+    memory_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/"  + str(
         HMC_OPERATION_CAPACITY) + "/unrolled8x/output_trace.out.tid0.mem.out"
 
-    static_trace = BASEDIR + "traces/Query06/columnStore/HMC/" + str(
+    static_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/" + str(
         HMC_OPERATION_CAPACITY) + "/unrolled8x/output_trace.out.tid0.stat.out"
 
     ################### TREATING FILE INPUT ###################
@@ -354,12 +383,12 @@ for HMC_OPERATION_CAPACITY in (16, 32, 64, 128, 256):
         elem = elem.split()
         basicBlock = 0
         for column in range(numberOfPredicates):
-            dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
             bitColSum[column] += int(elem[column])
             ########################################################################
             ##  HMC INSTRUCTION WILL BE SENDED
             ########################################################################
             if fieldsByInstruction == 1:
+                dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
                 ########################################################################
                 ##  MATCH FOUND
                 ########################################################################
@@ -439,20 +468,21 @@ for HMC_OPERATION_CAPACITY in (16, 32, 64, 128, 256):
         fieldsByInstruction -= 1
 
     print "Writing on Dynamic and Memory File..."
-    ######### WRITES ON DYNAMIC AND MEMORY FILE ################3
-    for column in range(numberOfPredicates):
-        for tuple in range(len(tuples)):
-            FILE_DYN.write(dynamic_block[column][tuple])
-            if memory_block[column][tuple] != 0:
-                FILE_MEM.write(memory_block[column][tuple])
+    vectorCounter = 0
+    startIndex = 0
+    ######### WRITES ON DYNAMIC AND MEMORY FILE ################
+    if QUERY_ENGINE == "pipelined":
+        writeOnDynamicAndMemoryFilesPipelined()
+    else:
+        writeOnDynamicAndMemoryFilesVectorized()
 
     FILE_MEM.close()
     FILE_DYN.close()
     print "Dynamic and Memory Files Ok!"
 
     print "Compressing Files..."
-    os.system("rm -f " + BASEDIR + "traces/Query06/columnStore/HMC/" + str(HMC_OPERATION_CAPACITY) + "/unrolled8x/" + "*gz")
-    os.system("gzip " + BASEDIR + "traces/Query06/columnStore/HMC/" + str(HMC_OPERATION_CAPACITY) + "/unrolled8x/" + "*.out")
+    os.system("rm -f " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/" + str(HMC_OPERATION_CAPACITY) + "/unrolled8x/" + "*gz")
+    os.system("gzip " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/" + str(HMC_OPERATION_CAPACITY) + "/unrolled8x/" + "*.out")
     print "ALL Done!"
 
    ########### UNROLLED 16x ########################
@@ -462,15 +492,14 @@ for HMC_OPERATION_CAPACITY in (16, 32, 64, 128, 256):
     DATA_SIZE = 4 #Bytes
     INSTRUCTION_ADDR = 1024 #Bytes
 
-    BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
     input_file = BASEDIR + "bitmap_files/resultQ06.txt"
-    dynamic_trace = BASEDIR + "traces/Query06/columnStore/HMC/" + str(
+    dynamic_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/" + str(
         HMC_OPERATION_CAPACITY) + "/unrolled16x/output_trace.out.tid0.dyn.out"
 
-    memory_trace = BASEDIR + "traces/Query06/columnStore/HMC/" + str(
+    memory_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/" + str(
         HMC_OPERATION_CAPACITY) + "/unrolled16x/output_trace.out.tid0.mem.out"
 
-    static_trace = BASEDIR + "traces/Query06/columnStore/HMC/" + str(
+    static_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/" + str(
         HMC_OPERATION_CAPACITY) + "/unrolled16x/output_trace.out.tid0.stat.out"
 
     ################### TREATING FILE INPUT ###################
@@ -597,12 +626,12 @@ for HMC_OPERATION_CAPACITY in (16, 32, 64, 128, 256):
         elem = elem.split()
         basicBlock = 0
         for column in range(numberOfPredicates):
-            dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
             bitColSum[column] += int(elem[column])
             ########################################################################
             ##  HMC INSTRUCTION WILL BE SENDED
             ########################################################################
             if fieldsByInstruction == 1:
+                dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
                 ########################################################################
                 ##  MATCH FOUND
                 ########################################################################
@@ -682,20 +711,21 @@ for HMC_OPERATION_CAPACITY in (16, 32, 64, 128, 256):
         fieldsByInstruction -= 1
 
     print "Writing on Dynamic and Memory File..."
-    ######### WRITES ON DYNAMIC AND MEMORY FILE ################3
-    for column in range(numberOfPredicates):
-        for tuple in range(len(tuples)):
-            FILE_DYN.write(dynamic_block[column][tuple])
-            if memory_block[column][tuple] != 0:
-                FILE_MEM.write(memory_block[column][tuple])
+    vectorCounter = 0
+    startIndex = 0
+    ######### WRITES ON DYNAMIC AND MEMORY FILE ################
+    if QUERY_ENGINE == "pipelined":
+        writeOnDynamicAndMemoryFilesPipelined()
+    else:
+        writeOnDynamicAndMemoryFilesVectorized()
 
     FILE_MEM.close()
     FILE_DYN.close()
     print "Dynamic and Memory Files Ok!"
 
     print "Compressing Files..."
-    os.system("rm -f " + BASEDIR + "traces/Query06/columnStore/HMC/" + str(HMC_OPERATION_CAPACITY) + "/unrolled16x/" + "*gz")
-    os.system("gzip " + BASEDIR + "traces/Query06/columnStore/HMC/" + str(HMC_OPERATION_CAPACITY) + "/unrolled16x/" + "*.out")
+    os.system("rm -f " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/" + str(HMC_OPERATION_CAPACITY) + "/unrolled16x/" + "*gz")
+    os.system("gzip " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/" + str(HMC_OPERATION_CAPACITY) + "/unrolled16x/" + "*.out")
     print "ALL Done!"
 
    ########### UNROLLED 32x ########################
@@ -705,15 +735,14 @@ for HMC_OPERATION_CAPACITY in (16, 32, 64, 128, 256):
     DATA_SIZE = 4 #Bytes
     INSTRUCTION_ADDR = 1024 #Bytes
 
-    BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
     input_file = BASEDIR + "bitmap_files/resultQ06.txt"
-    dynamic_trace = BASEDIR + "traces/Query06/columnStore/HMC/" + str(
+    dynamic_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/" + str(
         HMC_OPERATION_CAPACITY) + "/unrolled32x/output_trace.out.tid0.dyn.out"
 
-    memory_trace = BASEDIR + "traces/Query06/columnStore/HMC/" + str(
+    memory_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/" + str(
         HMC_OPERATION_CAPACITY) + "/unrolled32x/output_trace.out.tid0.mem.out"
 
-    static_trace = BASEDIR + "traces/Query06/columnStore/HMC/" + str(
+    static_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/" + str(
         HMC_OPERATION_CAPACITY) + "/unrolled32x/output_trace.out.tid0.stat.out"
 
     ################### TREATING FILE INPUT ###################
@@ -872,12 +901,12 @@ for HMC_OPERATION_CAPACITY in (16, 32, 64, 128, 256):
         elem = elem.split()
         basicBlock = 0
         for column in range(numberOfPredicates):
-            dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
             bitColSum[column] += int(elem[column])
             ########################################################################
             ##  HMC INSTRUCTION WILL BE SENDED
             ########################################################################
             if fieldsByInstruction == 1:
+                dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
                 ########################################################################
                 ##  MATCH FOUND
                 ########################################################################
@@ -957,18 +986,19 @@ for HMC_OPERATION_CAPACITY in (16, 32, 64, 128, 256):
         fieldsByInstruction -= 1
 
     print "Writing on Dynamic and Memory File..."
-    ######### WRITES ON DYNAMIC AND MEMORY FILE ################3
-    for column in range(numberOfPredicates):
-        for tuple in range(len(tuples)):
-            FILE_DYN.write(dynamic_block[column][tuple])
-            if memory_block[column][tuple] != 0:
-                FILE_MEM.write(memory_block[column][tuple])
+    vectorCounter = 0
+    startIndex = 0
+    ######### WRITES ON DYNAMIC AND MEMORY FILE ################
+    if QUERY_ENGINE == "pipelined":
+        writeOnDynamicAndMemoryFilesPipelined()
+    else:
+        writeOnDynamicAndMemoryFilesVectorized()
 
     FILE_MEM.close()
     FILE_DYN.close()
     print "Dynamic and Memory Files Ok!"
 
     print "Compressing Files..."
-    os.system("rm -f " + BASEDIR + "traces/Query06/columnStore/HMC/" + str(HMC_OPERATION_CAPACITY) + "/unrolled32x/" + "*gz")
-    os.system("gzip " + BASEDIR + "traces/Query06/columnStore/HMC/" + str(HMC_OPERATION_CAPACITY) + "/unrolled32x/" + "*.out")
+    os.system("rm -f " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/" + str(HMC_OPERATION_CAPACITY) + "/unrolled32x/" + "*gz")
+    os.system("gzip " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/" + str(HMC_OPERATION_CAPACITY) + "/unrolled32x/" + "*.out")
     print "ALL Done!"
