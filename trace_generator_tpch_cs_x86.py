@@ -17,7 +17,7 @@ import sys
 
 VECTOR_SIZE = 1000
 QUERY = "Query06"
-QUERY_ENGINE = "vectorized"
+QUERY_ENGINE = "pipelined"
 BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 
 def writeOnDynamicAndMemoryFilesVectorized():
@@ -148,12 +148,12 @@ for tuple in range(len(tuples)):
     elem = elem.split()
     basicBlock = 0
     for column in range(numberOfPredicates):
-        dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
         bitColSum[column] += int(elem[column])
         ########################################################################
         ##  HMC INSTRUCTION WILL BE SENDED
         ########################################################################
         if fieldsByInstruction == 1:
+            dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
             ########################################################################
             ##  MATCH FOUND
             ########################################################################
@@ -163,6 +163,15 @@ for tuple in range(len(tuples)):
                 if column == numberOfPredicates - 1:
                     fieldsByInstruction = REGISTER_SIZE / 4 + 1
                 ########################################################################
+                ## READ THE BITMAP 1 Byte of Store by 32 Bytes of Loads
+                ########################################################################
+                if column > 0:
+                    dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
+                    memory_block[column][tuple] += (
+                        "R 1 " + str(address_target_bitmap[column - 1] - 1) + " " + str(
+                            basicBlock + 3) + "\n")
+                    address_target_bitmap[column - 1] += 1
+                ########################################################################
                 ##  APPLY PREDICATE
                 ########################################################################
                 dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
@@ -170,47 +179,35 @@ for tuple in range(len(tuples)):
                     "R " + str(REGISTER_SIZE) + " " + str(address_base[column]) + " " + str(
                         basicBlock + 2) + "\n")
                 address_base[column] += (REGISTER_SIZE)
-                loadCount[column] += 1
                 ########################################################################
                 ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                 ########################################################################
-                if loadCount[column] == 2:
-                    loadCount[column] = 0
-                    if column > 0:
-                        dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
-                        memory_block[column][tuple] += (
-                            "R 1 " + str(address_target_bitmap[column - 1] - 1) + " " + str(
-                                basicBlock + 3) + "\n")
-                        address_target_bitmap[column - 1] += 1
-                    dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
-                    memory_block[column][tuple] += str(
-                        "W 1 " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
-                    address_target_bitmap[column] += 1
+                dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
+                memory_block[column][tuple] += str(
+                    "W 1 " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
+                address_target_bitmap[column] += 1
             elif column > 0:
+                dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
+                memory_block[column][tuple] += (
+                    "R 1 " + str(address_target_bitmap[column - 1] - 1) + " " + str(
+                        basicBlock + 3) + "\n")
+                dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                 if column == numberOfPredicates - 1:
                     fieldsByInstruction = REGISTER_SIZE / 4 + 1
                 if lastFieldSum > 0:
                     lastFieldSum = 0
-                    dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                     memory_block[column][tuple] += (
                         "R " + str(REGISTER_SIZE) + " " + str(address_base[column]) + " " + str(
                             basicBlock + 2) + "\n")
                     address_base[column] += (REGISTER_SIZE)
-                    loadCount[column] += 1
-                    if loadCount[column] == 2:
-                        loadCount[column] = 0
-                        ########################################################################
-                        ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
-                        ########################################################################
-                        dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
-                        dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
-                        memory_block[column][tuple] += (
-                            "R 1 " + str(address_target_bitmap[column - 1] - 1) + " " + str(
-                                basicBlock + 3) + "\n")
-                        address_target_bitmap[column - 1] += 1
-                        memory_block[column][tuple] += str(
-                            "W 1 " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
-                        address_target_bitmap[column] += 1
+                    ########################################################################
+                    ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
+                    ########################################################################
+                dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
+                address_target_bitmap[column - 1] += 1
+                memory_block[column][tuple] += str(
+                    "W 1 " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
+                address_target_bitmap[column] += 1
         basicBlock += 4
     fieldsByInstruction -= 1
 
