@@ -161,7 +161,7 @@ for tuple in range(len(tuples)):
                 lastFieldSum = bitColSum[column]
                 bitColSum[column] = 0
                 if column == numberOfPredicates - 1:
-                    fieldsByInstruction = REGISTER_SIZE / 4 + 1
+                    fieldsByInstruction = (REGISTER_SIZE / 4) + 1
                 ########################################################################
                 ## READ THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                 ########################################################################
@@ -191,11 +191,12 @@ for tuple in range(len(tuples)):
                 memory_block[column][tuple] += (
                     "R 1 " + str(address_target_bitmap[column - 1] - 1) + " " + str(
                         basicBlock + 3) + "\n")
-                dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
+                address_target_bitmap[column - 1] += 1
                 if column == numberOfPredicates - 1:
-                    fieldsByInstruction = REGISTER_SIZE / 4 + 1
+                    fieldsByInstruction = (REGISTER_SIZE / 4) + 1
                 if lastFieldSum > 0:
                     lastFieldSum = 0
+                    dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                     memory_block[column][tuple] += (
                         "R " + str(REGISTER_SIZE) + " " + str(address_base[column]) + " " + str(
                             basicBlock + 2) + "\n")
@@ -209,6 +210,7 @@ for tuple in range(len(tuples)):
                     "W 1 " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
                 address_target_bitmap[column] += 1
         basicBlock += 4
+    lastFieldSum = 0
     fieldsByInstruction -= 1
 
 print "Writing on Dynamic and Memory File..."
