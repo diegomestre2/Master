@@ -111,15 +111,9 @@ for hmc_size in (16, 32, 64, 128, 256):
         INSTRUCTION_ADDR += 4
         FILE_STAT.write("HMC_UNLOCK 15 " + str(INSTRUCTION_ADDR) + " 4 1 11 0 0 0 0 0 0 3 0 0 1 -1 -1 -1\n")
         INSTRUCTION_ADDR += 4
-        FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 10 1 5 0 0 0 0 0 4 0 0 0\n")
-        INSTRUCTION_ADDR += 2
         basicBlock += 1
-        FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
+        FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY OP)#
         FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 8 0 0 0 0 0 0 3 0 0 1 1 -1 1\n")
-        INSTRUCTION_ADDR += 4
-        basicBlock += 1
-        FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY WRITE BITMAP)
-        FILE_STAT.write("HMC_UNLOCK 15 " + str(INSTRUCTION_ADDR) + " 4 1 11 0 0 0 0 0 0 3 0 0 1 -1 -1 -1\n")
         INSTRUCTION_ADDR += 4
 
     FILE_STAT.write("# eof")
@@ -152,10 +146,6 @@ for hmc_size in (16, 32, 64, 128, 256):
                 if bitColSum[column] > 0 or column == 0:
                     lastFieldsSum = bitColSum[column]
                     bitColSum[column] = 0
-                    if column == numberOfPredicates - 1:
-                        fieldsByInstruction = (HMC_OPERATION_CAPACITY / 4) + 1
-                    if HMC_OPERATION_CAPACITY == 16:
-                        loadSize = 16
                     if column == 0:
                         dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                     ########################################################################
@@ -172,16 +162,13 @@ for hmc_size in (16, 32, 64, 128, 256):
                     if HMC_OPERATION_CAPACITY == 16:
                         loadSize = 16
                     if column == numberOfPredicates - 1:
+                        fieldsByInstruction = (HMC_OPERATION_CAPACITY / 4) + 1
                         dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
                         memory_block[column][tuple] += str(
                             "W " + str(HMC_OPERATION_CAPACITY / loadSize) + " " + str(
                                 address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
                         address_target_bitmap[column] += (HMC_OPERATION_CAPACITY / loadSize)
                 elif column > 0:
-                    if column == numberOfPredicates - 1:
-                        fieldsByInstruction = (HMC_OPERATION_CAPACITY / 4) + 1
-                    if HMC_OPERATION_CAPACITY == 16:
-                        loadSize = 16
                     if lastFieldsSum > 0:
                         lastFieldsSum = 0
                         dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
@@ -189,23 +176,25 @@ for hmc_size in (16, 32, 64, 128, 256):
                             "R " + str(HMC_OPERATION_CAPACITY) + " " + str(address_base[column]) + " " + str(
                                 basicBlock + 3) + "\n")
                         address_base[column] += HMC_OPERATION_CAPACITY
-                        if column == numberOfPredicates - 1:
-                            dynamic_block[column][tuple] += str(str(basicBlock + 6) + "\n")
                     else:
                         dynamic_block[column][tuple] += str(str(basicBlock + 5) + "\n")
-                        if column == numberOfPredicates - 1:
-                            dynamic_block[column][tuple] += str(str(basicBlock + 6) + "\n")
 
                         ########################################################################
                         # CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                         ########################################################################
                     if HMC_OPERATION_CAPACITY == 16:
                         loadSize = 16
-
+                    if column == numberOfPredicates - 1:
+                        fieldsByInstruction = (HMC_OPERATION_CAPACITY / 4) + 1
+                        dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
+                        memory_block[column][tuple] += str(
+                            "W " + str(HMC_OPERATION_CAPACITY / loadSize) + " " + str(
+                                address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
+                        address_target_bitmap[column] += (HMC_OPERATION_CAPACITY / loadSize)
                         # if lastSum > 0:
                         # elif column > 0:
             # if fieldCount == 1:
-            basicBlock += 6
+            basicBlock += 5
             loadSize = 32
         fieldsByInstruction -= 1
 
