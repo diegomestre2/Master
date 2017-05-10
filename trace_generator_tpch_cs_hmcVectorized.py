@@ -97,17 +97,17 @@ for HMC_OPERATION_CAPACITY in (16, 256):
         INSTRUCTION_ADDR += 2
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
-        FILE_STAT.write("HMC_CMP 12 " + str(INSTRUCTION_ADDR) + " 4 1 12 1 9 0 0 1 0 0 3 0 0 0\n")  # R HMC_SIZE
+        FILE_STAT.write("HMC_CMP 12 " + str(INSTRUCTION_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")  # R HMC_SIZE
         INSTRUCTION_ADDR += 4
-        FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 9 1 10 0 0 0 0 0 4 0 0 0\n")
+        FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 10 1 5 0 0 0 0 0 4 0 0 0\n")
         INSTRUCTION_ADDR += 2
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # MATCH POSITION (STORE)#
-        FILE_STAT.write("MOV 9 " + str(INSTRUCTION_ADDR) + " 6 1 9 1 12 0 0 0 0 1 3 0 0 0\n")  # W 1Byte
+        FILE_STAT.write("MOV 9 " + str(INSTRUCTION_ADDR) + " 6 1 10 1 11 0 0 0 0 1 3 0 0 0\n")  # W 1Byte
         INSTRUCTION_ADDR += 6
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY OP)#
-        FILE_STAT.write("HMC_CMP 12 " + str(INSTRUCTION_ADDR) + " 4 1 12 1 9 0 0 0 0 0 3 0 0 0\n")  # R HMC_SIZE
+        FILE_STAT.write("HMC_CMP 12 " + str(INSTRUCTION_ADDR) + " 4 1 11 1 9 0 0 1 0 0 3 0 0 0\n")  # R HMC_SIZE
         INSTRUCTION_ADDR += 4
 
     FILE_STAT.write("# eof")
@@ -170,6 +170,10 @@ for HMC_OPERATION_CAPACITY in (16, 256):
                         address_base[column] += HMC_OPERATION_CAPACITY
                     else:
                         dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
+                        memory_block[column][tuple] += str(
+                            "R " + str(1) + " " + str(
+                                address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
+                        address_target_bitmap[column] += 1
 
                     ########################################################################
                     # STORE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
