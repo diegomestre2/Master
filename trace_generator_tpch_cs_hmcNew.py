@@ -135,6 +135,10 @@ for hmc_size in (16, 32, 64, 128, 256):
         INSTRUCTION_ADDR += 4
         FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 10 1 5 0 0 0 0 0 4 0 0 0\n")
         INSTRUCTION_ADDR += 2
+        basicBlock += 1
+        FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
+        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 8 0 0 0 0 0 0 3 0 0 1 1 -1 1\n")
+        INSTRUCTION_ADDR += 4
 
     FILE_STAT.write("# eof")
     FILE_STAT.close()
@@ -200,7 +204,6 @@ for hmc_size in (16, 32, 64, 128, 256):
                         fieldsByInstruction = (HMC_OPERATION_CAPACITY / 4) + 1
                     if HMC_OPERATION_CAPACITY == 16:
                         loadSize = 16
-                    dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                     dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
                     memory_block[column][tuple] += str(
                         "R " + str(HMC_OPERATION_CAPACITY / loadSize) + " " + str(
@@ -208,6 +211,7 @@ for hmc_size in (16, 32, 64, 128, 256):
                     address_target_bitmap[column] += (HMC_OPERATION_CAPACITY / loadSize)
                     if lastFieldsSum > 0:
                         lastFieldsSum = 0
+                        dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                         dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
                         memory_block[column][tuple] += (
                             "R " + str(HMC_OPERATION_CAPACITY) + " " + str(address_base[column]) + " " + str(
@@ -216,6 +220,8 @@ for hmc_size in (16, 32, 64, 128, 256):
                         ########################################################################
                         # CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                         ########################################################################
+                    else:
+                        dynamic_block[column][tuple] += str(str(basicBlock + 6) + "\n")
                     if HMC_OPERATION_CAPACITY == 16:
                         loadSize = 16
                     dynamic_block[column][tuple] += str(str(basicBlock + 5) + "\n")
@@ -226,7 +232,7 @@ for hmc_size in (16, 32, 64, 128, 256):
                         # if lastSum > 0:
                         # elif column > 0:
             # if fieldCount == 1:
-            basicBlock += 5
+            basicBlock += 6
             loadSize = 32
         fieldsByInstruction -= 1
 
