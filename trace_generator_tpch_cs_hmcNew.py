@@ -204,6 +204,7 @@ for hmc_size in (16, 32, 64, 128, 256):
                         fieldsByInstruction = (HMC_OPERATION_CAPACITY / 4) + 1
                     if HMC_OPERATION_CAPACITY == 16:
                         loadSize = 16
+                    dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                     dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
                     memory_block[column][tuple] += str(
                         "R " + str(HMC_OPERATION_CAPACITY / loadSize) + " " + str(
@@ -211,7 +212,6 @@ for hmc_size in (16, 32, 64, 128, 256):
                     address_target_bitmap[column] += (HMC_OPERATION_CAPACITY / loadSize)
                     if lastFieldsSum > 0:
                         lastFieldsSum = 0
-                        dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                         dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
                         memory_block[column][tuple] += (
                             "R " + str(HMC_OPERATION_CAPACITY) + " " + str(address_base[column]) + " " + str(
