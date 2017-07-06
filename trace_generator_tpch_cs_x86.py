@@ -173,7 +173,7 @@ for REGISTER_SIZE in (16, 32, 64):
                     dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
                     memory_block[column][tuple] += str(
                         "W " + str(bitmapSize) + " " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
-                    address_target_bitmap[column] += 1
+                    address_target_bitmap[column] += bitmapSize
                 elif column > 0:
                     if column == numberOfPredicates - 1:
                         fieldsByInstruction = (REGISTER_SIZE / 4) + 1
