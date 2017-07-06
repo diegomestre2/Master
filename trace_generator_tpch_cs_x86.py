@@ -20,22 +20,6 @@ QUERY = "Query06"
 QUERY_ENGINE = "pipelined"
 BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
 
-def writeOnDynamicAndMemoryFilesVectorized():
-    global column, tuple
-    vectorCounter = 0
-    startIndex = 0
-    ######### WRITES ON DYNAMIC AND MEMORY FILE  VECTORIZED ################
-    while vectorCounter < len(tuples):
-        for column in range(numberOfPredicates):
-            startIndex = vectorCounter
-            for tuple in range(startIndex, (startIndex + VECTOR_SIZE)):
-                if tuple == len(tuples):
-                    break
-                FILE_DYN.write(dynamic_block[column][tuple])
-                if memory_block[column][tuple] != 0:
-                    FILE_MEM.write(memory_block[column][tuple])
-        vectorCounter += VECTOR_SIZE
-
 def writeOnDynamicAndMemoryFilesPipelined():
     global column, tuple
     ######### WRITES ON DYNAMIC AND MEMORY FILE COLUMN-AT-A-TIME################3
@@ -51,11 +35,13 @@ REGISTER_SIZE = 16
 INSTRUCTION_ADDR = 1024
 DATA_SIZE = 4
 
+################### FILES #################################
 input_file = BASEDIR + "bitmap_files/resultQ06.txt"
 dynamic_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/output_trace.out.tid0.dyn.out"
 memory_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/output_trace.out.tid0.mem.out"
 static_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/output_trace.out.tid0.stat.out"
 ################### TREATING FILE INPUT ###################
+
 FILE_INPUT = open(input_file, 'r')
 
 header = FILE_INPUT.readline()
@@ -122,11 +108,11 @@ for tuple in range(numberOfPredicates):
     FILE_STAT.write("@" + str(basicBlock) + "\n")  # MATCH POSITION (STORE)#
     FILE_STAT.write("MOV 9 " + str(INSTRUCTION_ADDR) + " 6 1 10 1 13 0 0 0 0 1 3 0 0 0\n")  # W 1Byte
     INSTRUCTION_ADDR += 6
-    FILE_STAT.write("ADD 1 " + str(INSTRUCTION_ADDR) + " 4 1 1 1 1 0 0 0 0 0 3 0 0 0\n")
+    FILE_STAT.write("ADD 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 5 0 0 0 0 0 3 0 0 0\n")
     INSTRUCTION_ADDR += 4
-    FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 3 1 1 1 2 0 0 0 0 0 3 0 0 0\n")
+    FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 3 1 5 1 6 0 0 0 0 0 3 0 0 0\n")
     INSTRUCTION_ADDR += 3
-    FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 2 1 3 0 0 0 0 0 4 0 0 0\n")
+    FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 6 1 7 0 0 0 0 0 4 0 0 0\n")
     INSTRUCTION_ADDR += 2
 
 FILE_STAT.write("# eof")
@@ -217,10 +203,8 @@ print "Writing on Dynamic and Memory File..."
 vectorCounter = 0
 startIndex = 0
 ######### WRITES ON DYNAMIC AND MEMORY FILE ################
-if QUERY_ENGINE == "pipelined":
-    writeOnDynamicAndMemoryFilesPipelined()
-else:
-    writeOnDynamicAndMemoryFilesVectorized()
+writeOnDynamicAndMemoryFilesPipelined()
+
 
 FILE_MEM.close()
 FILE_DYN.close()
