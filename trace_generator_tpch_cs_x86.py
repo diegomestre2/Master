@@ -175,15 +175,21 @@ for REGISTER_SIZE in (16, 32, 64):
                         "W " + str(bitmapSize) + " " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
                     address_target_bitmap[column] += 1
                 elif column > 0:
+                    if column == numberOfPredicates - 1:
+                        fieldsByInstruction = (REGISTER_SIZE / 4) + 1
+                    ########################################################################
+                    ## READ THE BITMAP 1 Byte of Store by 32 Bytes of Loads
+                    ########################################################################
                     dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
                     memory_block[column][tuple] += (
                         "R " + str(bitmapSize) + " " + str(address_target_bitmap[column - 1] - 1) + " " + str(
                             basicBlock + 3) + "\n")
-                    address_target_bitmap[column - 1] += 1
-                    if column == numberOfPredicates - 1:
-                        fieldsByInstruction = (REGISTER_SIZE / 4) + 1
+                    address_target_bitmap[column - 1] += bitmapSize
                     if lastFieldSum > 0:
                         lastFieldSum = 0
+                        ########################################################################
+                        ##  APPLY PREDICATE
+                        ########################################################################
                         dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                         memory_block[column][tuple] += (
                             "R " + str(REGISTER_SIZE) + " " + str(address_base[column]) + " " + str(
@@ -192,11 +198,11 @@ for REGISTER_SIZE in (16, 32, 64):
                         ########################################################################
                         ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                         ########################################################################
-                    dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
-                    address_target_bitmap[column - 1] += 1
-                    memory_block[column][tuple] += str(
-                        "W " + str(bitmapSize) + " " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
-                    address_target_bitmap[column] += 1
+                        dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
+                        address_target_bitmap[column - 1] += 1
+                        memory_block[column][tuple] += str(
+                            "W " + str(bitmapSize) + " " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
+                        address_target_bitmap[column] += bitmapSize
             basicBlock += 4
         lastFieldSum = 0
         fieldsByInstruction -= 1
