@@ -34,7 +34,7 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
     DATA_SIZE = 4  # Bytes
     INSTRUCTION_ADDR = 1024  # Bytes
 
-    BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
+    BASEDIR = "/Users/diegogomestome/Dropbox/1-UFPR/1-Mestrado_Diego_Tome/EXPERIMENTOS/"
     input_file = BASEDIR + "bitmap_files/resultQ06.txt"
     dynamic_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/" + str(
         HMC_OPERATION) + "/output_trace.out.tid0.dyn.out"
@@ -98,19 +98,19 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
         INSTRUCTION_ADDR += 2
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # READ BITMAP)#
-        FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 8 1 10 0 0 1 0 0 3 0 0 0\n")  # R
+        FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 8 1 9 0 0 1 0 0 3 0 0 0\n")  # R
+        INSTRUCTION_ADDR += 4
+        FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 9 1 7 0 0 0 0 0 4 0 0 0\n")
+        INSTRUCTION_ADDR += 2
+        basicBlock += 1
+        FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
+        FILE_STAT.write("HMC_CMP 12 " + str(INSTRUCTION_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")  # R HMC_SIZE
         INSTRUCTION_ADDR += 4
         FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
         INSTRUCTION_ADDR += 2
         basicBlock += 1
-        FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
-        FILE_STAT.write("HMC_CMP 12 " + str(INSTRUCTION_ADDR) + " 4 1 13 1 14 0 0 1 0 0 3 0 0 0\n")  # R HMC_SIZE
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 14 1 7 0 0 0 0 0 4 0 0 0\n")
-        INSTRUCTION_ADDR += 2
-        basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # MATCH POSITION (STORE)#
-        FILE_STAT.write("MOV 9 " + str(INSTRUCTION_ADDR) + " 6 1 14 1 9 0 0 0 0 1 3 0 0 0\n")  # W 1Byte
+        FILE_STAT.write("MOV 9 " + str(INSTRUCTION_ADDR) + " 6 1 10 1 11 0 0 0 0 1 3 0 0 0\n")  # W 1Byte
         INSTRUCTION_ADDR += 6
 
     FILE_STAT.write("# eof")
@@ -181,7 +181,7 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
                     ########################################################################
                     dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                     memory_block[column][tuple] += (
-                        "R 1 " + str(address_target_bitmap[column - 1] - 1) + " " + str(basicBlock + 2) + "\n")
+                        "R " + str(bitmapSize) + " " + str(address_target_bitmap[column - 1] - 1) + " " + str(basicBlock + 2) + "\n")
                     address_target_bitmap[column - 1] += bitmapSize
                     if lastFieldsSum > 0:
                         lastFieldsSum = 0
@@ -193,14 +193,14 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
                             "R " + str(HMC_OPERATION) + " " + str(address_base[column]) + " " + str(
                                 basicBlock + 3) + "\n")
                         address_base[column] += HMC_OPERATION
-                        ########################################################################
-                        # CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
-                        ########################################################################
-                        dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
-                        memory_block[column][tuple] += str(
-                            "W " + str(bitmapSize) + " " + str(address_target_bitmap[column]) + " " + str(
-                                basicBlock + 4) + "\n")
-                        address_target_bitmap[column] += bitmapSize
+                    ########################################################################
+                    # CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
+                    ########################################################################
+                    dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
+                    memory_block[column][tuple] += str(
+                        "W " + str(bitmapSize) + " " + str(address_target_bitmap[column]) + " " + str(
+                            basicBlock + 4) + "\n")
+                    address_target_bitmap[column] += bitmapSize
                     # if lastSum > 0:
                     # elif column > 0:
             # if fieldCount == 1:
