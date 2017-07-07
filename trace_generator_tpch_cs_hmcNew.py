@@ -17,7 +17,7 @@ import sys
 VECTOR_SIZE = 1000
 QUERY = "Query06"
 QUERY_ENGINE = "pipelined"
-BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
+BASEDIR = "/Users/diegogomestome/Dropbox/1-UFPR/1-Mestrado_Diego_Tome/EXPERIMENTOS/"
 
 def writeOnDynamicAndMemoryFilesPipelined():
     global column, tuple
@@ -88,38 +88,32 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
     for i in range(numberOfPredicates):
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # COLUMN-AT-A-TIME#
-        FILE_STAT.write("ADD 1 " + str(INSTRUCTION_ADDR) + " 4 1 1 1 2 0 0 0 0 0 3 0 0 0\n")
+        FILE_STAT.write("ADD 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 5 0 0 0 0 0 3 0 0 0\n")
         INSTRUCTION_ADDR += 4
-        FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 3 1 3 1 4 0 0 0 0 0 3 0 0 0\n")
+        FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 3 1 5 1 6 0 0 0 0 0 3 0 0 0\n")
         INSTRUCTION_ADDR += 3
-        FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 2 1 5 0 0 0 0 0 4 0 0 0\n")
+        FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 6 1 7 0 0 0 0 0 4 0 0 0\n")
         INSTRUCTION_ADDR += 2
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY LOCK)#
-        FILE_STAT.write("HMC_LOCK 14 " + str(INSTRUCTION_ADDR) + " 4 1 6 0 0 0 0 0 0 3 0 0 1 -1 -1 -1\n")
+        FILE_STAT.write("HMC_LOCK 14 " + str(INSTRUCTION_ADDR) + " 4 1 7 0 0 0 0 0 0 3 0 0 1 -1 -1 -1\n")
         INSTRUCTION_ADDR += 4
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY READ BITMAP)#
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 7 0 0 0 1 0 0 3 0 0 1 -1 -1 1\n")  # R
+        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 8 1 9 0 1 0 0 3 0 0 1 -1 -1 1\n")  # R
         INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 8 0 0 0 0 0 0 3 0 0 1 1 -1 1\n")
+        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 9 1 7 0 0 0 0 3 0 0 1 1 -1 1\n")
         INSTRUCTION_ADDR += 4
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 1\n")  # R
+        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 1 10 0 1 0 0 3 0 0 1 -1 -1 1\n")  # R
         INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 8 0 0 0 0 0 0 3 0 0 1 1 -1 1\n")
+        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 1 7 0 0 0 0 3 0 0 1 1 -1 1\n")
         INSTRUCTION_ADDR += 4
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY WRITE BITMAP)
-        FILE_STAT.write("HMC_ST 17 " + str(INSTRUCTION_ADDR) + " 4 1 7 0 0 0 0 0 1 3 0 0 1 1 -1 -1\n")  # W
+        FILE_STAT.write("HMC_ST 17 " + str(INSTRUCTION_ADDR) + " 4 1 10 1 11 0 0 0 1 3 0 0 1 1 -1 -1\n")  # W
         INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_UNLOCK 15 " + str(INSTRUCTION_ADDR) + " 4 1 11 0 0 0 0 0 0 3 0 0 1 -1 -1 -1\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 10 1 5 0 0 0 0 0 4 0 0 0\n")
-        INSTRUCTION_ADDR += 2
-        basicBlock += 1
-        FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY UNLOCK)
         FILE_STAT.write("HMC_UNLOCK 15 " + str(INSTRUCTION_ADDR) + " 4 1 11 0 0 0 0 0 0 3 0 0 1 -1 -1 -1\n")
         INSTRUCTION_ADDR += 4
         # basicBlock += 1
@@ -212,19 +206,18 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
                             "R " + str(HMC_OPERATION) + " " + str(address_base[column]) + " " + str(
                                 basicBlock + 4) + "\n")
                         address_base[column] += HMC_OPERATION
-                        ########################################################################
-                        # STORE + UNLOCK
-                        ########################################################################
-                        dynamic_block[column][tuple] += str(str(basicBlock + 5) + "\n")
-                        memory_block[column][tuple] += str(
-                            "W " + str(HMC_OPERATION / loadSize) + " " + str(
-                                address_target_bitmap[column]) + " " + str(basicBlock + 5) + "\n")
-                        address_target_bitmap[column] += (HMC_OPERATION / loadSize)
+                    ########################################################################
+                    # STORE + UNLOCK
+                    ########################################################################
+                    dynamic_block[column][tuple] += str(str(basicBlock + 5) + "\n")
+                    memory_block[column][tuple] += str(
+                        "W " + str(HMC_OPERATION / loadSize) + " " + str(
+                            address_target_bitmap[column]) + " " + str(basicBlock + 5) + "\n")
+                    address_target_bitmap[column] += (HMC_OPERATION / loadSize)
                         # if lastSum > 0:
-                    dynamic_block[column][tuple] += str(str(basicBlock + 6) + "\n")
                     # elif column > 0:
             # if fieldCount == 1:
-            basicBlock += 6
+            basicBlock += 5
             loadSize = 32
         fieldsByInstruction -= 1
 
