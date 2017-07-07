@@ -192,9 +192,9 @@ for REGISTER_SIZE in (16, 32, 64):
                             "R " + str(REGISTER_SIZE) + " " + str(address_base[column]) + " " + str(
                                 basicBlock + 3) + "\n")
                         address_base[column] += (REGISTER_SIZE)
-                        ########################################################################
-                        ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
-                        ########################################################################
+                    ########################################################################
+                    ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
+                    ########################################################################
                     dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
                     address_target_bitmap[column - 1] += 1
                     memory_block[column][tuple] += str(
