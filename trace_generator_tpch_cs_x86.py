@@ -96,20 +96,20 @@ for REGISTER_SIZE in (16, 32, 64):
         FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 6 1 7 0 0 0 0 0 4 0 0 0\n")
         INSTRUCTION_ADDR += 2
         basicBlock += 1
-        FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
-        FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")  # R 16 Bytes
+        FILE_STAT.write("@" + str(basicBlock) + "\n")  # READ BITMAP)#
+        FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 8 1 9 0 0 1 0 0 3 0 0 0\n")  # R 1 Byte
         INSTRUCTION_ADDR += 1
-        FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
+        FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 9 1 7 0 0 0 0 0 4 0 0 0\n")
         INSTRUCTION_ADDR += 2
         basicBlock += 1
-        FILE_STAT.write("@" + str(basicBlock) + "\n")  # READ BITMAP)#
-        FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 13 1 14 0 0 1 0 0 3 0 0 0\n")  # R 1Byte
+        FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
+        FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")  # R 16 Byte
         INSTRUCTION_ADDR += 1
         FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
         INSTRUCTION_ADDR += 2
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # MATCH POSITION (STORE)#
-        FILE_STAT.write("MOV 9 " + str(INSTRUCTION_ADDR) + " 6 1 10 1 13 0 0 0 0 1 3 0 0 0\n")  # W 1Byte
+        FILE_STAT.write("MOV 9 " + str(INSTRUCTION_ADDR) + " 6 1 10 1 11 0 0 0 0 1 3 0 0 0\n")  # W 1Byte
         INSTRUCTION_ADDR += 6
 
     FILE_STAT.write("# eof")
@@ -151,18 +151,18 @@ for REGISTER_SIZE in (16, 32, 64):
                     ## READ THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                     ########################################################################
                     if column > 0:
-                        dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
+                        dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                         memory_block[column][tuple] += (
                             "R " + str(bitmapSize) + " " + str(address_target_bitmap[column - 1] - 1) + " " + str(
-                                basicBlock + 3) + "\n")
+                                basicBlock + 2) + "\n")
                         address_target_bitmap[column - 1] += 1
                     ########################################################################
                     ##  APPLY PREDICATE
                     ########################################################################
-                    dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
+                    dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
                     memory_block[column][tuple] += (
                         "R " + str(REGISTER_SIZE) + " " + str(address_base[column]) + " " + str(
-                            basicBlock + 2) + "\n")
+                            basicBlock + 3) + "\n")
                     address_base[column] += (REGISTER_SIZE)
                     ########################################################################
                     ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
@@ -177,29 +177,29 @@ for REGISTER_SIZE in (16, 32, 64):
                     ########################################################################
                     ## READ THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                     ########################################################################
-                    dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
+                    dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                     memory_block[column][tuple] += (
                         "R " + str(bitmapSize) + " " + str(address_target_bitmap[column - 1] - 1) + " " + str(
-                            basicBlock + 3) + "\n")
+                            basicBlock + 2) + "\n")
                     address_target_bitmap[column - 1] += bitmapSize
                     if lastFieldSum > 0:
                         lastFieldSum = 0
                         ########################################################################
                         ##  APPLY PREDICATE
                         ########################################################################
-                        dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
+                        dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
                         memory_block[column][tuple] += (
                             "R " + str(REGISTER_SIZE) + " " + str(address_base[column]) + " " + str(
-                                basicBlock + 2) + "\n")
+                                basicBlock + 3) + "\n")
                         address_base[column] += (REGISTER_SIZE)
                         ########################################################################
                         ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                         ########################################################################
-                        dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
-                        address_target_bitmap[column - 1] += 1
-                        memory_block[column][tuple] += str(
-                            "W " + str(bitmapSize) + " " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
-                        address_target_bitmap[column] += bitmapSize
+                    dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
+                    address_target_bitmap[column - 1] += 1
+                    memory_block[column][tuple] += str(
+                        "W " + str(bitmapSize) + " " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
+                    address_target_bitmap[column] += bitmapSize
             basicBlock += 4
         lastFieldSum = 0
         fieldsByInstruction -= 1
