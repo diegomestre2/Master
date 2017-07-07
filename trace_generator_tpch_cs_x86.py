@@ -18,7 +18,7 @@ import sys
 VECTOR_SIZE = 1000
 QUERY = "Query06"
 QUERY_ENGINE = "pipelined"
-BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
+BASEDIR = "/Users/diegogomestome/Dropbox/1-UFPR/1-Mestrado_Diego_Tome/EXPERIMENTOS/"
 
 def writeOnDynamicAndMemoryFilesPipelined():
     global column, tuple
@@ -37,9 +37,12 @@ for REGISTER_SIZE in (16, 32, 64):
 
     ################### FILES #################################
     input_file = BASEDIR + "bitmap_files/resultQ06.txt"
-    dynamic_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/output_trace.out.tid0.dyn.out"
-    memory_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/output_trace.out.tid0.mem.out"
-    static_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/output_trace.out.tid0.stat.out"
+    dynamic_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/" + str(
+        REGISTER_SIZE) + "/output_trace.out.tid0.dyn.out"
+    memory_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/" + str(
+        REGISTER_SIZE) + "/output_trace.out.tid0.mem.out"
+    static_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/" + str(
+        REGISTER_SIZE) + "/output_trace.out.tid0.stat.out"
     ################### TREATING FILE INPUT ###################
 
     FILE_INPUT = open(input_file, 'r')
@@ -80,7 +83,7 @@ for REGISTER_SIZE in (16, 32, 64):
     FILE_STAT.write("# SiNUCA Trace Static\n")
 
     basicBlock = 0
-    print("Generating Traces Files For x86 - 16 Bytes")
+    print("Generating Traces Files For x86 - " + str(REGISTER_SIZE) + " Bytes")
     #################### STATIC FILE #########################
     print "Generating Static File..."
     for tuple in range(numberOfPredicates):
@@ -108,12 +111,6 @@ for REGISTER_SIZE in (16, 32, 64):
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # MATCH POSITION (STORE)#
         FILE_STAT.write("MOV 9 " + str(INSTRUCTION_ADDR) + " 6 1 10 1 13 0 0 0 0 1 3 0 0 0\n")  # W 1Byte
         INSTRUCTION_ADDR += 6
-        FILE_STAT.write("ADD 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 5 0 0 0 0 0 3 0 0 0\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 3 1 5 1 6 0 0 0 0 0 3 0 0 0\n")
-        INSTRUCTION_ADDR += 3
-        FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 6 1 7 0 0 0 0 0 4 0 0 0\n")
-        INSTRUCTION_ADDR += 2
 
     FILE_STAT.write("# eof")
     FILE_STAT.close()
@@ -219,6 +216,8 @@ for REGISTER_SIZE in (16, 32, 64):
     print "Dynamic and Memory Files Ok!"
     print "Compressing Files..."
 
-    os.system("rm -f " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/" + "*gz")
-    os.system("gzip " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/" + "*.out")
+    os.system("rm -f " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/" + str(
+        REGISTER_SIZE) + "/*gz")
+    os.system("gzip " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/" + str(
+        REGISTER_SIZE) + "/*.out")
     print "ALL Done!"
