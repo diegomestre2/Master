@@ -135,11 +135,13 @@ for REGISTER_SIZE in (16, 32, 64):
     lastSum = 0
     #################### DYNAMIC AND MEMORY FILE #########################
     print "Generating Data For Dynamic and Memory Files..."
-    fieldsByInstruction = REGISTER_SIZE / 4
+    tuplesByOperation = REGISTER_SIZE / 64
     lastFieldSum = 0
     loadsByTuple = 1
     if REGISTER_SIZE < 64:
         loadsByTuple = 64 / REGISTER_SIZE
+        tuplesByOperation = 1
+    fieldsByInstruction = tuplesByOperation
 
     for tuple in range(len(tuples)):
         elem = tuples[tuple]
@@ -159,7 +161,7 @@ for REGISTER_SIZE in (16, 32, 64):
                     lastFieldSum = bitColSum[column]
                     bitColSum[column] = 0
                     if column == numberOfPredicates - 1:
-                        fieldsByInstruction = (REGISTER_SIZE / 4) + 1
+                        fieldsByInstruction = tuplesByOperation + 1
                     ########################################################################
                     ##  APPLY PREDICATE
                     ########################################################################
@@ -185,7 +187,7 @@ for REGISTER_SIZE in (16, 32, 64):
                             address_base2[column] += REGISTER_SIZE
                 elif column > 0:
                     if column == numberOfPredicates - 1:
-                        fieldsByInstruction = (REGISTER_SIZE / 4) + 1
+                        fieldsByInstruction = tuplesByOperation + 1
                     if lastFieldSum > 0:
                         lastFieldSum = 0
                         ########################################################################
