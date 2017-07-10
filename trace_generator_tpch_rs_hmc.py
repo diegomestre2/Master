@@ -31,7 +31,6 @@ def writeOnDynamicAndMemoryFilesPipelined():
 for HMC_OPERATION in (16, 32, 64, 128, 256):
     DATA_ADDR_READ = 1024 * 1024 * 1024
     DATA_ADDR_WRITE = 1024 * 1024 * 4096
-    REGISTER_SIZE = 16
     INSTRUCTION_ADDR = 1024
     DATA_SIZE = 4
 
@@ -130,11 +129,13 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
     lastSum = 0
     #################### DYNAMIC AND MEMORY FILE #########################
     print "Generating Data For Dynamic and Memory Files..."
-    fieldsByInstruction = REGISTER_SIZE / 4
+    tuplesByOperation = HMC_OPERATION / 64
     lastFieldSum = 0
     loadsByTuple = 1
-    if REGISTER_SIZE < 64:
-        loadsByTuple = 64 / REGISTER_SIZE
+    if HMC_OPERATION < 64:
+        loadsByTuple = 64 / HMC_OPERATION
+        tuplesByOperation = 1
+    fieldsByInstruction = tuplesByOperation
 
     for tuple in range(len(tuples)):
         elem = tuples[tuple]
@@ -154,33 +155,33 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
                     lastFieldSum = bitColSum[column]
                     bitColSum[column] = 0
                     if column == numberOfPredicates - 1:
-                        fieldsByInstruction = (REGISTER_SIZE / 4) + 1
+                        fieldsByInstruction = tuplesByOperation + 1
                     ########################################################################
                     ##  APPLY PREDICATE
                     ########################################################################
                     dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                     memory_block[column][tuple] += (
-                        "R " + str(REGISTER_SIZE) + " " + str(address_base[column]) + " " + str(
+                        "R " + str(HMC_OPERATION) + " " + str(address_base[column]) + " " + str(
                             basicBlock + 2) + "\n")
-                    address_base[column] += REGISTER_SIZE * loadsByTuple
+                    address_base[column] += HMC_OPERATION * loadsByTuple
                     ########################################################################
                     ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                     ########################################################################
                     if lastFieldSum > 0:
-                        address_base[column] -= REGISTER_SIZE * loadsByTuple
+                        address_base[column] -= HMC_OPERATION * loadsByTuple
                         for i in range(loadsByTuple):
                             dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
                             memory_block[column][tuple] += (
-                                "R " + str(REGISTER_SIZE) + " " + str(address_base[column]) + " " + str(
+                                "R " + str(HMC_OPERATION) + " " + str(address_base[column]) + " " + str(
                                     basicBlock + 3) + "\n")
-                            address_base[column] += REGISTER_SIZE
+                            address_base[column] += HMC_OPERATION
                             memory_block[column][tuple] += str(
-                                "W " + str(REGISTER_SIZE) + " " + str(address_base2[column]) + " " + str(
+                                "W " + str(HMC_OPERATION) + " " + str(address_base2[column]) + " " + str(
                                     basicBlock + 3) + "\n")
-                            address_base2[column] += REGISTER_SIZE
+                            address_base2[column] += HMC_OPERATION
                 elif column > 0:
                     if column == numberOfPredicates - 1:
-                        fieldsByInstruction = (REGISTER_SIZE / 4) + 1
+                        fieldsByInstruction = tuplesByOperation + 1
                     if lastFieldSum > 0:
                         lastFieldSum = 0
                         ########################################################################
@@ -188,9 +189,9 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
                         ########################################################################
                         dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                         memory_block[column][tuple] += (
-                            "R " + str(REGISTER_SIZE) + " " + str(address_base[column]) + " " + str(
+                            "R " + str(HMC_OPERATION) + " " + str(address_base[column]) + " " + str(
                                 basicBlock + 2) + "\n")
-                        address_base[column] += (REGISTER_SIZE)
+                        address_base[column] += (HMC_OPERATION)
             basicBlock += 3
         lastFieldSum = 0
         fieldsByInstruction -= 1
