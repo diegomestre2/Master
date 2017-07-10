@@ -17,7 +17,7 @@ import sys
 VECTOR_SIZE = 1000
 QUERY = "Query06"
 QUERY_ENGINE = "pipelined"
-BASEDIR = "/Users/diegogomestome/Dropbox/UFPR/Mestrado_Diego_Tome/EXPERIMENTOS/"
+BASEDIR = "/Users/diegogomestome/Dropbox/1-UFPR/1-Mestrado_Diego_Tome/EXPERIMENTOS/"
 
 def writeOnDynamicAndMemoryFilesPipelined():
     global column, tuple
@@ -28,7 +28,7 @@ def writeOnDynamicAndMemoryFilesPipelined():
             if memory_block[column][tuple] != 0:
                 FILE_MEM.write(memory_block[column][tuple])
 
-for HMC_OPERATION_CAPACITY in (16, 256):
+for HMC_OPERATION in (16, 32, 64, 128, 256):
     DATA_ADDR_READ = 1024 * 1024 * 1024
     DATA_ADDR_WRITE = 1024 * 1024 * 4096
     REGISTER_SIZE = 16
@@ -36,9 +36,9 @@ for HMC_OPERATION_CAPACITY in (16, 256):
     DATA_SIZE = 4
 
     input_file = BASEDIR + "bitmap_files/resultQ06.txt"
-    dynamic_trace = BASEDIR + "traces/" + QUERY + "/rowStore/HMC/" + str(HMC_OPERATION_CAPACITY) + "/output_trace.out.tid0.dyn.out"
-    memory_trace = BASEDIR + "traces/" + QUERY + "/rowStore/HMC/" + str(HMC_OPERATION_CAPACITY) + "/output_trace.out.tid0.mem.out"
-    static_trace = BASEDIR + "traces/" + QUERY + "/rowStore/HMC/" + str(HMC_OPERATION_CAPACITY) + "/output_trace.out.tid0.stat.out"
+    dynamic_trace = BASEDIR + "traces/" + QUERY + "/rowStore/HMC/" + str(HMC_OPERATION) + "/output_trace.out.tid0.dyn.out"
+    memory_trace = BASEDIR + "traces/" + QUERY + "/rowStore/HMC/" + str(HMC_OPERATION) + "/output_trace.out.tid0.mem.out"
+    static_trace = BASEDIR + "traces/" + QUERY + "/rowStore/HMC/" + str(HMC_OPERATION) + "/output_trace.out.tid0.stat.out"
     ################### TREATING FILE INPUT ###################
     FILE_INPUT = open(input_file, 'r')
 
@@ -66,6 +66,9 @@ for HMC_OPERATION_CAPACITY in (16, 256):
     address_base = [DATA_ADDR_READ, DATA_ADDR_READ + (qtdTuples * DATA_SIZE),  # READ
                     DATA_ADDR_READ + (qtdTuples * DATA_SIZE * 2)]
 
+    address_base2 = [DATA_ADDR_READ, DATA_ADDR_READ + (qtdTuples * DATA_SIZE),  # READ
+                    DATA_ADDR_READ + (qtdTuples * DATA_SIZE * 2)]
+
     address_target = [DATA_ADDR_WRITE, DATA_ADDR_WRITE + (qtdTuples * DATA_SIZE) + 1,  # WRITE
                       DATA_ADDR_WRITE + (qtdTuples * DATA_SIZE * 2) + 1]
 
@@ -77,7 +80,7 @@ for HMC_OPERATION_CAPACITY in (16, 256):
     FILE_STAT.write("# SiNUCA Trace Static\n")
 
     basicBlock = 0
-    print("Generating Traces Files For HMC... " + str(HMC_OPERATION_CAPACITY) + " Bytes")
+    print("Generating Traces Files For HMC... " + str(HMC_OPERATION) + " Bytes")
     #################### STATIC FILE #########################
     print "Generating Static File..."
     for i in range(numberOfPredicates):
@@ -91,9 +94,9 @@ for HMC_OPERATION_CAPACITY in (16, 256):
         basicBlock += 1
         INSTRUCTION_ADDR += 2
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
-        FILE_STAT.write("HMC_LD 12 " + str(INSTRUCTION_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")  # R
+        FILE_STAT.write("HMC_LD 12 " + str(INSTRUCTION_ADDR) + " 4 1 8 1 9 0 0 1 0 0 3 0 0 0\n")  # R
         INSTRUCTION_ADDR += 4
-        FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 3 1 10 1 9 0 0 0 0 0 3 0 0 0\n")
+        FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 3 1 9 1 8 0 0 0 0 0 3 0 0 0\n")
         INSTRUCTION_ADDR += 3
         # FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
         basicBlock += 1
@@ -118,15 +121,21 @@ for HMC_OPERATION_CAPACITY in (16, 256):
     FILE_MEM = open(memory_trace, 'w')
     FILE_DYN.write("# SiNUCA Trace Dynamic\n")
     FILE_MEM.write("# SiNUCA Trace Memory\n")
-    if HMC_OPERATION_CAPACITY == 16:
+    if HMC_OPERATION == 16 or HMC_OPERATION == 32:
         fieldCount = 1
         fields = 2
     else:
-        fieldCount = 4
-        fields = 5
+        fieldCount = HMC_OPERATION / 64
+        fields = (HMC_OPERATION / 64) + 1
     lastSum = 0
     #################### DYNAMIC AND MEMORY FILE #########################
     print "Generating Data For Dynamic and Memory Files..."
+    fieldsByInstruction = REGISTER_SIZE / 4
+    lastFieldSum = 0
+    loadsByTuple = 1
+    if REGISTER_SIZE < 64:
+        loadsByTuple = 64 / REGISTER_SIZE
+
     for tuple in range(len(tuples)):
         elem = tuples[tuple]
         elem = elem.split()
@@ -134,69 +143,58 @@ for HMC_OPERATION_CAPACITY in (16, 256):
         for column in range(numberOfPredicates):
             bitColSum[column] += int(elem[column])
             ########################################################################
-            ##  ITERATOR TUPLE-AT-A-TIME
+            ##  HMC INSTRUCTION WILL BE SENDED
             ########################################################################
-            if fieldCount == 1:
+            if fieldsByInstruction == 1:
                 dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
-                if bitColSum[column] > 0:
-                    lastSum = bitColSum[column]
+                ########################################################################
+                ##  MATCH FOUND
+                ########################################################################
+                if bitColSum[column] > 0 or column == 0:
+                    lastFieldSum = bitColSum[column]
                     bitColSum[column] = 0
                     if column == numberOfPredicates - 1:
-                        fieldCount = fields
+                        fieldsByInstruction = (REGISTER_SIZE / 4) + 1
                     ########################################################################
-                    ##  PREDICATE MATCH
+                    ##  APPLY PREDICATE
                     ########################################################################
                     dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                     memory_block[column][tuple] += (
-                        "R " + str(HMC_OPERATION_CAPACITY) + " " + str(address_base[column]) + " " + str(
+                        "R " + str(REGISTER_SIZE) + " " + str(address_base[column]) + " " + str(
                             basicBlock + 2) + "\n")
-                    address_base[column] += (int(totalAttributes[0]) * DATA_SIZE)
+                    address_base[column] += REGISTER_SIZE * loadsByTuple
                     ########################################################################
-                    ## MATERIALIZATION ALL TUPLES
+                    ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                     ########################################################################
-                    if HMC_OPERATION_CAPACITY == 16:
-                        sizeOfMaterialization = 4
-                    else:
-                        sizeOfMaterialization = 1
-                    if column == numberOfPredicates - 1:
-                        for i in range(sizeOfMaterialization):
+                    if lastFieldSum > 0:
+                        address_base[column] -= REGISTER_SIZE * loadsByTuple
+                        for i in range(loadsByTuple):
                             dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
-                            memory_block[column][tuple] += str(
-                                "R " + str(HMC_OPERATION_CAPACITY) + " " + str(
-                                    address_base[column] - (REGISTER_SIZE * DATA_SIZE)) + " " + str(
+                            memory_block[column][tuple] += (
+                                "R " + str(REGISTER_SIZE) + " " + str(address_base[column]) + " " + str(
                                     basicBlock + 3) + "\n")
-                            address_base[column] += (REGISTER_SIZE * DATA_SIZE)
+                            address_base[column] += REGISTER_SIZE
                             memory_block[column][tuple] += str(
-                                "W " + str(HMC_OPERATION_CAPACITY) + " " + str(address_target[column]) + " " + str(
+                                "W " + str(REGISTER_SIZE) + " " + str(address_base2[column]) + " " + str(
                                     basicBlock + 3) + "\n")
-                            address_target[column] += (REGISTER_SIZE * DATA_SIZE)
+                            address_base2[column] += REGISTER_SIZE
                 elif column > 0:
                     if column == numberOfPredicates - 1:
-                        fieldCount = fields
-                    if lastSum > 0:
-                        lastSum = 0
+                        fieldsByInstruction = (REGISTER_SIZE / 4) + 1
+                    if lastFieldSum > 0:
+                        lastFieldSum = 0
                         ########################################################################
-                        ##  PREDICATE MATCH
+                        ##  APPLY PREDICATE
                         ########################################################################
                         dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                         memory_block[column][tuple] += (
-                            "R " + str(HMC_OPERATION_CAPACITY) + " " + str(address_base[column]) + " " + str(
+                            "R " + str(REGISTER_SIZE) + " " + str(address_base[column]) + " " + str(
                                 basicBlock + 2) + "\n")
-                        address_base[column] += (int(totalAttributes[0]) * DATA_SIZE)
-                        # Controls the sum of bits in each column
-                elif column == 0:
-                    if column == numberOfPredicates - 1:
-                        fieldCount = fields
-                    ########################################################################
-                    ##  PREDICATE MATCH
-                    ########################################################################
-                    dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
-                    memory_block[column][tuple] += (
-                        "R " + str(HMC_OPERATION_CAPACITY) + " " + str(address_base[column]) + " " + str(
-                            basicBlock + 2) + "\n")
-                    address_base[column] += (int(totalAttributes[0]) * DATA_SIZE)
-            basicBlock += 3  # Controls the basicBlock way for each column
-        fieldCount -= 1  # Counts the amount of tuples to process
+                        address_base[column] += (REGISTER_SIZE)
+            basicBlock += 3
+        lastFieldSum = 0
+        fieldsByInstruction -= 1
+
 
     print "Writing on Dynamic and Memory File..."
     ######### WRITES ON DYNAMIC AND MEMORY FILE ################3
@@ -206,6 +204,6 @@ for HMC_OPERATION_CAPACITY in (16, 256):
     FILE_DYN.close()
     print "Dynamic and Memory Files Ok!"
     print "Compressing Files..."
-    os.system("rm -f " + BASEDIR + "traces/" + QUERY + "/rowStore/HMC/" + str(HMC_OPERATION_CAPACITY) + "/" + "*gz")
-    os.system("gzip " + BASEDIR + "traces/" + QUERY + "/rowStore/HMC/" + str(HMC_OPERATION_CAPACITY) + "/"  "*.out")
+    os.system("rm -f " + BASEDIR + "traces/" + QUERY + "/rowStore/HMC/" + str(HMC_OPERATION) + "/" + "*gz")
+    os.system("gzip " + BASEDIR + "traces/" + QUERY + "/rowStore/HMC/" + str(HMC_OPERATION) + "/"  "*.out")
     print "ALL Done!"
