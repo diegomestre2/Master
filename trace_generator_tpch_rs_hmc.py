@@ -120,13 +120,7 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
     FILE_MEM = open(memory_trace, 'w')
     FILE_DYN.write("# SiNUCA Trace Dynamic\n")
     FILE_MEM.write("# SiNUCA Trace Memory\n")
-    if HMC_OPERATION == 16 or HMC_OPERATION == 32:
-        fieldCount = 1
-        fields = 2
-    else:
-        fieldCount = HMC_OPERATION / 64
-        fields = (HMC_OPERATION / 64) + 1
-    lastSum = 0
+
     #################### DYNAMIC AND MEMORY FILE #########################
     print "Generating Data For Dynamic and Memory Files..."
     tuplesByOperation = HMC_OPERATION / 64
