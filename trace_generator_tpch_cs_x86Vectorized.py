@@ -197,7 +197,7 @@ for REGISTER_SIZE in (16, 32, 64):
     print "Writing on Dynamic and Memory File..."
     vectorCounter = 0
     startIndex = 0
-    VECTOR_SIZE = int(VECTORIZED_SIZE / numberOfPredicates)
+    VECTOR_SIZE = int((VECTORIZED_SIZE / numberOfPredicates) / (REGISTER_SIZE / DATA_SIZE))
     ######### WRITES ON DYNAMIC AND MEMORY FILE ################
     while vectorCounter < len(tuples):
         for column in xrange(numberOfPredicates):
