@@ -271,6 +271,7 @@ for HMC_OPERATION in (16, 256):
                     FILE_DYN.write(dynamic_block[column][tuple])
                     if memory_block[column][tuple] != 0:
                         FILE_MEM.write(memory_block[column][tuple])
+        vectorCounter += VECTOR_SIZE
 
     FILE_MEM.close()
     FILE_DYN.close()
@@ -556,8 +557,7 @@ for HMC_OPERATION in (16, 256):
     print "Writing on Dynamic and Memory File..."
     vectorCounter = 0
     startIndex = 0
-    VECTOR_SIZE = int((VECTORIZED_SIZE / numberOfPredicates) / (HMC_OPERATION / DATA_SIZE))
-    VECTOR_SIZE = int(VECTOR_SIZE / 8)
+    VECTOR_SIZE = 1
     ######### WRITES ON DYNAMIC AND MEMORY FILE ################
     while vectorCounter < len(tuples):
         for column in xrange(numberOfPredicates):
@@ -567,6 +567,7 @@ for HMC_OPERATION in (16, 256):
                     FILE_DYN.write(dynamic_block[column][tuple])
                     if memory_block[column][tuple] != 0:
                         FILE_MEM.write(memory_block[column][tuple])
+        vectorCounter += VECTOR_SIZE
 
     FILE_MEM.close()
     FILE_DYN.close()
