@@ -172,7 +172,7 @@ for HMC_OPERATION in (16, 256):
                             memory_block[column][tuple] += (
                                 "R " + str(bitmapSize) + " " + str(address_target_bitmap[column - 1] - 1) + " " + str(
                                     basicBlock + 2) + "\n")
-                            address_target_bitmap[column - 1] += 1
+                            address_target_bitmap[column - 1] += bitmapSize
                     ########################################################################
                     ##  APPLY PREDICATE
                     ########################################################################
@@ -218,7 +218,7 @@ for HMC_OPERATION in (16, 256):
                     ########################################################################
                     dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
                     for i in range(4):
-                        address_target_bitmap[column - 1] += 1
+                        address_target_bitmap[column - 1] += bitmapSize
                         memory_block[column][tuple] += str(
                             "W " + str(bitmapSize) + " " + str(address_target_bitmap[column]) + " " + str(basicBlock + 4) + "\n")
                         address_target_bitmap[column] += bitmapSize
