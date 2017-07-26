@@ -123,7 +123,7 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
     FILE_MEM.write("# SiNUCA Trace Memory\n")
 
     fieldsByInstruction = HMC_OPERATION / 4
-    lastFieldsSum = 0
+    lastFieldSum = 0
     bitmapSize = 1
     if HMC_OPERATION > 16:
         bitmapSize = HMC_OPERATION / 32
@@ -144,7 +144,7 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
                 ##  MATCH FOUND
                 ########################################################################
                 if bitColSum[column] > 0 or column == 0:
-                    lastFieldsSum = bitColSum[column]
+                    lastFieldSum = bitColSum[column]
                     bitColSum[column] = 0
                     if column == numberOfPredicates - 1:
                         fieldsByInstruction = (HMC_OPERATION / 4) + 1
@@ -183,8 +183,8 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
                     memory_block[column][tuple] += (
                         "R " + str(bitmapSize) + " " + str(address_target_bitmap[column - 1] - 1) + " " + str(basicBlock + 2) + "\n")
                     address_target_bitmap[column - 1] += bitmapSize
-                    if lastFieldsSum > 0:
-                        lastFieldsSum = 0
+                    if lastFieldSum > 0:
+                        lastFieldSum = 0
                         ########################################################################
                         ##  APPLY PREDICATE
                         ########################################################################
