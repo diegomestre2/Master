@@ -93,7 +93,7 @@ for HMC_OPERATION in (16, 256):
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # READ BITMAP)#
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 8 1 9 0 0 1 0 0 3 0 0 0\n")  # R 1 Byte
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 9 1 7 0 0 0 0 0 4 0 0 0\n")
         INSTRUCTION_ADDR += 2
         basicBlock += 1
@@ -152,7 +152,7 @@ for HMC_OPERATION in (16, 256):
                         memory_block[column][tuple] += (
                             "R " + str(bitmapSize) + " " + str(address_target_bitmap[column - 1] - 1) + " " + str(
                                 basicBlock + 3) + "\n")
-                        address_target_bitmap[column - 1] += 1
+                        address_target_bitmap[column - 1] += bitmapSize
                     ########################################################################
                     ##  APPLY PREDICATE
                     ########################################################################
