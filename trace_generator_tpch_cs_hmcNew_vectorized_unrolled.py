@@ -19,14 +19,6 @@ QUERY = "Query06"
 QUERY_ENGINE = "vectorized"
 BASEDIR = "/Users/diegogomestome/Dropbox/1-UFPR/1-Mestrado_Diego_Tome/EXPERIMENTOS/"
 
-def writeOnDynamicAndMemoryFilesPipelined():
-    global column, tuple
-    ######### WRITES ON DYNAMIC AND MEMORY FILE COLUMN-AT-A-TIME################3
-    for column in range(numberOfPredicates):
-        for tuple in range(len(tuples)):
-            FILE_DYN.write(dynamic_block[column][tuple])
-            if memory_block[column][tuple] != 0:
-                FILE_MEM.write(memory_block[column][tuple])
 
 for HMC_OPERATION in (16, 256):
 
@@ -160,7 +152,7 @@ for HMC_OPERATION in (16, 256):
     FILE_DYN.write("# SiNUCA Trace Dynamic\n")
     FILE_MEM.write("# SiNUCA Trace Memory\n")
     fieldsByInstruction = HMC_OPERATION / 4
-    lastFieldsSum = 0
+    lastFieldSum = 0
     bitmapSize = 1
     if HMC_OPERATION > 16:
         bitmapSize = HMC_OPERATION / 32
@@ -181,7 +173,7 @@ for HMC_OPERATION in (16, 256):
                 ##  MATCH FOUND
                 ########################################################################
                 if bitColSum[column] > 0 or column == 0:
-                    lastFieldsSum = bitColSum[column]
+                    lastFieldSum = bitColSum[column]
                     bitColSum[column] = 0
                     if column == numberOfPredicates - 1:
                         fieldsByInstruction = (HMC_OPERATION / 4) + 1
@@ -229,9 +221,9 @@ for HMC_OPERATION in (16, 256):
                         memory_block[column][tuple] += str(
                             "R " + str(bitmapSize) + " " + str(
                                 address_target_bitmap[column]) + " " + str(basicBlock + 3) + "\n")
-                        address_target_bitmap[column] += bitmapSize
-                    if lastFieldsSum > 0:
-                        lastFieldsSum = 0
+                        address_target_bitmap[column - 1] += bitmapSize
+                    if lastFieldSum > 0:
+                        lastFieldSum = 0
                         ########################################################################
                         ##  APPLY PREDICATE
                         ########################################################################
@@ -247,14 +239,14 @@ for HMC_OPERATION in (16, 256):
                     dynamic_block[column][tuple] += str(str(basicBlock + 5) + "\n")
                     for i in range(4):
                         memory_block[column][tuple] += str(
-                            "W " + str(HMC_OPERATION / loadSize) + " " + str(
+                            "W " + str(bitmapSize) + " " + str(
                                 address_target_bitmap[column]) + " " + str(basicBlock + 5) + "\n")
-                        address_target_bitmap[column] += (HMC_OPERATION / loadSize)
+                        address_target_bitmap[column] += (bitmapSize)
                         # if lastSum > 0:
                     # elif column > 0:
             # if fieldCount == 1:
             basicBlock += 5
-            loadSize = 32
+        lastFieldSum = 0
         fieldsByInstruction -= 1
 
     print "Writing on Dynamic and Memory File..."
@@ -457,7 +449,7 @@ for HMC_OPERATION in (16, 256):
     FILE_DYN.write("# SiNUCA Trace Dynamic\n")
     FILE_MEM.write("# SiNUCA Trace Memory\n")
     fieldsByInstruction = HMC_OPERATION / 4
-    lastFieldsSum = 0
+    lastFieldSum = 0
     bitmapSize = 1
     if HMC_OPERATION > 16:
         bitmapSize = HMC_OPERATION / 32
@@ -478,7 +470,7 @@ for HMC_OPERATION in (16, 256):
                 ##  MATCH FOUND
                 ########################################################################
                 if bitColSum[column] > 0 or column == 0:
-                    lastFieldsSum = bitColSum[column]
+                    lastFieldSum = bitColSum[column]
                     bitColSum[column] = 0
                     if column == numberOfPredicates - 1:
                         fieldsByInstruction = (HMC_OPERATION / 4) + 1
@@ -527,8 +519,8 @@ for HMC_OPERATION in (16, 256):
                             "R " + str(bitmapSize) + " " + str(
                                 address_target_bitmap[column]) + " " + str(basicBlock + 3) + "\n")
                         address_target_bitmap[column] += bitmapSize
-                    if lastFieldsSum > 0:
-                        lastFieldsSum = 0
+                    if lastFieldSum > 0:
+                        lastFieldSum = 0
                         ########################################################################
                         ##  APPLY PREDICATE
                         ########################################################################
@@ -544,14 +536,14 @@ for HMC_OPERATION in (16, 256):
                     dynamic_block[column][tuple] += str(str(basicBlock + 5) + "\n")
                     for i in range(8):
                         memory_block[column][tuple] += str(
-                            "W " + str(HMC_OPERATION / loadSize) + " " + str(
+                            "W " + str(bitmapSize) + " " + str(
                                 address_target_bitmap[column]) + " " + str(basicBlock + 5) + "\n")
-                        address_target_bitmap[column] += (HMC_OPERATION / loadSize)
+                        address_target_bitmap[column] += (bitmapSize)
                         # if lastSum > 0:
                         # elif column > 0:
             # if fieldCount == 1:
             basicBlock += 5
-            loadSize = 32
+        lastFieldSum = 0
         fieldsByInstruction -= 1
 
     print "Writing on Dynamic and Memory File..."
