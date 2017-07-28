@@ -18,7 +18,7 @@ import sys
 VECTOR_SIZE = 1000
 QUERY = "Query06"
 QUERY_ENGINE = "pipelined"
-BASEDIR = "/Users/diegogomestome/Dropbox/1-UFPR/1-Mestrado_Diego_Tome/EXPERIMENTOS/"
+
 
 def writeOnDynamicAndMemoryFilesPipelined():
     global column, tuple
@@ -30,12 +30,14 @@ def writeOnDynamicAndMemoryFilesPipelined():
                 FILE_MEM.write(memory_block[column][tuple])
 
 for REGISTER_SIZE in (16, 32, 64):
+
     DATA_ADDR_READ = 1024 * 1024 * 1024
     DATA_ADDR_WRITE = 1024 * 1024 * 4096
     INSTRUCTION_ADDR = 1024
     DATA_SIZE = 4
 
     ################### FILES #################################
+    BASEDIR = "/Users/diegogomestome/Dropbox/1-UFPR/1-Mestrado_Diego_Tome/EXPERIMENTOS/"
     input_file = BASEDIR + "bitmap_files/resultQ06.txt"
     dynamic_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/x86/" + str(
         REGISTER_SIZE) + "/output_trace.out.tid0.dyn.out"
@@ -104,7 +106,7 @@ for REGISTER_SIZE in (16, 32, 64):
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")  # R 16 Byte
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
         INSTRUCTION_ADDR += 2
         basicBlock += 1
