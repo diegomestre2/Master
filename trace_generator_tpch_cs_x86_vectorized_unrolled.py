@@ -86,25 +86,25 @@ for REGISTER_SIZE in (16, 32, 64):
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # READ BITMAP)#
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 8 1 9 0 0 1 0 0 3 0 0 0\n")  # R 1 Byte
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 10 1 11 0 0 1 0 0 3 0 0 0\n")  # R 1 Byte
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 12 1 13 0 0 1 0 0 3 0 0 0\n")  # R 1 Byte
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 14 1 15 0 0 1 0 0 3 0 0 0\n")  # R 1 Byte
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 15 1 7 0 0 0 0 0 4 0 0 0\n")
         INSTRUCTION_ADDR += 2
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 1 1 2 0 0 1 0 0 3 0 0 0\n")  # R 16 Bytes
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 3 1 4 0 0 1 0 0 3 0 0 0\n")  # R 16 Bytes
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")  # R 16 Bytes
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 11 1 12 0 0 1 0 0 3 0 0 0\n")  # R 16 Bytes
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 12 1 7 0 0 0 0 0 4 0 0 0\n")
         INSTRUCTION_ADDR += 2
         basicBlock += 1
@@ -162,7 +162,7 @@ for REGISTER_SIZE in (16, 32, 64):
                             memory_block[column][tuple] += (
                                 "R " + str(bitmapSize) + " " + str(address_target_bitmap[column - 1] - 1) + " " + str(
                                     basicBlock + 2) + "\n")
-                            address_target_bitmap[column - 1] += 1
+                            address_target_bitmap[column - 1] += bitmapSize
                     ########################################################################
                     ##  APPLY PREDICATE
                     ########################################################################
@@ -209,7 +209,7 @@ for REGISTER_SIZE in (16, 32, 64):
                     ########################################################################
                     dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
                     for i in range(4):
-                        address_target_bitmap[column - 1] += 1
+                        address_target_bitmap[column - 1] += bitmapSize
                         memory_block[column][tuple] += str(
                             "W " + str(bitmapSize) + " " + str(address_target_bitmap[column]) + " " + str(
                                 basicBlock + 4) + "\n")
@@ -307,41 +307,41 @@ for REGISTER_SIZE in (16, 32, 64):
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # READ BITMAP)#
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 8 1 9 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 10 1 11 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 12 1 13 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 14 1 15 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 1 1 2 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 3 1 4 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 6 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 7 1 16 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 16 1 7 0 0 0 0 0 4 0 0 0\n")
         INSTRUCTION_ADDR += 2
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 1 1 2 0 0 1 0 0 3 0 0 0\n")  # R 16 Byte
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 3 1 4 0 0 1 0 0 3 0 0 0\n")  # R 16 Byte
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")  # R 16 Byte
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 11 1 12 0 0 1 0 0 3 0 0 0\n")# R 16 Byte
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 13 1 14 0 0 1 0 0 3 0 0 0\n")  # R 16 Byte
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 15 1 16 0 0 1 0 0 3 0 0 0\n")  # R 16 Byte
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 6 0 0 1 0 0 3 0 0 0\n")  # R 16 Byte
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 17 1 8 0 0 1 0 0 3 0 0 0\n")# R 16 Byte
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 8 1 7 0 0 0 0 0 4 0 0 0\n")
         INSTRUCTION_ADDR += 2
         basicBlock += 1
@@ -408,7 +408,7 @@ for REGISTER_SIZE in (16, 32, 64):
                             memory_block[column][tuple] += (
                                 "R " + str(bitmapSize) + " " + str(address_target_bitmap[column - 1] - 1) + " " + str(
                                     basicBlock + 2) + "\n")
-                            address_target_bitmap[column - 1] += 1
+                            address_target_bitmap[column - 1] += bitmapSize
                     ########################################################################
                     ##  APPLY PREDICATE
                     ########################################################################
@@ -455,7 +455,7 @@ for REGISTER_SIZE in (16, 32, 64):
                     ########################################################################
                     dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
                     for i in range(8):
-                        address_target_bitmap[column - 1] += 1
+                        address_target_bitmap[column - 1] += bitmapSize
                         memory_block[column][tuple] += str(
                             "W " + str(bitmapSize) + " " + str(address_target_bitmap[column]) + " " + str(
                                 basicBlock + 4) + "\n")

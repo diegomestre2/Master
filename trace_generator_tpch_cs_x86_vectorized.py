@@ -86,13 +86,13 @@ for REGISTER_SIZE in (16, 32, 64):
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # READ BITMAP)#
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 8 1 9 0 0 1 0 0 3 0 0 0\n")  # R 1 Byte
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 9 1 7 0 0 0 0 0 4 0 0 0\n")
         INSTRUCTION_ADDR += 2
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")  # R 16 Bytes
-        INSTRUCTION_ADDR += 1
+        INSTRUCTION_ADDR += 4
         FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
         INSTRUCTION_ADDR += 2
         basicBlock += 1
@@ -143,7 +143,7 @@ for REGISTER_SIZE in (16, 32, 64):
                         memory_block[column][tuple] += (
                             "R " + str(bitmapSize) + " " + str(address_target_bitmap[column - 1] - 1) + " " + str(
                                 basicBlock + 2) + "\n")
-                        address_target_bitmap[column - 1] += 1
+                        address_target_bitmap[column - 1] += bitmapSize
                     ########################################################################
                     ##  APPLY PREDICATE
                     ########################################################################
@@ -185,7 +185,7 @@ for REGISTER_SIZE in (16, 32, 64):
                     ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                     ########################################################################
                     dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
-                    address_target_bitmap[column - 1] += 1
+                    address_target_bitmap[column - 1] += bitmapSize
                     memory_block[column][tuple] += str(
                         "W " + str(bitmapSize) + " " + str(address_target_bitmap[column]) + " " + str(
                             basicBlock + 4) + "\n")
