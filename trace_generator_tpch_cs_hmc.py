@@ -31,20 +31,18 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
 
     DATA_ADDR_READ = 1024 * 1024 * 1024  # Bytes
     DATA_ADDR_WRITE = 1024 * 1024 * 4096  # Bytes
-    DATA_SIZE = 4  # Bytes
     INSTRUCTION_ADDR = 1024  # Bytes
+    DATA_SIZE = 4  # Bytes
 
+    ################### FILES #################################
     BASEDIR = "/Users/diegogomestome/Dropbox/1-UFPR/1-Mestrado_Diego_Tome/EXPERIMENTOS/"
     input_file = BASEDIR + "bitmap_files/resultQ06.txt"
     dynamic_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/" + str(
         HMC_OPERATION) + "/output_trace.out.tid0.dyn.out"
-
     memory_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/" + str(
         HMC_OPERATION) + "/output_trace.out.tid0.mem.out"
-
     static_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC/" + str(
         HMC_OPERATION) + "/output_trace.out.tid0.stat.out"
-
     ################### TREATING FILE INPUT ###################
     FILE_INPUT = open(input_file, 'r')
 
