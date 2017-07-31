@@ -163,7 +163,7 @@ for HMC_OPERATION in (16, 256):
                             memory_block[column][tuple] += (
                                 "R " + str(bitmapSize) + " " + str(address_target_bitmap[column - 1] - 1) + " " + str(
                                     basicBlock + 2) + "\n")
-                            address_target_bitmap[column - 1] += 1
+                            address_target_bitmap[column - 1] += bitmapSize
                     ########################################################################
                     ##  APPLY PREDICATE
                     ########################################################################
@@ -469,6 +469,8 @@ for HMC_OPERATION in (16, 256):
         fieldsByInstruction -= 1
 
     print "Writing on Dynamic and Memory File..."
+    vectorCounter = 0
+    startIndex = 0
     VECTOR_SIZE = int((VECTORIZED_SIZE / numberOfPredicates) / (HMC_OPERATION / DATA_SIZE))
     VECTOR_SIZE = int(VECTOR_SIZE / 8)
     while vectorCounter < len(tuples):
