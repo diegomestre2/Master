@@ -188,7 +188,6 @@ for HMC_OPERATION in (16, 256):
                     ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                     ########################################################################
                     dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
-                    address_target_bitmap[column - 1] += bitmapSize
                     memory_block[column][tuple] += str(
                         "W " + str(bitmapSize) + " " + str(address_target_bitmap[column]) + " " + str(
                             basicBlock + 4) + "\n")
