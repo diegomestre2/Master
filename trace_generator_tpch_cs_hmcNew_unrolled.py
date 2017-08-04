@@ -332,10 +332,10 @@ for HMC_OPERATION in (16, 256):
     FILE_DYN.write("# SiNUCA Trace Dynamic\n")
     FILE_MEM.write("# SiNUCA Trace Memory\n")
 
-    fieldsByInstruction = HMC_OPERATION * 2
+    fieldsByInstruction = HMC_OPERATION
     bitmapSize = 1
     if HMC_OPERATION > 16:
-        bitmapSize = (HMC_OPERATION / 32) * 8
+        bitmapSize = (HMC_OPERATION / 32) * 4
     #################### DYNAMIC AND MEMORY FILE #########################
     print "Generating Data For Dynamic and Memory Files..."
     for tuple in range(len(tuples)):
@@ -343,19 +343,17 @@ for HMC_OPERATION in (16, 256):
         elem = elem.split()
         basicBlock = 0
         for column in range(numberOfPredicates):
-            bitColSum[column] += int(elem[column])
             ########################################################################
             ##  HMC INSTRUCTION WILL BE SENDED
             ########################################################################
             if fieldsByInstruction == 1:
-                if column == numberOfPredicates - 1:
-                    fieldsByInstruction = (HMC_OPERATION * 2) + 1
-
                 dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
                 ########################################################################
                 ##  MATCH FOUND
                 ########################################################################
                 dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
+                if column == numberOfPredicates - 1:
+                    fieldsByInstruction = HMC_OPERATION + 1
                 ########################################################################
                 ## READ THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                 ########################################################################
@@ -382,8 +380,8 @@ for HMC_OPERATION in (16, 256):
                     "W " + str(bitmapSize) + " " + str(
                         address_target_bitmap[column]) + " " + str(basicBlock + 5) + "\n")
                 address_target_bitmap[column] += bitmapSize
-                # if lastSum > 0:
-                # elif column > 0:
+                        # if lastSum > 0:
+                    # elif column > 0:
             # if fieldCount == 1:
             basicBlock += 5
         fieldsByInstruction -= 1
@@ -561,10 +559,10 @@ for HMC_OPERATION in (16, 256):
     FILE_DYN.write("# SiNUCA Trace Dynamic\n")
     FILE_MEM.write("# SiNUCA Trace Memory\n")
 
-    fieldsByInstruction = HMC_OPERATION * 4
+    fieldsByInstruction = HMC_OPERATION
     bitmapSize = 1
     if HMC_OPERATION > 16:
-        bitmapSize = (HMC_OPERATION / 32) * 16
+        bitmapSize = (HMC_OPERATION / 32) * 4
     #################### DYNAMIC AND MEMORY FILE #########################
     print "Generating Data For Dynamic and Memory Files..."
     for tuple in range(len(tuples)):
@@ -572,19 +570,17 @@ for HMC_OPERATION in (16, 256):
         elem = elem.split()
         basicBlock = 0
         for column in range(numberOfPredicates):
-            bitColSum[column] += int(elem[column])
             ########################################################################
             ##  HMC INSTRUCTION WILL BE SENDED
             ########################################################################
             if fieldsByInstruction == 1:
-                if column == numberOfPredicates - 1:
-                    fieldsByInstruction = (HMC_OPERATION * 4) + 1
-
                 dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
                 ########################################################################
                 ##  MATCH FOUND
                 ########################################################################
                 dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
+                if column == numberOfPredicates - 1:
+                    fieldsByInstruction = HMC_OPERATION + 1
                 ########################################################################
                 ## READ THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                 ########################################################################
@@ -611,8 +607,8 @@ for HMC_OPERATION in (16, 256):
                     "W " + str(bitmapSize) + " " + str(
                         address_target_bitmap[column]) + " " + str(basicBlock + 5) + "\n")
                 address_target_bitmap[column] += bitmapSize
-                # if lastSum > 0:
-                # elif column > 0:
+                        # if lastSum > 0:
+                    # elif column > 0:
             # if fieldCount == 1:
             basicBlock += 5
         fieldsByInstruction -= 1
@@ -854,10 +850,10 @@ for HMC_OPERATION in (16, 256):
     FILE_DYN.write("# SiNUCA Trace Dynamic\n")
     FILE_MEM.write("# SiNUCA Trace Memory\n")
 
-    fieldsByInstruction = HMC_OPERATION * 8
+    fieldsByInstruction = HMC_OPERATION
     bitmapSize = 1
     if HMC_OPERATION > 16:
-        bitmapSize = (HMC_OPERATION / 32) * 32
+        bitmapSize = (HMC_OPERATION / 32) * 4
     #################### DYNAMIC AND MEMORY FILE #########################
     print "Generating Data For Dynamic and Memory Files..."
     for tuple in range(len(tuples)):
@@ -865,19 +861,17 @@ for HMC_OPERATION in (16, 256):
         elem = elem.split()
         basicBlock = 0
         for column in range(numberOfPredicates):
-            bitColSum[column] += int(elem[column])
             ########################################################################
             ##  HMC INSTRUCTION WILL BE SENDED
             ########################################################################
             if fieldsByInstruction == 1:
-                if column == numberOfPredicates - 1:
-                    fieldsByInstruction = (HMC_OPERATION * 8) + 1
-
                 dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
                 ########################################################################
                 ##  MATCH FOUND
                 ########################################################################
                 dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
+                if column == numberOfPredicates - 1:
+                    fieldsByInstruction = HMC_OPERATION + 1
                 ########################################################################
                 ## READ THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                 ########################################################################
@@ -904,8 +898,8 @@ for HMC_OPERATION in (16, 256):
                     "W " + str(bitmapSize) + " " + str(
                         address_target_bitmap[column]) + " " + str(basicBlock + 5) + "\n")
                 address_target_bitmap[column] += bitmapSize
-                # if lastSum > 0:
-                # elif column > 0:
+                        # if lastSum > 0:
+                    # elif column > 0:
             # if fieldCount == 1:
             basicBlock += 5
         fieldsByInstruction -= 1
