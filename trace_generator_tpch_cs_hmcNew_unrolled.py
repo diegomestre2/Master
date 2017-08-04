@@ -332,10 +332,10 @@ for HMC_OPERATION in (16, 256):
     FILE_DYN.write("# SiNUCA Trace Dynamic\n")
     FILE_MEM.write("# SiNUCA Trace Memory\n")
 
-    fieldsByInstruction = HMC_OPERATION
+    fieldsByInstruction = HMC_OPERATION * 2
     bitmapSize = 1
     if HMC_OPERATION > 16:
-        bitmapSize = (HMC_OPERATION / 32) * 4
+        bitmapSize = (HMC_OPERATION / 32) * 8
     #################### DYNAMIC AND MEMORY FILE #########################
     print "Generating Data For Dynamic and Memory Files..."
     for tuple in range(len(tuples)):
@@ -353,7 +353,7 @@ for HMC_OPERATION in (16, 256):
                 ########################################################################
                 dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                 if column == numberOfPredicates - 1:
-                    fieldsByInstruction = HMC_OPERATION + 1
+                    fieldsByInstruction = (HMC_OPERATION * 2) + 1
                 ########################################################################
                 ## READ THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                 ########################################################################
@@ -559,10 +559,10 @@ for HMC_OPERATION in (16, 256):
     FILE_DYN.write("# SiNUCA Trace Dynamic\n")
     FILE_MEM.write("# SiNUCA Trace Memory\n")
 
-    fieldsByInstruction = HMC_OPERATION
+    fieldsByInstruction = HMC_OPERATION * 4
     bitmapSize = 1
     if HMC_OPERATION > 16:
-        bitmapSize = (HMC_OPERATION / 32) * 4
+        bitmapSize = (HMC_OPERATION / 32) * 16
     #################### DYNAMIC AND MEMORY FILE #########################
     print "Generating Data For Dynamic and Memory Files..."
     for tuple in range(len(tuples)):
@@ -580,7 +580,7 @@ for HMC_OPERATION in (16, 256):
                 ########################################################################
                 dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                 if column == numberOfPredicates - 1:
-                    fieldsByInstruction = HMC_OPERATION + 1
+                    fieldsByInstruction = (HMC_OPERATION * 4) + 1
                 ########################################################################
                 ## READ THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                 ########################################################################
@@ -850,10 +850,10 @@ for HMC_OPERATION in (16, 256):
     FILE_DYN.write("# SiNUCA Trace Dynamic\n")
     FILE_MEM.write("# SiNUCA Trace Memory\n")
 
-    fieldsByInstruction = HMC_OPERATION
+    fieldsByInstruction = HMC_OPERATION * 8
     bitmapSize = 1
     if HMC_OPERATION > 16:
-        bitmapSize = (HMC_OPERATION / 32) * 4
+        bitmapSize = (HMC_OPERATION / 32) * 32
     #################### DYNAMIC AND MEMORY FILE #########################
     print "Generating Data For Dynamic and Memory Files..."
     for tuple in range(len(tuples)):
@@ -871,7 +871,7 @@ for HMC_OPERATION in (16, 256):
                 ########################################################################
                 dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                 if column == numberOfPredicates - 1:
-                    fieldsByInstruction = HMC_OPERATION + 1
+                    fieldsByInstruction = (HMC_OPERATION * 8) + 1
                 ########################################################################
                 ## READ THE BITMAP 1 Byte of Store by 32 Bytes of Loads
                 ########################################################################
