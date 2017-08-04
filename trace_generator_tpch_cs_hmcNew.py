@@ -139,7 +139,6 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
         elem = elem.split()
         basicBlock = 0
         for column in range(numberOfPredicates):
-            bitColSum[column] += int(elem[column])
             ########################################################################
             ##  HMC INSTRUCTION WILL BE SENDED
             ########################################################################
@@ -149,8 +148,6 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
                 ##  MATCH FOUND
                 ########################################################################
                 dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
-                lastFieldSum = bitColSum[column]
-                bitColSum[column] = 0
                 if column == numberOfPredicates - 1:
                     fieldsByInstruction = (HMC_OPERATION / 4) + 1
                 ########################################################################
