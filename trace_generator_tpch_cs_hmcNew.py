@@ -114,10 +114,6 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
         INSTRUCTION_ADDR += 4
         FILE_STAT.write("HMC_UNLOCK 15 " + str(INSTRUCTION_ADDR) + " 4 1 11 0 0 0 0 0 0 3 0 0 1 -1 -1 -1\n")
         INSTRUCTION_ADDR += 4
-        # basicBlock += 1
-        # FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
-        # FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 8 0 0 0 0 0 0 3 0 0 1 1 -1 1\n")
-        # INSTRUCTION_ADDR += 4
 
     FILE_STAT.write("# eof")
     FILE_STAT.close()
