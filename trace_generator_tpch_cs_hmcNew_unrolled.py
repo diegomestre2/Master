@@ -30,8 +30,8 @@ for HMC_OPERATION in (16, 256):
 
     DATA_ADDR_READ = 1024 * 1024 * 1024
     DATA_ADDR_WRITE = 1024 * 1024 * 4096
-    DATA_SIZE = 4
     INSTRUCTION_ADDR = 1024
+    DATA_SIZE = 4
 
     input_file = BASEDIR + "bitmap_files/resultQ06.txt"
 
@@ -49,8 +49,8 @@ for HMC_OPERATION in (16, 256):
     header = header.split("|")
     numberOfTables = int(header[0])
     numberOfPredicates = int(header[(numberOfTables * 2) + 1])
-
     tuples = FILE_INPUT.readlines()
+
     FILE_INPUT.close()
     ##########################################################
     qtdTuples = len(tuples)
@@ -124,10 +124,6 @@ for HMC_OPERATION in (16, 256):
         INSTRUCTION_ADDR += 4
         FILE_STAT.write("HMC_UNLOCK 15 " + str(INSTRUCTION_ADDR) + " 4 1 11 0 0 0 0 0 0 3 0 0 1 -1 -1 -1\n")
         INSTRUCTION_ADDR += 4
-        # basicBlock += 1
-        # FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
-        # FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 8 0 0 0 0 0 0 3 0 0 1 1 -1 1\n")
-        # INSTRUCTION_ADDR += 4
 
     FILE_STAT.write("# eof")
     FILE_STAT.close()
@@ -199,8 +195,8 @@ for HMC_OPERATION in (16, 256):
     FILE_MEM.close()
     FILE_DYN.close()
     print "Dynamic and Memory Files Ok!"
-
     print "Compressing Files..."
+
     os.system("rm -f " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
         HMC_OPERATION) + "/unrolled4x/" + "*gz")
     os.system("gzip " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
@@ -212,8 +208,8 @@ for HMC_OPERATION in (16, 256):
 
     DATA_ADDR_READ = 1024 * 1024 * 1024
     DATA_ADDR_WRITE = 1024 * 1024 * 4096
-    DATA_SIZE = 4
     INSTRUCTION_ADDR = 1024
+    DATA_SIZE = 4
 
     dynamic_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
         HMC_OPERATION) + "/unrolled8x/output_trace.out.tid0.dyn.out"
@@ -229,8 +225,6 @@ for HMC_OPERATION in (16, 256):
     header = header.split("|")
     numberOfTables = int(header[0])
     numberOfPredicates = int(header[(numberOfTables * 2) + 1])
-    instructionAddress = 1024
-    basicBlock = 0
     tuples = FILE_INPUT.readlines()
 
     FILE_INPUT.close()
@@ -387,16 +381,15 @@ for HMC_OPERATION in (16, 256):
         fieldsByInstruction -= 1
 
     print "Writing on Dynamic and Memory File..."
-    vectorCounter = 0
-    startIndex = 0
+
     ######### WRITES ON DYNAMIC AND MEMORY FILE ################
     writeOnDynamicAndMemoryFilesPipelined()
 
     FILE_MEM.close()
     FILE_DYN.close()
     print "Dynamic and Memory Files Ok!"
-
     print "Compressing Files..."
+
     os.system("rm -f " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
         HMC_OPERATION) + "/unrolled8x/" + "*gz")
     os.system("gzip " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
@@ -407,8 +400,8 @@ for HMC_OPERATION in (16, 256):
 
     DATA_ADDR_READ = 1024 * 1024 * 1024
     DATA_ADDR_WRITE = 1024 * 1024 * 4096
-    DATA_SIZE = 4
     INSTRUCTION_ADDR = 1024
+    DATA_SIZE = 4
 
     dynamic_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
         HMC_OPERATION) + "/unrolled16x/output_trace.out.tid0.dyn.out"
@@ -424,8 +417,6 @@ for HMC_OPERATION in (16, 256):
     header = header.split("|")
     numberOfTables = int(header[0])
     numberOfPredicates = int(header[(numberOfTables * 2) + 1])
-    instructionAddress = 1024
-    basicBlock = 0
     tuples = FILE_INPUT.readlines()
 
     FILE_INPUT.close()
@@ -614,16 +605,15 @@ for HMC_OPERATION in (16, 256):
         fieldsByInstruction -= 1
 
     print "Writing on Dynamic and Memory File..."
-    vectorCounter = 0
-    startIndex = 0
+
     ######### WRITES ON DYNAMIC AND MEMORY FILE ################
     writeOnDynamicAndMemoryFilesPipelined()
 
     FILE_MEM.close()
     FILE_DYN.close()
     print "Dynamic and Memory Files Ok!"
-
     print "Compressing Files..."
+
     os.system("rm -f " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
         HMC_OPERATION) + "/unrolled16x/" + "*gz")
     os.system("gzip " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
@@ -634,8 +624,8 @@ for HMC_OPERATION in (16, 256):
 
     DATA_ADDR_READ = 1024 * 1024 * 1024
     DATA_ADDR_WRITE = 1024 * 1024 * 4096
-    DATA_SIZE = 4
     INSTRUCTION_ADDR = 1024
+    DATA_SIZE = 4
 
     dynamic_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
         HMC_OPERATION) + "/unrolled32x/output_trace.out.tid0.dyn.out"
@@ -651,8 +641,6 @@ for HMC_OPERATION in (16, 256):
     header = header.split("|")
     numberOfTables = int(header[0])
     numberOfPredicates = int(header[(numberOfTables * 2) + 1])
-    instructionAddress = 1024
-    basicBlock = 0
     tuples = FILE_INPUT.readlines()
 
     FILE_INPUT.close()
@@ -905,19 +893,17 @@ for HMC_OPERATION in (16, 256):
         fieldsByInstruction -= 1
 
     print "Writing on Dynamic and Memory File..."
-    vectorCounter = 0
-    startIndex = 0
+
     ######### WRITES ON DYNAMIC AND MEMORY FILE ################
     writeOnDynamicAndMemoryFilesPipelined()
 
     FILE_MEM.close()
     FILE_DYN.close()
     print "Dynamic and Memory Files Ok!"
-
     print "Compressing Files..."
+
     os.system("rm -f " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
         HMC_OPERATION) + "/unrolled32x/" + "*gz")
     os.system("gzip " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
         HMC_OPERATION) + "/unrolled32x/" + "*.out")
     print "ALL Done!"
-
