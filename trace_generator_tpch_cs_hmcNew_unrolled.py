@@ -49,8 +49,8 @@ for HMC_OPERATION in (16, 256):
     header = header.split("|")
     numberOfTables = int(header[0])
     numberOfPredicates = int(header[(numberOfTables * 2) + 1])
-    tuples = FILE_INPUT.readlines()
 
+    tuples = FILE_INPUT.readlines()
     FILE_INPUT.close()
     ##########################################################
     qtdTuples = len(tuples)
