@@ -28,7 +28,7 @@ def writeOnDynamicAndMemoryFilesPipelined():
             if memory_block[column][tuple] != 0:
                 FILE_MEM.write(memory_block[column][tuple])
 
-for HMC_OPERATION in (16, 256):
+for HMC_OPERATION in (256, 256):
 
     DATA_ADDR_READ = 1024 * 1024 * 1024
     DATA_ADDR_WRITE = 1024 * 1024 * 4096
@@ -80,7 +80,7 @@ for HMC_OPERATION in (16, 256):
     FILE_STAT.write("# SiNUCA Trace Static\n")
 
     basicBlock = 0
-    print("Generating Traces Files For HMC_NEW... Inner Lock " + str(HMC_OPERATION) + " Bytes")
+    print("Generating Traces Files For HMC_NEW... Predication Unrolled 32x " + str(HMC_OPERATION) + " Bytes")
     #################### STATIC FILE #########################
     print "Generating Static File..."
     for i in range(numberOfPredicates):
@@ -2556,136 +2556,6 @@ for HMC_OPERATION in (16, 256):
         FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 32 -1 32\n")
         INSTRUCTION_ADDR += 4
         basicBlock += 1
-        FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE 19)#
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 1\n")  # R
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 2\n")  # R
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 3\n")  # R
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 4\n")  # R
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 5\n")  # R
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 6\n")  # R
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 7\n")  # R
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 8\n")  # R
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 9\n")  # R
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 10\n")  # R
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 11\n")  # R
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 12\n")  # R
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 13\n")  # R
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 14\n")  # R
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 15\n")  # R
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 16\n")  # R
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 17\n")  # R
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 18\n")  # R
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 19\n")  # R
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 20 -1 20\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 21 -1 21\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 22 -1 22\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 23 -1 23\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 24 -1 24\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 25 -1 25\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 26 -1 26\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 27 -1 27\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 28 -1 28\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 29 -1 29\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 30 -1 30\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 31 -1 31\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 32 -1 32\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 1 -1 1\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 2 -1 2\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 3 -1 3\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 4 -1 4\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 5 -1 5\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 6 -1 6\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 7 -1 7\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 8 -1 8\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 9 -1 9\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 10 -1 10\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 11 -1 11\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 12 -1 12\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 13 -1 13\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 14 -1 14\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 15 -1 15\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 16 -1 16\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 17 -1 17\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 18 -1 18\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 19 -1 19\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 20 -1 20\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 21 -1 21\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 22 -1 22\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 23 -1 23\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 24 -1 24\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 25 -1 25\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 26 -1 26\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 27 -1 27\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 28 -1 28\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 29 -1 29\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 30 -1 30\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 31 -1 31\n")
-        INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 32 -1 32\n")
-        INSTRUCTION_ADDR += 4
-        basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE 20)#
         FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 1\n")  # R
         INSTRUCTION_ADDR += 4
@@ -4391,7 +4261,7 @@ for HMC_OPERATION in (16, 256):
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY READ BITMAP)#
         FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 8 0 0 0 1 0 0 3 0 0 1 -1 -1 33\n")  # R
         INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 0 0 0 3 0 0 1 33 -1 33\n")
+        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 0 0 0 3 0 0 1 33 -1 32\n")
         INSTRUCTION_ADDR += 4
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY WRITE BITMAP)
@@ -4410,13 +4280,13 @@ for HMC_OPERATION in (16, 256):
     FILE_MEM.write("# SiNUCA Trace Memory\n")
 
     fieldsByInstruction = HMC_OPERATION / 4
-    totalFields = HMC_OPERATION / 4 * 8
+    totalFields = (HMC_OPERATION / 4) * 32
     lastFieldSum = 0
-    loads = 0
-    operation = 0
+    loadCount = [0, 0, 0]
     bitmapSize = 1
+    iterator = 0
     if HMC_OPERATION > 16:
-        bitmapSize = HMC_OPERATION / 32 * 32
+        bitmapSize = (HMC_OPERATION / 32) * 32
     #################### DYNAMIC AND MEMORY FILE #########################
     print "Generating Data For Dynamic and Memory Files..."
     for tuple in range(len(tuples)):
@@ -4426,52 +4296,110 @@ for HMC_OPERATION in (16, 256):
         for column in range(numberOfPredicates):
             bitColSum[column] += int(elem[column])
             ########################################################################
-            ##  HMC INSTRUCTION WILL BE SENDED
+            ##  HMC INSTRUCTION WILL BE SENT
             ########################################################################
             if fieldsByInstruction == 1:
-                dynamic_block[column][tuple] += str(str(basicBlock + 1) + "\n")
+                if column == numberOfPredicates - 1:
+                    fieldsByInstruction = (HMC_OPERATION / 4) + 1
                 ########################################################################
                 ##  MATCH FOUND
                 ########################################################################
                 if bitColSum[column] > 0:
-                    loads += 1
-                    dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
+                    if column > 0:
+                        loadCount[column] += 1
                     lastFieldSum = bitColSum[column]
                     bitColSum[column] = 0
-                    if column == numberOfPredicates - 1:
-                        fieldsByInstruction = (HMC_OPERATION / 4) + 1
-                    ########################################################################
-                    ## READ THE BITMAP 1 Byte of Store by 32 Bytes of Loads
-                    ########################################################################
-                    if column > 0:
-                        dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
-                        memory_block[column][tuple] += str(
-                            "R " + str(bitmapSize) + " " + str(
-                                address_target_bitmap[column - 1] - 1) + " " + str(basicBlock + 3) + "\n")
-                        address_target_bitmap[column - 1] += bitmapSize
-                    ########################################################################
-                    ##  APPLY PREDICATE
-                    ########################################################################
-                    dynamic_block[column][tuple] += str(str(basicBlock + 4) + "\n")
-                    memory_block[column][tuple] += (
-                        "R " + str(HMC_OPERATION) + " " + str(address_base[column]) + " " + str(
-                            basicBlock + 4) + "\n")
-                    address_base[column] += HMC_OPERATION
-                    ########################################################################
-                    # CREATE THE BITMAP 1 Byte Store by 32 Bytes of Loads
-                    ########################################################################
+
                     if totalFields == 1:
-                        dynamic_block[column][tuple] += str(str(basicBlock + 5) + "\n")
+                        dynamic_block[column][tuple] += str(str(basicBlock + 33) + "\n")
+
+                        if column == numberOfPredicates - 1:
+                            fieldsByInstruction = (HMC_OPERATION / 4) + 1
+                            totalFields = (HMC_OPERATION / 4) * 32 + 1
+
+                        dynamic_block[column][tuple] += str(str(basicBlock + 34) + "\n")
+                        ########################################################################
+                        ## READ THE BITMAP 1 Byte of Store by 32 Bytes of Loads
+                        ########################################################################
+                        if column > 0:
+                            dynamic_block[column][tuple] += str(str(basicBlock + 35) + "\n")
+                            memory_block[column][tuple] += str(
+                                "R " + str(bitmapSize) + " " + str(
+                                    address_target_bitmap[column - 1] - 1) + " " + str(basicBlock + 35) + "\n")
+                            address_target_bitmap[column - 1] += bitmapSize
+                        ########################################################################
+                        ##  APPLY PREDICATE
+                        ########################################################################
+                        if column == 0:
+                            iterator = 32
+                        else:
+                            iterator = loadCount[column]
+
+                        dynamic_block[column][tuple] += str(str(basicBlock + iterator) + "\n")
+                        for i in range(iterator):
+                            memory_block[column][tuple] += (
+                                "R " + str(HMC_OPERATION) + " " + str(address_base[column]) + " " + str(
+                                    basicBlock + iterator) + "\n")
+                            address_base[column] += HMC_OPERATION
+                        loadCount[column] = 0
+                        ########################################################################
+                        # CREATE THE BITMAP 1 Byte Store by 32 Bytes of Loads
+                        ########################################################################
+                        dynamic_block[column][tuple] += str(str(basicBlock + 36) + "\n")
                         memory_block[column][tuple] += str(
                             "W " + str(bitmapSize) + " " + str(
-                                address_target_bitmap[column]) + " " + str(basicBlock + 5) + "\n")
+                                address_target_bitmap[column]) + " " + str(basicBlock + 36) + "\n")
                         address_target_bitmap[column] += bitmapSize
+                # bitColSum[column] > 0:
                 else:
-                    operation += 1
-                        # if lastSum > 0:
-                    # elif column > 0:
-            # if fieldCount == 1:
-            basicBlock += 6
+                    if column > 0 and lastFieldSum > 0:
+                        lastFieldSum = 0
+                        loadCount[column] += 1
+                    # if column > 0 and lastFieldSum > 0:
+                    if totalFields == 1:
+                        dynamic_block[column][tuple] += str(str(basicBlock + 33) + "\n")
+
+                        if column == numberOfPredicates - 1:
+                            fieldsByInstruction = (HMC_OPERATION / 4) + 1
+                            totalFields = (HMC_OPERATION / 4) * 32 + 1
+
+                        dynamic_block[column][tuple] += str(str(basicBlock + 34) + "\n")
+                        ########################################################################
+                        ## READ THE BITMAP 1 Byte of Store by 32 Bytes of Loads
+                        ########################################################################
+                        if column > 0:
+                            dynamic_block[column][tuple] += str(str(basicBlock + 35) + "\n")
+                            memory_block[column][tuple] += str(
+                                "R " + str(bitmapSize) + " " + str(
+                                    address_target_bitmap[column - 1] - 1) + " " + str(basicBlock + 35) + "\n")
+                            address_target_bitmap[column - 1] += bitmapSize
+                        ########################################################################
+                        ##  APPLY PREDICATE
+                        ########################################################################
+                        if column == 0:
+                            iterator = 32
+                        else:
+                            iterator = loadCount[column]
+
+                        dynamic_block[column][tuple] += str(str(basicBlock + iterator) + "\n")
+                        for i in range(iterator):
+                            memory_block[column][tuple] += (
+                                "R " + str(HMC_OPERATION) + " " + str(address_base[column]) + " " + str(
+                                    basicBlock + iterator) + "\n")
+                            address_base[column] += HMC_OPERATION
+                        loadCount[column] = 0
+                        ########################################################################
+                        # CREATE THE BITMAP 1 Byte Store by 32 Bytes of Loads
+                        ########################################################################
+                        dynamic_block[column][tuple] += str(str(basicBlock + 36) + "\n")
+                        memory_block[column][tuple] += str(
+                            "W " + str(bitmapSize) + " " + str(
+                                address_target_bitmap[column]) + " " + str(basicBlock + 36) + "\n")
+                        address_target_bitmap[column] += bitmapSize
+                        # bitColSum[column] > 0:
+                    # if totalFields == 1:
+                # else
+            basicBlock += 36
         lastFieldSum = 0
         totalFields -= 1
         fieldsByInstruction -= 1
