@@ -16,17 +16,24 @@ import sys
 
 VECTOR_SIZE = 999
 QUERY = "Query06"
-QUERY_ENGINE = "pipelined"
+QUERY_ENGINE = "vectorized"
 BASEDIR = "/Users/diegogomestome/Dropbox/1-UFPR/1-Mestrado_Diego_Tome/EXPERIMENTOS/"
 
-def writeOnDynamicAndMemoryFilesPipelined():
+
+def writeOnDynamicAndMemoryFilesVectorized():
     global column, tuple
-    ######### WRITES ON DYNAMIC AND MEMORY FILE COLUMN-AT-A-TIME################3
-    for column in range(numberOfPredicates):
-        for tuple in range(len(tuples)):
-            FILE_DYN.write(dynamic_block[column][tuple])
-            if memory_block[column][tuple] != 0:
-                FILE_MEM.write(memory_block[column][tuple])
+    vectorCounter = 0
+    VECTOR_SIZE = 1
+    ######### WRITES ON DYNAMIC AND MEMORY FILE ################
+    while vectorCounter < len(tuples):
+        for column in xrange(numberOfPredicates):
+            startIndex = vectorCounter
+            for tuple in xrange(startIndex, startIndex + VECTOR_SIZE):
+                if tuple < len(tuples):
+                    FILE_DYN.write(dynamic_block[column][tuple])
+                    if memory_block[column][tuple] != 0:
+                        FILE_MEM.write(memory_block[column][tuple])
+        vectorCounter += VECTOR_SIZE
 
 for HMC_OPERATION in (256, 256):
 
@@ -4406,7 +4413,7 @@ for HMC_OPERATION in (256, 256):
 
     print "Writing on Dynamic and Memory File..."
     ######### WRITES ON DYNAMIC AND MEMORY FILE ################
-    writeOnDynamicAndMemoryFilesPipelined()
+    writeOnDynamicAndMemoryFilesVectorized()
 
     FILE_MEM.close()
     FILE_DYN.close()
