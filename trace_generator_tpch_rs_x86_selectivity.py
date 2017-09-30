@@ -29,7 +29,7 @@ def writeOnDynamicAndMemoryFilesPipelined():
                 FILE_MEM.write(memory_block[column][tuple])
 
 
-for REGISTER_SIZE in (16, 32, 64):
+for REGISTER_SIZE in (16, 64):
     for SELECTIVITY in ("0001", "001", "01", "1", "10", "100"):
         
         DATA_ADDR_READ = 1024 * 1024 * 1024
@@ -39,11 +39,11 @@ for REGISTER_SIZE in (16, 32, 64):
     
         input_file = BASEDIR + "bitmap_files/resultQ06.txt"
         dynamic_trace = BASEDIR + "traces/" + QUERY + "/rowStore/x86/" + str(
-            REGISTER_SIZE) + "/" + SELECTIVITY + "/" + SELECTIVITY + "/output_trace.out.tid0.dyn.out"
+            REGISTER_SIZE) + "/selectivity/" + SELECTIVITY + "/output_trace.out.tid0.dyn.out"
         memory_trace = BASEDIR + "traces/" + QUERY + "/rowStore/x86/" + str(
-            REGISTER_SIZE) + "/" + SELECTIVITY + "/output_trace.out.tid0.mem.out"
+            REGISTER_SIZE) + "/selectivity/" + SELECTIVITY + "/output_trace.out.tid0.mem.out"
         static_trace = BASEDIR + "traces/" + QUERY + "/rowStore/x86/" + str(
-            REGISTER_SIZE) + "/" + SELECTIVITY + "/output_trace.out.tid0.stat.out"
+            REGISTER_SIZE) + "/selectivity/" + SELECTIVITY + "/output_trace.out.tid0.stat.out"
         ################### TREATING FILE INPUT ###################
         FILE_INPUT = open(input_file, 'r')
     
@@ -168,7 +168,7 @@ for REGISTER_SIZE in (16, 32, 64):
                         ########################################################################
                         dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                         memory_block[column][tuple] += (
-                            "R " + str(REGISTER_SIZE) + "/" + SELECTIVITY + " " + str(address_base[column]) + " " + str(
+                            "R " + str(REGISTER_SIZE) + " " + str(address_base[column]) + " " + str(
                                 basicBlock + 2) + "\n")
                         address_base[column] += REGISTER_SIZE * loadsByTuple
                         ########################################################################
@@ -179,11 +179,11 @@ for REGISTER_SIZE in (16, 32, 64):
                             for i in range(loadsByTuple):
                                 dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
                                 memory_block[column][tuple] += (
-                                    "R " + str(REGISTER_SIZE) + "/" + SELECTIVITY + " " + str(address_base[column]) + " " + str(
+                                    "R " + str(REGISTER_SIZE) + " " + str(address_base[column]) + " " + str(
                                         basicBlock + 3) + "\n")
                                 address_base[column] += REGISTER_SIZE
                                 memory_block[column][tuple] += str(
-                                    "W " + str(REGISTER_SIZE) + "/" + SELECTIVITY + " " + str(address_base2[column]) + " " + str(
+                                    "W " + str(REGISTER_SIZE) + " " + str(address_base2[column]) + " " + str(
                                         basicBlock + 3) + "\n")
                                 address_base2[column] += REGISTER_SIZE
                     elif column > 0:
@@ -213,7 +213,7 @@ for REGISTER_SIZE in (16, 32, 64):
         print "Dynamic and Memory Files Ok!"
         print "Compressing Files..."
         os.system("rm -f " + BASEDIR + "traces/" + QUERY + "/rowStore/x86/" + str(
-            REGISTER_SIZE) + "/" + SELECTIVITY + "/" + "*gz")
+            REGISTER_SIZE) + "/selectivity/" + SELECTIVITY + "/" + "*gz")
         os.system("gzip " + BASEDIR + "traces/" + QUERY + "/rowStore/x86/" + str(
-            REGISTER_SIZE) + "/" + SELECTIVITY + "/" + "*.out")
+            REGISTER_SIZE) + "/selectivity/" + SELECTIVITY + "/" + "*.out")
         print "ALL Done!"
