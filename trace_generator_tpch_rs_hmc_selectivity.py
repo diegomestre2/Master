@@ -29,7 +29,7 @@ def writeOnDynamicAndMemoryFilesPipelined():
                 FILE_MEM.write(memory_block[column][tuple])
 
 
-for HMC_OPERATION in (16, 32, 64, 128, 256):
+for HMC_OPERATION in (16, 256):
     for SELECTIVITY in ("0001", "001", "01", "1", "10", "100"):
         DATA_ADDR_READ = 1024 * 1024 * 1024
         DATA_ADDR_WRITE = 1024 * 1024 * 4096
@@ -38,11 +38,11 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
 
         input_file = BASEDIR + "bitmap_files/resultQ06.txt"
         dynamic_trace = BASEDIR + "traces/" + QUERY + "/rowStore/HMC/" + str(
-            HMC_OPERATION) + "/" + SELECTIVITY + "/output_trace.out.tid0.dyn.out"
+            HMC_OPERATION) + "/selectivity/" + SELECTIVITY + "/output_trace.out.tid0.dyn.out"
         memory_trace = BASEDIR + "traces/" + QUERY + "/rowStore/HMC/" + str(
-            HMC_OPERATION) + "/" + SELECTIVITY + "/output_trace.out.tid0.mem.out"
+            HMC_OPERATION) + "/selectivity/" + SELECTIVITY + "/output_trace.out.tid0.mem.out"
         static_trace = BASEDIR + "traces/" + QUERY + "/rowStore/HMC/" + str(
-            HMC_OPERATION) + "/" + SELECTIVITY + "/output_trace.out.tid0.stat.out"
+            HMC_OPERATION) + "/selectivity/" + SELECTIVITY + "/output_trace.out.tid0.stat.out"
         ################### TREATING FILE INPUT ###################
         FILE_INPUT = open(input_file, 'r')
     
@@ -160,7 +160,7 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
                         ########################################################################
                         dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                         memory_block[column][tuple] += (
-                            "R " + str(HMC_OPERATION) + "/" + SELECTIVITY + " " + str(address_base[column]) + " " + str(
+                            "R " + str(HMC_OPERATION) + " " + str(address_base[column]) + " " + str(
                                 basicBlock + 2) + "\n")
                         address_base[column] += HMC_OPERATION * loadsByTuple
                         ########################################################################
@@ -171,11 +171,11 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
                             for i in range(loadsByTuple):
                                 dynamic_block[column][tuple] += str(str(basicBlock + 3) + "\n")
                                 memory_block[column][tuple] += (
-                                    "R " + str(HMC_OPERATION) + "/" + SELECTIVITY + " " + str(address_base[column]) + " " + str(
+                                    "R " + str(HMC_OPERATION) + " " + str(address_base[column]) + " " + str(
                                         basicBlock + 3) + "\n")
                                 address_base[column] += HMC_OPERATION
                                 memory_block[column][tuple] += str(
-                                    "W " + str(HMC_OPERATION) + "/" + SELECTIVITY + " " + str(address_base2[column]) + " " + str(
+                                    "W " + str(HMC_OPERATION) + " " + str(address_base2[column]) + " " + str(
                                         basicBlock + 3) + "\n")
                                 address_base2[column] += HMC_OPERATION
                     elif column > 0:
@@ -188,7 +188,7 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
                             ########################################################################
                             dynamic_block[column][tuple] += str(str(basicBlock + 2) + "\n")
                             memory_block[column][tuple] += (
-                                "R " + str(HMC_OPERATION) + "/" + SELECTIVITY + " " + str(address_base[column]) + " " + str(
+                                "R " + str(HMC_OPERATION) + " " + str(address_base[column]) + " " + str(
                                     basicBlock + 2) + "\n")
                             address_base[column] += (HMC_OPERATION)
                 basicBlock += 3
@@ -204,6 +204,6 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
         FILE_DYN.close()
         print "Dynamic and Memory Files Ok!"
         print "Compressing Files..."
-        os.system("rm -f " + BASEDIR + "traces/" + QUERY + "/rowStore/HMC/" + str(HMC_OPERATION) + "/" + SELECTIVITY + "/" + "*gz")
-        os.system("gzip " + BASEDIR + "traces/" + QUERY + "/rowStore/HMC/" + str(HMC_OPERATION) + "/" + SELECTIVITY + "/"  "*.out")
+        os.system("rm -f " + BASEDIR + "traces/" + QUERY + "/rowStore/HMC/" + str(HMC_OPERATION) + "/selectivity/" + SELECTIVITY + "/" + "*gz")
+        os.system("gzip " + BASEDIR + "traces/" + QUERY + "/rowStore/HMC/" + str(HMC_OPERATION) + "/selectivity/" + SELECTIVITY + "/" + "*.out")
         print "ALL Done!"

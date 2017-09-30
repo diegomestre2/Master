@@ -221,7 +221,7 @@ for HMC_OPERATION in (16, 256):
         input_file = BASEDIR + "bitmap_files/q6_selectivity/q6_" + SELECTIVITY + ".txt"
     
         dynamic_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
-            HMC_OPERATION) + "/unrolled4x/selectivity/" + SELECTIVITY + "/selectivity/" + SELECTIVITY + "/output_trace.out.tid0.dyn.out"
+            HMC_OPERATION) + "/unrolled4x/selectivity/" + SELECTIVITY + "/output_trace.out.tid0.dyn.out"
         memory_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
             HMC_OPERATION) + "/unrolled4x/selectivity/" + SELECTIVITY + "/output_trace.out.tid0.mem.out"
         static_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(

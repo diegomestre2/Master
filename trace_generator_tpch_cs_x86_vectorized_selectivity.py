@@ -18,7 +18,7 @@ QUERY = "Query06"
 QUERY_ENGINE = "vectorized"
 BASEDIR = "/Users/diegogomestome/Dropbox/1-UFPR/1-Mestrado_Diego_Tome/EXPERIMENTOS/"
 
-for REGISTER_SIZE in (16, 32, 64):
+for REGISTER_SIZE in (16, 64):
     for SELECTIVITY in ("0001", "001", "01", "1", "10", "100"):
     
         DATA_ADDR_READ = 1024 * 1024 * 1024

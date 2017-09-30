@@ -82,7 +82,7 @@ for HMC_OPERATION in (256, 256):
         FILE_STAT.write("# SiNUCA Trace Static\n")
 
         basicBlock = 0
-        print("Generating Traces Files For HMC_NEW... Predication Unrolled 32x " + str(HMC_OPERATION) + " Bytes Selectivity " SELECTIVITY)
+        print("Generating Traces Files For HMC_NEW... Predication Unrolled 32x " + str(HMC_OPERATION) + " Bytes Selectivity " + SELECTIVITY)
         #################### STATIC FILE #########################
         print "Generating Static File..."
         for i in range(numberOfPredicates):
@@ -4416,8 +4416,8 @@ for HMC_OPERATION in (256, 256):
 
         print "Compressing Files..."
         os.system("rm -f " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
-            HMC_OPERATION) + "/predication/selectivity/" + SELECTIVITY + "/selectivity/" + SELECTIVITY + "/" + "*gz")
+            HMC_OPERATION) + "/predication/selectivity/" + SELECTIVITY + "/" + "*gz")
         os.system("gzip " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
-            HMC_OPERATION) + "/predication/selectivity/" + SELECTIVITY + "/selectivity/" + SELECTIVITY + "/" + "*.out")
+            HMC_OPERATION) + "/predication/selectivity/" + SELECTIVITY + "/" + "*.out")
         print "ALL Done!"
 
