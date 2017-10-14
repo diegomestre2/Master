@@ -211,8 +211,9 @@ for HMC_OPERATION in (16, 256):
         os.system("gzip " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
             HMC_OPERATION) + "/selectivity/" + SELECTIVITY + "/" + "*.out")
         print "ALL Done!"
-    
-        #UNROLLED4x
+
+        ################## Unrolled 4x ####################################
+
         DATA_ADDR_READ = 1024 * 1024 * 1024
         DATA_ADDR_WRITE = 1024 * 1024 * 4096
         INSTRUCTION_ADDR = 1024

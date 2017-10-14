@@ -36,7 +36,7 @@ for HMC_OPERATION in (16, 256):
         INSTRUCTION_ADDR = 1024
         DATA_SIZE = 4
 
-        input_file = BASEDIR + "bitmap_files/resultQ06.txt"
+        input_file = BASEDIR + "bitmap_files/q6_selectivity/q6_" + SELECTIVITY + ".txt"
         dynamic_trace = BASEDIR + "traces/" + QUERY + "/rowStore/HMC/" + str(
             HMC_OPERATION) + "/selectivity/" + SELECTIVITY + "/output_trace.out.tid0.dyn.out"
         memory_trace = BASEDIR + "traces/" + QUERY + "/rowStore/HMC/" + str(

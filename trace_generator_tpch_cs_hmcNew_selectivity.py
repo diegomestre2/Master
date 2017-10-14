@@ -192,15 +192,13 @@ for HMC_OPERATION in (16, 256):
         os.system("gzip " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
             HMC_OPERATION) + "/selectivity/" + SELECTIVITY + "/" + "*.out")
         print "ALL Done!"
-    
-        #UNROLLED 4x
+
+        ################## Unrolled 4x ####################################
     
         DATA_ADDR_READ = 1024 * 1024 * 1024
         DATA_ADDR_WRITE = 1024 * 1024 * 4096
         INSTRUCTION_ADDR = 1024
         DATA_SIZE = 4
-    
-        input_file = BASEDIR + "bitmap_files/resultQ06.txt"
     
         dynamic_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
             HMC_OPERATION) + "/unrolled4x/selectivity/" + SELECTIVITY + "/output_trace.out.tid0.dyn.out"
