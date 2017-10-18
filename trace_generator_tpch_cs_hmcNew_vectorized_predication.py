@@ -4388,13 +4388,14 @@ for HMC_OPERATION in (256, 256):
                         else:
                             iterator = loadCount[column]
 
-                        dynamic_block[column][tuple] += str(str(basicBlock + iterator) + "\n")
-                        for i in range(iterator):
-                            memory_block[column][tuple] += (
-                                "R " + str(HMC_OPERATION) + " " + str(address_base[column]) + " " + str(
-                                    basicBlock + iterator) + "\n")
-                            address_base[column] += HMC_OPERATION
-                        loadCount[column] = 0
+                        if iterator > 0:
+                            dynamic_block[column][tuple] += str(str(basicBlock + iterator) + "\n")
+                            for i in range(iterator):
+                                memory_block[column][tuple] += (
+                                    "R " + str(HMC_OPERATION) + " " + str(address_base[column]) + " " + str(
+                                        basicBlock + iterator) + "\n")
+                                address_base[column] += HMC_OPERATION
+                            loadCount[column] = 0
                         ########################################################################
                         # CREATE THE BITMAP 1 Byte Store by 32 Bytes of Loads
                         ########################################################################
