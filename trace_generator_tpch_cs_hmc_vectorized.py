@@ -17,7 +17,7 @@ QUERY = "Query06"
 QUERY_ENGINE = "vectorized"
 
 
-for HMC_OPERATION in (16, 256):
+for HMC_OPERATION in (16, 32, 64, 128, 256):
 
     DATA_ADDR_READ = 1024 * 1024 * 1024 #Bytes
     DATA_ADDR_WRITE = 1024 * 1024 * 4096 #Bytes
