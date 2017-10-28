@@ -4343,6 +4343,9 @@ for HMC_OPERATION in (256, 256):
                                 iterator = 32
                             else:
                                 iterator = loadCount[column]
+                                if iterator == 0:
+                                    print "teste"
+                                    iterator = 1
 
                             dynamic_block[column][tuple] += str(str(basicBlock + iterator) + "\n")
                             for i in range(iterator):
@@ -4391,6 +4394,8 @@ for HMC_OPERATION in (256, 256):
                                 iterator = 32
                             else:
                                 iterator = loadCount[column]
+                                if iterator == 0:
+                                    iterator = 1
                             dynamic_block[column][tuple] += str(str(basicBlock + iterator) + "\n")
                             for i in range(iterator):
                                 memory_block[column][tuple] += (
