@@ -1032,8 +1032,6 @@ for HMC_OPERATION in (16, 256):
             INSTRUCTION_ADDR += 4
             FILE_STAT.write("HMC_CMP 12 " + str(INSTRUCTION_ADDR) + " 4 1 7 1 8 0 0 1 0 0 3 0 0 0\n")  # R HMC_SIZE
             INSTRUCTION_ADDR += 4
-            FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 8 1 7 0 0 0 0 0 4 0 0 0\n")
-            INSTRUCTION_ADDR += 2
             basicBlock += 1
             FILE_STAT.write("@" + str(basicBlock) + "\n")  # MATCH POSITION (STORE)#
             FILE_STAT.write("MOV 9 " + str(INSTRUCTION_ADDR) + " 6 1 8 1 13 0 0 0 0 1 3 0 0 0\n")  # W 1 Byte

@@ -4256,17 +4256,17 @@ for HMC_OPERATION in (256, 256):
             INSTRUCTION_ADDR += 2
             basicBlock += 1
             FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY LOCK)#
-            FILE_STAT.write("HMC_LOCK 14 " + str(INSTRUCTION_ADDR) + " 4 1 7 0 0 0 0 0 0 3 0 0 1 -1 -1 -1\n")
+            FILE_STAT.write("HMC_LOCK 14 " + str(INSTRUCTION_ADDR) + " 4 0 0 0 0 0 0 0 3 0 0 1 -1 -1 -1\n")
             INSTRUCTION_ADDR += 4
             basicBlock += 1
             FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY READ BITMAP)#
-            FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 2 7 11 1 1 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
+            FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 1 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
             INSTRUCTION_ADDR += 4
-            FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 12 1 2 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
+            FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 2 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
             INSTRUCTION_ADDR += 4
-            FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 13 1 3 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
+            FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 3 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
             INSTRUCTION_ADDR += 4
-            FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 14 1 4 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
+            FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 4 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
             INSTRUCTION_ADDR += 4
             FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 4 1 2 3 4 1 7 0 0 0 0 0 4 0 0 0\n")
             INSTRUCTION_ADDR += 2
@@ -4343,17 +4343,16 @@ for HMC_OPERATION in (256, 256):
                                 iterator = 32
                             else:
                                 iterator = loadCount[column]
-                                if iterator == 0:
-                                    print "teste"
-                                    iterator = 1
 
-                            dynamic_block[column][tuple] += str(str(basicBlock + iterator) + "\n")
-                            for i in range(iterator):
-                                memory_block[column][tuple] += (
-                                    "R " + str(HMC_OPERATION) + " " + str(address_base[column]) + " " + str(
-                                        basicBlock + iterator) + "\n")
-                                address_base[column] += HMC_OPERATION
-                            loadCount[column] = 0
+
+                            if iterator > 0:
+                                dynamic_block[column][tuple] += str(str(basicBlock + iterator) + "\n")
+                                for i in range(iterator):
+                                    memory_block[column][tuple] += (
+                                        "R " + str(HMC_OPERATION) + " " + str(address_base[column]) + " " + str(
+                                            basicBlock + iterator) + "\n")
+                                    address_base[column] += HMC_OPERATION
+                                loadCount[column] = 0
                             ########################################################################
                             # CREATE THE BITMAP 1 Byte Store by 32 Bytes of Loads
                             ########################################################################
