@@ -84,7 +84,7 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
     print "Generating Static File..."
     for i in range(numberOfPredicates):
         basicBlock += 1
-        FILE_STAT.write("@" + str(basicBlock) + "\n")  # COLUMN-AT-A-TIME#
+        FILE_STAT.write("@" + str(basicBlock) + "\n")  # TUPLE-AT-A-TIME#
         FILE_STAT.write("ADD 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 5 0 0 0 0 0 3 0 0 0\n")
         INSTRUCTION_ADDR += 4
         FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 3 1 5 1 6 0 0 0 0 0 3 0 0 0\n")
@@ -93,15 +93,13 @@ for HMC_OPERATION in (16, 32, 64, 128, 256):
         basicBlock += 1
         INSTRUCTION_ADDR += 2
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
-        FILE_STAT.write("HMC_LD 12 " + str(INSTRUCTION_ADDR) + " 4 1 8 1 9 0 0 1 0 0 3 0 0 0\n")  # R
+        FILE_STAT.write("HMC_CMP 12 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 9 0 0 1 0 0 3 0 0 0\n")  # R
         INSTRUCTION_ADDR += 4
-        FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 3 1 9 1 8 0 0 0 0 0 3 0 0 0\n")
-        INSTRUCTION_ADDR += 3
-        # FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
+        FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 9 1 7 0 0 0 0 0 4 0 0 0\n")
         basicBlock += 1
        #INSTRUCTION_ADDR += 2
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # MATERIALIZATION (LOAD -> STORE)#
-        FILE_STAT.write("MOV 8 " + str(INSTRUCTION_ADDR) + " 6 1 11 1 12 0 0 1 0 0 3 0 0 0\n")  # R
+        FILE_STAT.write("LD 8 " + str(INSTRUCTION_ADDR) + " 6 2 9 1 1 12 0 0 1 0 0 3 0 0 0\n")  # R
         INSTRUCTION_ADDR += 6
         FILE_STAT.write("MOV 9 " + str(INSTRUCTION_ADDR) + " 6 1 12 1 13 0 0 0 0 1 3 0 0 0\n")  # W
         INSTRUCTION_ADDR += 6

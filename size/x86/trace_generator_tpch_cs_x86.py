@@ -99,19 +99,19 @@ for REGISTER_SIZE in (16, 32, 64):
         INSTRUCTION_ADDR += 2
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # READ BITMAP)#
-        FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 8 1 9 0 0 1 0 0 3 0 0 0\n")  # R 1 Byte
+        FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 9 0 0 1 0 0 3 0 0 0\n")  # R 1 Byte
         INSTRUCTION_ADDR += 4
         FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 9 1 7 0 0 0 0 0 4 0 0 0\n")
         INSTRUCTION_ADDR += 2
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
-        FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 9 1 10 0 0 1 0 0 3 0 0 0\n")  # R 16 Byte
+        FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 10 0 0 1 0 0 3 0 0 0\n")  # R 16 Byte
         INSTRUCTION_ADDR += 4
-        FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
-        INSTRUCTION_ADDR += 2
+        #FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 10 1 7 0 0 0 0 0 4 0 0 0\n")
+        #INSTRUCTION_ADDR += 2
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # MATCH POSITION (STORE)#
-        FILE_STAT.write("MOV 9 " + str(INSTRUCTION_ADDR) + " 6 1 10 1 11 0 0 0 0 1 3 0 0 0\n")  # W 1Byte
+        FILE_STAT.write("MOV 9 " + str(INSTRUCTION_ADDR) + " 6 1 5 1 11 0 0 0 0 1 3 0 0 0\n")  # W 1Byte
         INSTRUCTION_ADDR += 6
 
     FILE_STAT.write("# eof")

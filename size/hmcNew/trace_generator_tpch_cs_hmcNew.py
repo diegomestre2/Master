@@ -1,4 +1,4 @@
-# coding=utf-8
+
 ## 1MB => 262144
 ## 2MB => 524288
 ## 4MB => 1048576
@@ -14,13 +14,21 @@ import subprocess
 import os
 import sys
 
-VECTORIZED_SIZE = 999
+VECTOR_SIZE = 999
 QUERY = "Query06"
-QUERY_ENGINE = "vectorized"
+QUERY_ENGINE = "pipelined"
 BASEDIR = "/Users/diegogomestome/Dropbox/1-UFPR/1-Mestrado_Diego_Tome/EXPERIMENTOS/"
 
+def writeOnDynamicAndMemoryFilesPipelined():
+    global column, tuple
+    ######### WRITES ON DYNAMIC AND MEMORY FILE COLUMN-AT-A-TIME################3
+    for column in range(numberOfPredicates):
+        for tuple in range(len(tuples)):
+            FILE_DYN.write(dynamic_block[column][tuple])
+            if memory_block[column][tuple] != 0:
+                FILE_MEM.write(memory_block[column][tuple])
 
-for HMC_OPERATION in (16, 256):
+for HMC_OPERATION in (16, 32, 64, 128, 256):
 
     DATA_ADDR_READ = 1024 * 1024 * 1024
     DATA_ADDR_WRITE = 1024 * 1024 * 4096
@@ -86,25 +94,25 @@ for HMC_OPERATION in (16, 256):
         INSTRUCTION_ADDR += 2
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY LOCK)#
-        FILE_STAT.write("HMC_LOCK 14 " + str(INSTRUCTION_ADDR) + " 4 1 7 0 0 0 0 0 0 3 0 0 1 -1 -1 -1\n")
+        FILE_STAT.write("HMC_LOCK 14 " + str(INSTRUCTION_ADDR) + " 4 0 0 0 0 0 0 0 3 0 0 1 -1 -1 -1\n")
         INSTRUCTION_ADDR += 4
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY READ BITMAP)#
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 8 0 0 0 1 0 0 3 0 0 1 -1 -1 33\n")  # R
+        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 5 0 0 0 1 0 0 3 0 0 1 -1 -1 33\n")  # R
         INSTRUCTION_ADDR += 4
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
-        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 1 0 0 3 0 0 1 -1 -1 1\n")  # R
+        FILE_STAT.write("HMC_LD 16 " + str(INSTRUCTION_ADDR) + " 4 1 5 0 0 0 1 0 0 3 0 0 1 -1 -1 1\n")  # R
         INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 0 3 0 0 1 1 -1 1\n")
+        FILE_STAT.write("HMC_CMP 18 " + str(INSTRUCTION_ADDR) + " 4 1 5 0 0 0 0 0 0 3 0 0 1 1 -1 1\n")
         INSTRUCTION_ADDR += 4
         basicBlock += 1
         FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY WRITE BITMAP)
-        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 9 0 0 0 0 0 0 3 0 0 1 33 -1 1\n")
+        FILE_STAT.write("HMC_OP 18 " + str(INSTRUCTION_ADDR) + " 4 1 5 0 0 0 0 0 0 3 0 0 1 33 -1 1\n")
         INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_ST 17 " + str(INSTRUCTION_ADDR) + " 4 1 10 0 0 0 0 0 1 3 0 0 1 33 -1 -1\n")  # W
+        FILE_STAT.write("HMC_ST 17 " + str(INSTRUCTION_ADDR) + " 4 1 5 0 0 0 0 0 1 3 0 0 1 33 -1 -1\n")  # W
         INSTRUCTION_ADDR += 4
-        FILE_STAT.write("HMC_UNLOCK 15 " + str(INSTRUCTION_ADDR) + " 4 1 11 0 0 0 0 0 0 3 0 0 1 -1 -1 -1\n")
+        FILE_STAT.write("HMC_UNLOCK 15 " + str(INSTRUCTION_ADDR) + " 4 0 0 0 0 0 0 0 3 0 0 1 -1 -1 -1\n")
         INSTRUCTION_ADDR += 4
 
     FILE_STAT.write("# eof")
@@ -170,20 +178,8 @@ for HMC_OPERATION in (16, 256):
         fieldsByInstruction -= 1
 
     print "Writing on Dynamic and Memory File..."
-    vectorCounter = 0
-    startIndex = 0
-    VECTOR_SIZE = int((VECTORIZED_SIZE / numberOfPredicates) / (HMC_OPERATION / DATA_SIZE))
     ######### WRITES ON DYNAMIC AND MEMORY FILE ################
-    while vectorCounter < len(tuples):
-        for column in xrange(numberOfPredicates):
-            startIndex = vectorCounter
-            for tuple in xrange(startIndex, startIndex + VECTOR_SIZE):
-                if tuple < len(tuples):
-                    FILE_DYN.write(dynamic_block[column][tuple])
-                    if memory_block[column][tuple] != 0:
-                        FILE_MEM.write(memory_block[column][tuple])
-
-        vectorCounter += VECTOR_SIZE
+    writeOnDynamicAndMemoryFilesPipelined()
 
     FILE_MEM.close()
     FILE_DYN.close()
