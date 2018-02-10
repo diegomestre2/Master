@@ -20,7 +20,7 @@ QUERY_ENGINE = "vectorized"
 BASEDIR = "/Users/diegogomestome/Dropbox/1-UFPR/1-Mestrado_Diego_Tome/EXPERIMENTOS/"
 
 
-for HMC_OPERATION in (16, 256):
+for HMC_OPERATION in (16, 32, 64, 128, 256):
 
     DATA_ADDR_READ = 1024 * 1024 * 1024
     DATA_ADDR_WRITE = 1024 * 1024 * 4096
@@ -30,11 +30,11 @@ for HMC_OPERATION in (16, 256):
     input_file = BASEDIR + "bitmap_files/resultQ06.txt"
 
     dynamic_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
-        HMC_OPERATION) + "/innerLock/output_trace.out.tid0.dyn.out"
+        HMC_OPERATION) + "/output_trace.out.tid0.dyn.out"
     memory_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
-        HMC_OPERATION) + "/innerLock/output_trace.out.tid0.mem.out"
+        HMC_OPERATION) + "/output_trace.out.tid0.mem.out"
     static_trace = BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
-        HMC_OPERATION) + "/innerLock/output_trace.out.tid0.stat.out"
+        HMC_OPERATION) + "/output_trace.out.tid0.stat.out"
 
     ################### TREATING FILE INPUT ###################
     FILE_INPUT = open(input_file, 'r')
@@ -191,7 +191,7 @@ for HMC_OPERATION in (16, 256):
 
     print "Compressing Files..."
     os.system("rm -f " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
-        HMC_OPERATION) + "/innerLock/" + "*gz")
+        HMC_OPERATION) + "/" + "*gz")
     os.system("gzip " + BASEDIR + "traces/" + QUERY + "/columnStore/" + QUERY_ENGINE + "/HMC_NEW/" + str(
-        HMC_OPERATION) + "/innerLock/" + "*.out")
+        HMC_OPERATION) + "/" + "*.out")
     print "ALL Done!"

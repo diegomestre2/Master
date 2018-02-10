@@ -98,6 +98,8 @@ for tuple in range(numberOfPredicates):
     FILE_STAT.write("@" + str(basicBlock) + "\n")  # READ BITMAP)#
     FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 9 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
     INSTRUCTION_ADDR += 4
+    FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 9 1 7 0 0 0 0 0 4 0 0 0\n")
+    INSTRUCTION_ADDR += 2
     basicBlock += 1
     FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
     FILE_STAT.write("HMC_CMP 12 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 2 0 0 1 0 0 3 0 0 0\n")  # R HMC_SIZE
@@ -110,7 +112,7 @@ for tuple in range(numberOfPredicates):
     INSTRUCTION_ADDR += 4
     basicBlock += 1
     FILE_STAT.write("@" + str(basicBlock) + "\n")  # MATCH POSITION (STORE)#
-    FILE_STAT.write("MOV 9 " + str(INSTRUCTION_ADDR) + " 6 1 12 1 13 0 0 0 0 1 3 0 0 0\n")  # W 1 Byte
+    FILE_STAT.write("MOV 9 " + str(INSTRUCTION_ADDR) + " 6 1 5 1 13 0 0 0 0 1 3 0 0 0\n")  # W 1 Byte
     INSTRUCTION_ADDR += 6
 
 FILE_STAT.write("# eof")
@@ -122,7 +124,7 @@ FILE_MEM = open(memory_trace, 'w')
 FILE_DYN.write("# SiNUCA Trace Dynamic\n")
 FILE_MEM.write("# SiNUCA Trace Memory\n")
 
-fieldsByInstruction = HMC_OPERATION * 8
+fieldsByInstruction = HMC_OPERATION
 lastFieldSum = 0
 bitmapSize = (HMC_OPERATION / 32) * 4
 #################### DYNAMIC AND MEMORY FILE #########################
@@ -140,9 +142,8 @@ for tuple in range(len(tuples)):
             ########################################################################
             ##  MATCH FOUND
             ########################################################################
-            bitColSum[column] = 0
             if column == numberOfPredicates - 1:
-                fieldsByInstruction = (HMC_OPERATION * 8) + 1
+                fieldsByInstruction = HMC_OPERATION + 1
             ########################################################################
             ## READ THE BITMAP 1 Byte of Store by 32 Bytes of Loads
             ########################################################################
@@ -160,7 +161,7 @@ for tuple in range(len(tuples)):
                 memory_block[column][tuple] += (
                     "R " + str(HMC_OPERATION) + " " + str(address_base[column]) + " " + str(
                         basicBlock + 3) + "\n")
-                address_base[column] += (HMC_OPERATION)
+                address_base[column] += HMC_OPERATION
             ########################################################################
             ## CREATE THE BITMAP 1 Byte of Store by 32 Bytes of Loads
             ########################################################################
@@ -169,7 +170,6 @@ for tuple in range(len(tuples)):
                 "W " + str(bitmapSize) + " " + str(address_target_bitmap[column]) + " " + str(
                     basicBlock + 4) + "\n")
             address_target_bitmap[column] += bitmapSize
-
 
         basicBlock += 4
     fieldsByInstruction -= 1
@@ -258,6 +258,8 @@ for tuple in range(numberOfPredicates):
     FILE_STAT.write("@" + str(basicBlock) + "\n")  # READ BITMAP)#
     FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 9 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
     INSTRUCTION_ADDR += 4
+    FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 1 9 1 7 0 0 0 0 0 4 0 0 0\n")
+    INSTRUCTION_ADDR += 2
     basicBlock += 1
     FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
     FILE_STAT.write("HMC_CMP 12 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 2 0 0 1 0 0 3 0 0 0\n")  # R HMC_SIZE
@@ -278,7 +280,7 @@ for tuple in range(numberOfPredicates):
     INSTRUCTION_ADDR += 4
     basicBlock += 1
     FILE_STAT.write("@" + str(basicBlock) + "\n")  # MATCH POSITION (STORE)#
-    FILE_STAT.write("MOV 9 " + str(INSTRUCTION_ADDR) + " 6 1 20 1 13 0 0 0 0 1 3 0 0 0\n")  # W 1 Byte
+    FILE_STAT.write("MOV 9 " + str(INSTRUCTION_ADDR) + " 6 1 5 1 13 0 0 0 0 1 3 0 0 0\n")  # W 1 Byte
     INSTRUCTION_ADDR += 6
 
 FILE_STAT.write("# eof")
@@ -290,7 +292,7 @@ FILE_MEM = open(memory_trace, 'w')
 FILE_DYN.write("# SiNUCA Trace Dynamic\n")
 FILE_MEM.write("# SiNUCA Trace Memory\n")
 
-fieldsByInstruction = HMC_OPERATION * 8
+fieldsByInstruction = HMC_OPERATION * 2
 bitmapSize = (HMC_OPERATION / 32) * 8
 #################### DYNAMIC AND MEMORY FILE #########################
 print "Generating Data For Dynamic and Memory Files..."
@@ -307,9 +309,8 @@ for tuple in range(len(tuples)):
             ########################################################################
             ##  MATCH FOUND
             ########################################################################
-            bitColSum[column] = 0
             if column == numberOfPredicates - 1:
-                fieldsByInstruction = (HMC_OPERATION * 8) + 1
+                fieldsByInstruction = (HMC_OPERATION * 2) + 1
             ########################################################################
             ## READ THE BITMAP 1 Byte of Store by 32 Bytes of Loads
             ########################################################################
@@ -336,7 +337,6 @@ for tuple in range(len(tuples)):
                 "W " + str(bitmapSize) + " " + str(address_target_bitmap[column]) + " " + str(
                     basicBlock + 4) + "\n")
             address_target_bitmap[column] += bitmapSize
-
 
         basicBlock += 4
     fieldsByInstruction -= 1
@@ -428,6 +428,8 @@ for tuple in range(numberOfPredicates):
     INSTRUCTION_ADDR += 4
     FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 10 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
     INSTRUCTION_ADDR += 4
+    FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 2 9 10 1 7 0 0 0 0 0 4 0 0 0\n")
+    INSTRUCTION_ADDR += 2
     basicBlock += 1
     FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
     FILE_STAT.write("HMC_CMP 12 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 2 0 0 1 0 0 3 0 0 0\n")  # R HMC_SIZE
@@ -478,11 +480,8 @@ FILE_MEM = open(memory_trace, 'w')
 FILE_DYN.write("# SiNUCA Trace Dynamic\n")
 FILE_MEM.write("# SiNUCA Trace Memory\n")
 
-fieldsByInstruction = HMC_OPERATION * 8
-lastFieldSum = 0
-bitmapSize = 4
-if HMC_OPERATION > 16:
-    bitmapSize = (HMC_OPERATION / 32) * 8
+fieldsByInstruction = HMC_OPERATION * 4
+bitmapSize = (HMC_OPERATION / 32) * 8
 #################### DYNAMIC AND MEMORY FILE #########################
 print "Generating Data For Dynamic and Memory Files..."
 for tuple in range(len(tuples)):
@@ -498,9 +497,8 @@ for tuple in range(len(tuples)):
             ########################################################################
             ##  MATCH FOUND
             ########################################################################
-            bitColSum[column] = 0
             if column == numberOfPredicates - 1:
-                fieldsByInstruction = (HMC_OPERATION * 8) + 1
+                fieldsByInstruction = (HMC_OPERATION * 4) + 1
             ########################################################################
             ## READ THE BITMAP 1 Byte of Store by 32 Bytes of Loads
             ########################################################################
@@ -620,10 +618,12 @@ for tuple in range(numberOfPredicates):
     INSTRUCTION_ADDR += 4
     FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 10 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
     INSTRUCTION_ADDR += 4
-    FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 11 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
+    FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 11 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
     INSTRUCTION_ADDR += 4
     FILE_STAT.write("CMP 1 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 12 0 0 1 0 0 3 0 0 0\n")  # R 1 Bytes
     INSTRUCTION_ADDR += 4
+    FILE_STAT.write("JNE 7 " + str(INSTRUCTION_ADDR) + " 2 4 9 10 11 12 1 7 0 0 0 0 0 4 0 0 0\n")
+    INSTRUCTION_ADDR += 2
     basicBlock += 1
     FILE_STAT.write("@" + str(basicBlock) + "\n")  # APPLY PREDICATE)#
     FILE_STAT.write("HMC_CMP 12 " + str(INSTRUCTION_ADDR) + " 4 1 5 1 2 0 0 1 0 0 3 0 0 0\n")  # R HMC_SIZE
@@ -730,7 +730,6 @@ for tuple in range(len(tuples)):
             ########################################################################
             ##  MATCH FOUND
             ########################################################################
-            bitColSum[column] = 0
             if column == numberOfPredicates - 1:
                 fieldsByInstruction = (HMC_OPERATION * 8) + 1
             ########################################################################
