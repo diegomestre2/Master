@@ -1,7 +1,7 @@
 # Master
 We hereby present the source code used to evaluate TPC-H Query 06. (Paper submitted to DATE 2018)HIPE: HMC instruction predication extension applied on database processing
 
-###TPC-H db-generator
+### TPC-H db-generator
 - https://github.com/eyalroz/tpch-dbgen
 
 TPC-H Query 06
